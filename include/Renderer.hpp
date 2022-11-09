@@ -1,5 +1,5 @@
-#ifndef RTVULKAN_RENDERER_HPP
-#define RTVULKAN_RENDERER_HPP
+#ifndef RTVC_RENDERER_HPP
+#define RTVC_RENDERER_HPP
 
 #include "ProxyFuncs.hpp"
 
@@ -17,17 +17,17 @@
 #include <algorithm>
 #include <fstream>
 
-namespace rt_vulkan
+namespace rtvc
 {
-    class RenderTriangleApplication
+    class RenderApplication
     {
     public:
         static const uint32_t init_window_width = 1024;
         static const uint32_t init_window_height = 720;
 
-        RenderTriangleApplication()
+        RenderApplication()
             : window{nullptr, init_window_width, init_window_height} {}
-        RenderTriangleApplication(uint32_t w, uint32_t h)
+        RenderApplication(uint32_t w, uint32_t h)
             : window{nullptr, w, h} {}
 
         void run();
@@ -89,6 +89,19 @@ namespace rt_vulkan
 
         std::vector<VkImageView> swapChainImageViews;
 
+        VkRenderPass renderPass;
+        VkPipelineLayout pipelineLayout;
+        VkPipeline graphicsPipeline;
+
+        std::vector<VkFramebuffer> swapChainFrameBuffers;
+
+        VkCommandPool commandPool;
+        VkCommandBuffer commandBuffer;
+
+        VkSemaphore imageAvailableSemaphore;
+        VkSemaphore renderFinishedSemaphore;
+        VkFence inFlightFence;
+
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
             VkDebugUtilsMessageSeverityFlagBitsEXT,
             VkDebugUtilsMessageTypeFlagsEXT,
@@ -96,35 +109,73 @@ namespace rt_vulkan
             void *);
 
         bool checkValidationLayerSupport();
+
         std::vector<VkExtensionProperties> getSupportedExtensions();
+
         std::vector<const char *> getRequiredExtensions();
+
         void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &);
+
         void setupDebugMessenger();
+
         void creatInstance();
+
         bool checkDeviceExtensionSupport(VkPhysicalDevice);
+
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice);
+
         bool isSuitableDevice(VkPhysicalDevice);
+
         int rateDeviceSuitability(VkPhysicalDevice);
+
         void selectPhysicalDevice();
+
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice);
+
         void createLogicalDevice();
+
         void createSurface();
+
         VkSurfaceFormatKHR selectSwapSurfaceFormat(
             const std::vector<VkSurfaceFormatKHR> &);
+
         VkPresentModeKHR selectSwapPresentMode(
             const std::vector<VkPresentModeKHR> &);
+
         VkExtent2D selectSwapExtent(const VkSurfaceCapabilitiesKHR &);
+
         void createSwapChain();
-        void createImageView();
+
+        void createImageViews();
+
         std::vector<char> readShader(const std::string &);
+
         VkShaderModule createShaderModule(const std::vector<char> &);
+
+        void createRenderPass();
+
         void createGraphicsPipeline();
 
+        void createFramebuffers();
+
+        void createCommandPool();
+
+        void createCommandBuffer();
+
+        void recordCommandBuffer(VkCommandBuffer, uint32_t);
+
+        void createSyncObjects();
+
+        void drawFrame();
+
         void initWindow();
+
         void initVulkan();
+
         void mainLoop();
+
         void cleanUp();
     };
-} // namespace rt_vulkan
+} // namespace rtvc
 
-#endif // RTVULKAN_RENDERER_HPP
+#endif // RTVC_RENDERER_HPP

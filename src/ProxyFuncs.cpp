@@ -1,6 +1,6 @@
 #include "ProxyFuncs.hpp"
 
-VkResult rt_vulkan::CreateDebugUtilsMessengerEXT(
+VkResult rtvc::createDebugUtilsMessengerEXT(
     VkInstance instance,
     const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
     const VkAllocationCallbacks *pAllocator,
@@ -14,7 +14,7 @@ VkResult rt_vulkan::CreateDebugUtilsMessengerEXT(
         return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
-void rt_vulkan::DestroyDebugUtilsMessengerEXT(
+void rtvc::destroyDebugUtilsMessengerEXT(
     VkInstance instance,
     VkDebugUtilsMessengerEXT debugMessenger,
     const VkAllocationCallbacks *pAllocator)

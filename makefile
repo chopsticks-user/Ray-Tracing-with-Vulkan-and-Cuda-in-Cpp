@@ -19,26 +19,28 @@ SHADERS_DIR = resources/shaders
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
-	$(shell clean-binaries)
 	$(COMPILER) $(BIN_FLAGS) $(INCLUDE_DIRS) -o build/$(ENTRY_NAME) $(SOURCE_PATHS) $(LDFLAGS) $(MDFLAGS)
 	objdump $(OBJDUMP_FLAGS) build/$(ENTRY_NAME) > build/$(ENTRY_NAME).dump
 	@echo "Build successfully.\n"
 
-.PHONY: compile-shaders debug release clean
+.PHONY: compile-shaders build-debug build-release run-debug run-release clean
 
 compile-shaders:
 	@mkdir -p build/shaders
-	$(shell clean-shaders)
 	glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
 	glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
 	@echo "Shaders compiled successfully.\n"
 
-debug: clean compile-shaders $(ENTRY_NAME)
-	@./build/$(ENTRY_NAME)
+build-debug: clean compile-shaders $(ENTRY_NAME)
 
-release: MDFLAGS += -DNDEBUG
-release: CFLAGS += -O3
-release: clean compile-shaders $(ENTRY_NAME)
+build-release: MDFLAGS += -DNDEBUG
+build-release: CFLAGS += -O3
+build-release: clean compile-shaders $(ENTRY_NAME)
+
+run-debug: build-debug
+	./build/$(ENTRY_NAME)
+
+run-release: build-release
 	@./build/$(ENTRY_NAME)
 	
 clean:

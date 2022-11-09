@@ -1,11 +1,11 @@
 #include <Renderer.hpp>
 
-using namespace rt_vulkan;
+using namespace rtvc;
 
 int protected_main([[maybe_unused]] int argc,
                    [[maybe_unused]] char **argv)
 {
-    RenderTriangleApplication app;
+    RenderApplication app;
     app.run();
 
     return EXIT_SUCCESS;

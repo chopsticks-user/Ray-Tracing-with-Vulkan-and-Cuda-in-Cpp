@@ -1,16 +1,16 @@
-#ifndef RT_VULKAN_PROXY_FUNCS_HPP
-#define RT_VULKAN_PROXY_FUNCS_HPP
+#ifndef RTVC_PROXY_FUNCS_HPP
+#define RTVC_PROXY_FUNCS_HPP
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-namespace rt_vulkan
+namespace rtvc
 {
-    VkResult CreateDebugUtilsMessengerEXT(VkInstance, const VkDebugUtilsMessengerCreateInfoEXT *,
+    VkResult createDebugUtilsMessengerEXT(VkInstance, const VkDebugUtilsMessengerCreateInfoEXT *,
                                           const VkAllocationCallbacks *, VkDebugUtilsMessengerEXT *);
 
-    void DestroyDebugUtilsMessengerEXT(VkInstance, VkDebugUtilsMessengerEXT,
+    void destroyDebugUtilsMessengerEXT(VkInstance, VkDebugUtilsMessengerEXT,
                                        const VkAllocationCallbacks *);
-} // namespace rt_vulkan
+} // namespace rtvc
 
-#endif // RT_VULKAN_PROXY_FUNCS_HPP
+#endif // RTVC_PROXY_FUNCS_HPP

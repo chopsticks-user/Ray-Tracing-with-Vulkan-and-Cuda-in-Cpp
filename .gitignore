@@ -1,2 +1,4 @@
 /test
 /libs
+/.vscode
+/CMakeLists.txt
