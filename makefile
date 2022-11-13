@@ -11,11 +11,10 @@ BIN_FLAGS = $(CFLAGS) -Wall -Wextra
 OBJDUMP_FLAGS = -S --disassemble
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 MDFLAGS =
-SOURCE_PATHS = $(ENTRY_NAME).cpp src/*.cpp
-INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src
-SHADERS_DIR = resources/shaders
 
-# $(COMPILER) $(ASM_FLAGS) $(INCLUDE_DIRS) -o build/$(ENTRY_NAME).asm $(SOURCE_DIRS) $(LDFLAGS) $(MDFLAGS)
+SHADERS_DIR = resources/shaders
+SOURCE_PATHS = $(ENTRY_NAME).cpp src/*.cpp
+INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src -I$(SHADERS_DIR)
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
@@ -23,7 +22,10 @@ $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	objdump $(OBJDUMP_FLAGS) build/$(ENTRY_NAME) > build/$(ENTRY_NAME).dump
 	@echo "Build successfully.\n"
 
-.PHONY: compile-shaders build-debug build-release run-debug run-release clean
+.PHONY: compile-shaders build-debug build-release run-debug run-release clean test
+
+test:
+	g++ -c src/*.cpp
 
 compile-shaders:
 	@mkdir -p build/shaders
@@ -38,7 +40,7 @@ build-release: CFLAGS += -O3
 build-release: clean compile-shaders $(ENTRY_NAME)
 
 run-debug: build-debug
-	./build/$(ENTRY_NAME)
+	@./build/$(ENTRY_NAME)
 
 run-release: build-release
 	@./build/$(ENTRY_NAME)
