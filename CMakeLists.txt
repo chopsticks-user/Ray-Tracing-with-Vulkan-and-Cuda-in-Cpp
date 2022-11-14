@@ -18,8 +18,6 @@ target_include_directories(Renderer PRIVATE resources/shaders)
 target_include_directories(Renderer PRIVATE src)
 target_include_directories(Renderer PUBLIC include)
 
-# target_include_directories(Application PUBLIC include)
-
 target_link_libraries(Renderer ProxyFuncs)
 target_link_libraries(Renderer Vertex)
 target_link_libraries(Renderer Utility)
@@ -33,5 +31,3 @@ target_link_libraries(Renderer Xrandr)
 target_link_libraries(Renderer Xi)
 
 target_link_libraries(Application Renderer)
-
-# target_include_directories(Application )

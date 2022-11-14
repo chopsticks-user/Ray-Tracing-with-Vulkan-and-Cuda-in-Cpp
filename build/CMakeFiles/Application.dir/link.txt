@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/Application.dir/Application.cpp.o -o Application  -Wl,-rpath,/home/xunililak/Code/Projects/4-RTVulkan/build libRenderer.so libProxyFuncs.a libVertex.a libUtility.a -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi 
