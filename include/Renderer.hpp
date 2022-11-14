@@ -114,6 +114,7 @@ private:
   uint32_t currentFrame = 0;
 
   VkBuffer vertexBuffer;
+  VkDeviceMemory vertexBufferMemory;
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
       VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
@@ -185,6 +186,8 @@ private:
   void recreateSwapChain();
 
   static void framebufferResizeCallback(GLFWwindow *, int, int);
+
+  uint32_t findMemoryType(uint32_t, VkMemoryPropertyFlags);
 
   void initWindow();
 

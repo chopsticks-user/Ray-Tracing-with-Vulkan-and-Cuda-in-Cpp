@@ -1,5 +1,7 @@
 #include <Renderer.hpp>
 
+// #include <iostream>
+
 int protected_main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
   rtvc::RenderApplication app;
   app.run();

@@ -1,0 +1,7 @@
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/Renderer.dir
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/Vertex.dir
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/ProxyFuncs.dir
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/Utility.dir
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/Application.dir
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/edit_cache.dir
+/home/xunililak/Code/Projects/4-RTVulkan/build/CMakeFiles/rebuild_cache.dir

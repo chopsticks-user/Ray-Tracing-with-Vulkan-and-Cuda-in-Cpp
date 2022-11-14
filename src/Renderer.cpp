@@ -218,6 +218,34 @@ void rtvc::RenderApplication::selectPhysicalDevice() {
   std::vector<VkPhysicalDevice> devices{deviceCount};
   vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
+  int noDeviceSelected = true;
+
+  std::cout << "Found " << devices.size() << " GPUs with Vulkan support:\n";
+  for (size_t i = 0; i < devices.size(); ++i) {
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(devices[i], &properties);
+
+    std::cout << "GPU " << i;
+    if (noDeviceSelected) {
+      if (isSuitableDevice(devices[i])) {
+        physicalDevice = devices[i];
+        std::cout << " (Selected)";
+        noDeviceSelected = false;
+      }
+    }
+
+    std::cout << ":\n";
+    std::cout << "\tAPI version: "
+              << VK_API_VERSION_MAJOR(properties.apiVersion) << '.'
+              << VK_API_VERSION_MINOR(properties.apiVersion) << '.'
+              << VK_API_VERSION_PATCH(properties.apiVersion) << '\n';
+    std::cout << "\tDriver version: " << properties.driverVersion << '\n';
+    std::cout << "\tVendor ID: " << properties.vendorID << '\n';
+    std::cout << "\tDevice ID: " << properties.deviceID << '\n';
+    std::cout << "\tDevice type: " << properties.deviceType << '\n';
+    std::cout << "\tDevice name: " << properties.deviceName << "\n\n";
+  }
+
   for (const auto &device : devices) {
     if (isSuitableDevice(device)) {
       physicalDevice = device;
@@ -225,12 +253,9 @@ void rtvc::RenderApplication::selectPhysicalDevice() {
     }
   }
 
-  if (physicalDevice == VK_NULL_HANDLE)
+  if (physicalDevice == VK_NULL_HANDLE) {
     throw std::runtime_error("Failed to find a suitable GPU.");
-
-  // std::cout << "Found GPUs with Vulkan support:\n";
-  // for (const auto &device : devices)
-  //     std::cout << '\t' << device << '\n';
+  }
 }
 
 rtvc::RenderApplication::QueueFamilyIndices
@@ -727,6 +752,28 @@ void rtvc::RenderApplication::createVertexBuffers() {
       VK_SUCCESS) {
     throw std::runtime_error("Failed to create vertex buffer.");
   }
+
+  VkMemoryRequirements memRequirements{};
+  vkGetBufferMemoryRequirements(device, vertexBuffer, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memRequirements.size;
+  allocInfo.memoryTypeIndex = findMemoryType(
+      memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+  if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to allocate vertex buffer memory.");
+  }
+
+  vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
+
+  void *data;
+  vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+  memcpy(data, triangle.data(), static_cast<size_t>(bufferInfo.size));
+  vkUnmapMemory(device, vertexBufferMemory);
 }
 
 void rtvc::RenderApplication::createCommandBuffers() {
@@ -770,6 +817,10 @@ void rtvc::RenderApplication::recordCommandBuffer(VkCommandBuffer commandBuffer,
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     graphicsPipeline);
 
+  VkBuffer vertexBuffers[] = {vertexBuffer};
+  VkDeviceSize offsets[] = {0};
+  vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
   vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
   vkCmdEndRenderPass(commandBuffer);
@@ -807,6 +858,22 @@ void rtvc::RenderApplication::framebufferResizeCallback(
   auto app = reinterpret_cast<rtvc::RenderApplication *>(
       glfwGetWindowUserPointer(window));
   app->frameBufferResized = true;
+}
+
+uint32_t
+rtvc::RenderApplication::findMemoryType(uint32_t typeFilter,
+                                        VkMemoryPropertyFlags properties) {
+
+  VkPhysicalDeviceMemoryProperties memProperties{};
+  vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+  for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
+    if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
+                                    properties) == properties) {
+      return i;
+    }
+  }
+  throw std::runtime_error("Failed to find suitable memory type.");
 }
 
 void rtvc::RenderApplication::initWindow() {
@@ -960,6 +1027,7 @@ void rtvc::RenderApplication::cleanUp() {
   cleanUpSwapChain();
 
   vkDestroyBuffer(device, vertexBuffer, nullptr);
+  vkFreeMemory(device, vertexBufferMemory, nullptr);
 
   for (size_t i = 0; i < max_frames_in_flight; ++i) {
     vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);

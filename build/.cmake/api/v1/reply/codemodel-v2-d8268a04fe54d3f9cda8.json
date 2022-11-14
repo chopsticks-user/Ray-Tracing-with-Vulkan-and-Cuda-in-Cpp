@@ -1,0 +1,96 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "RTVC",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Application::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Application-53693d2e0fe9fdb1b80e.json",
+					"name" : "Application",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ProxyFuncs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ProxyFuncs-8e6cbe38246c245cb638.json",
+					"name" : "ProxyFuncs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Renderer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Renderer-22f140cf9f74f80d81a1.json",
+					"name" : "Renderer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Utility::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Utility-d0b0d1dc97c8299e6274.json",
+					"name" : "Utility",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Vertex::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Vertex-233f5c72a6ba36c1dbfd.json",
+					"name" : "Vertex",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/xunililak/Code/Projects/4-RTVulkan/build",
+		"source" : "/home/xunililak/Code/Projects/4-RTVulkan"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

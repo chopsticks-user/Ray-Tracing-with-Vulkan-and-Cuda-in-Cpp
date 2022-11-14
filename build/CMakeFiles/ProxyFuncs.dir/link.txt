@@ -1,0 +1,2 @@
+/usr/bin/ar qc libProxyFuncs.a CMakeFiles/ProxyFuncs.dir/src/ProxyFuncs.cpp.o
+/usr/bin/ranlib libProxyFuncs.a
