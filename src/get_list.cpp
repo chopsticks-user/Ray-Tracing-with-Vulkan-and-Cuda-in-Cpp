@@ -61,4 +61,21 @@ std::vector<VkPhysicalDevice> getPhysicalDeviceList(VkInstance instance) {
   return physicalDevices;
 }
 
+VkPhysicalDeviceProperties
+getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice) {
+  VkPhysicalDeviceProperties properties;
+  vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+  return properties;
+}
+
+VkPhysicalDeviceProperties2
+getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
+                              void *pNextProperty) {
+  VkPhysicalDeviceProperties2 properties;
+  properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+  properties.pNext = pNextProperty;
+  vkGetPhysicalDeviceProperties2(physicalDevice, &properties);
+  return properties;
+}
+
 } // namespace vkh

@@ -6,6 +6,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace vkh {
@@ -43,6 +44,26 @@ std::vector<std::string> getRequiredInstanceExtensionList();
  * @return std::vector<VkPhysicalDevice>
  */
 std::vector<VkPhysicalDevice> getPhysicalDeviceList(VkInstance instance);
+
+/**
+ * @brief Get the Physical Device Property List object
+ *
+ * @param physicalDevice
+ * @return VkPhysicalDeviceProperties
+ */
+VkPhysicalDeviceProperties
+getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice);
+
+/**
+ * @brief Get the Physical Device Property List object
+ *
+ * @param physicalDevice
+ * @param pNextProperty
+ * @return VkPhysicalDeviceProperties2
+ */
+VkPhysicalDeviceProperties2
+getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
+                              void *pNextProperty);
 
 } // namespace vkh
 

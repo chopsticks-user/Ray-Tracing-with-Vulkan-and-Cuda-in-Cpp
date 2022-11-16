@@ -10,6 +10,12 @@ int protected_main() {
   auto createInfo = vkh::makeInstanceCreateInfo(&appInfo);
   auto instance = vkh::createInstance(&createInfo);
 
+  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance);
+  for (const auto &device : physicalDeviceList) {
+    auto properties = vkh::getPhysicalDevicePropertyList(device);
+    std::cout << properties.vendorID << '\n';
+  }
+
   vkDestroyInstance(instance, nullptr);
 
   glfwTerminate();
