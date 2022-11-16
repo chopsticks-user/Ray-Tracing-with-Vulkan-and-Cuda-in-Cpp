@@ -13,7 +13,8 @@ VkApplicationInfo makeApplicationInfo(const char *pApplicationName) {
 }
 
 VkInstanceCreateInfo makeInstanceCreateInfo(
-    const VkApplicationInfo *appInfo, uint32_t enabledLayerCount,
+    const VkApplicationInfo *appInfo, uint32_t enabledExtensionCount,
+    const char *const *ppEnabledExtensionNames, uint32_t enabledLayerCount,
     const char *const *ppEnabledLayerNames, const void *pNext) {
   VkInstanceCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -21,13 +22,8 @@ VkInstanceCreateInfo makeInstanceCreateInfo(
   createInfo.pApplicationInfo = appInfo;
   createInfo.enabledLayerCount = enabledLayerCount;
   createInfo.ppEnabledLayerNames = ppEnabledLayerNames;
-
-  uint32_t glfwExtensionCount;
-  const char **glfwExtensions;
-  glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-  createInfo.enabledExtensionCount = glfwExtensionCount;
-  createInfo.ppEnabledExtensionNames = glfwExtensions;
+  createInfo.enabledExtensionCount = enabledExtensionCount;
+  createInfo.ppEnabledExtensionNames = ppEnabledExtensionNames;
   return createInfo;
 }
 
@@ -49,6 +45,15 @@ VkDeviceCreateInfo makeDeviceCreateInfo(
   deviceCreateInfo.enabledLayerCount = enabledLayerCount;
   deviceCreateInfo.ppEnabledLayerNames = ppEnabledLayerNames;
   return deviceCreateInfo;
+}
+
+VkDeviceQueueCreateInfo makeDeviceQueueCreateInfo(uint32_t queueFamilyIndex,
+                                                  uint32_t queueCount,
+                                                  const float *pQueuePriorities,
+                                                  const void *pNext) {
+  VkDeviceQueueCreateInfo queueCreateInfo{};
+  queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  return queueCreateInfo;
 }
 
 } /* namespace vkh */

@@ -23,7 +23,7 @@ VkDevice createDevice(VkPhysicalDevice physicalDevice,
   VkDevice device;
   if (vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, &device) !=
       VK_SUCCESS) {
-    throw std::runtime_error("Failed to a create device.");
+    throw std::runtime_error("Failed to create logical device.");
   }
   return device;
 }

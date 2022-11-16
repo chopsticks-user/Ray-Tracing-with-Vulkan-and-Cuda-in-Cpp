@@ -4,6 +4,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include "get_list.hpp"
+
 namespace vkh {
 /**
  * @brief
@@ -25,6 +27,8 @@ makeApplicationInfo(const char *pApplicationName = "Vulkan Application");
  */
 VkInstanceCreateInfo
 makeInstanceCreateInfo(const VkApplicationInfo *appInfo,
+                       uint32_t enabledExtensionCount = 0,
+                       const char *const *ppEnabledExtensionNames = nullptr,
                        uint32_t enabledLayerCount = 0,
                        const char *const *ppEnabledLayerNames = nullptr,
                        const void *pNext = nullptr);
@@ -51,6 +55,21 @@ makeDeviceCreateInfo(uint32_t queueCreateInfoCount,
                      uint32_t enabledLayerCount = 0,
                      const char *const *ppEnabledLayerNames = nullptr,
                      const void *pNext = nullptr);
+
+/**
+ * @brief
+ *
+ * @param queueFamilyIndex
+ * @param queueCount
+ * @param pQueuePriorities
+ * @param pNext
+ * @return VkDeviceQueueCreateInfo
+ */
+VkDeviceQueueCreateInfo makeDeviceQueueCreateInfo(uint32_t queueFamilyIndex,
+                                                  uint32_t queueCount,
+                                                  const float *pQueuePriorities,
+                                                  const void *pNext = nullptr);
+
 } /* namespace vkh */
 
 #endif /* VK_MAKE_INFO_HPP */

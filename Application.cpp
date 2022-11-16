@@ -4,23 +4,8 @@
 #include <typeinfo>
 
 int protected_main() {
-  glfwInit();
-
-  auto appInfo = vkh::makeApplicationInfo();
-  auto createInfo = vkh::makeInstanceCreateInfo(&appInfo);
-  auto instance = vkh::createInstance(&createInfo);
-  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance);
-
-  auto layerList = vkh::getAvailableInstanceLayerList();
-  for (const auto &layer : layerList) {
-    std::cout << layer.layerName << '\n';
-  }
-
-  
-
-  vkh::destroyInstance(instance, nullptr);
-
-  glfwTerminate();
+  VulkanApp app;
+  app.run();
   return EXIT_SUCCESS;
 }
 

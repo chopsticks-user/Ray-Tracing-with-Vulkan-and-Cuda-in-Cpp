@@ -33,9 +33,10 @@ getAvailableDeviceExtensionList(VkPhysicalDevice physicalDevice,
 /**
  * @brief Get the Required Instance Extension List object
  *
- * @return std::vector<std::string>
+ * @return std::vector<const char *>
  */
-std::vector<std::string> getRequiredInstanceExtensionList();
+std::vector<const char *>
+getRequiredInstanceExtensionNameList(bool enableValidationLayers = false);
 
 /**
  * @brief Get the Available Instance Layer List object
