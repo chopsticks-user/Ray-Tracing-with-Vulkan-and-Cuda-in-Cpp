@@ -17,7 +17,7 @@ enum timer_behavior { silence, announce };
 template <typename DurationType = mic, timer_behavior when_destroyed = silence>
 class Timer {
 private:
-  std::chrono::high_resolution_clock::time_point start;
+  std::chrono::steady_clock::time_point start;
   std::string time_unit;
 
 public:
@@ -38,11 +38,11 @@ public:
     else
       static_assert("Unkown time unit.");
 
-    this->start = std::chrono::high_resolution_clock::now();
+    this->start = std::chrono::steady_clock::now();
   }
 
   ~Timer() {
-    auto stop = std::chrono::high_resolution_clock::now();
+    auto stop = std::chrono::steady_clock::now();
     if (when_destroyed == announce)
       std::cout
           << "Time elapsed: "
@@ -52,11 +52,11 @@ public:
 
   double current() const {
     return std::chrono::duration_cast<DurationType>(
-               std::chrono::high_resolution_clock::now() - start)
+               std::chrono::steady_clock::now() - start)
         .count();
   }
 
-  void reset() { start = std::chrono::high_resolution_clock::now(); }
+  void reset() { start = std::chrono::steady_clock::now(); }
 };
 
 inline double rand(double min, double max) {

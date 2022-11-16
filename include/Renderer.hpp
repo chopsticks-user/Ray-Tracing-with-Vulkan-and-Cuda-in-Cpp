@@ -41,6 +41,8 @@ public:
   RenderApplication(uint32_t w, uint32_t h)
       : window{nullptr}, width{w}, height{h} {}
 
+  ~RenderApplication();
+
   void run();
 
 private:
@@ -115,6 +117,8 @@ private:
 
   VkBuffer vertexBuffer;
   VkDeviceMemory vertexBufferMemory;
+  VkBuffer indexBuffer;
+  VkDeviceMemory indexBufferMemory;
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
       VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
@@ -176,7 +180,9 @@ private:
 
   void copyBuffer(VkBuffer, VkBuffer, VkDeviceSize);
 
-  void createVertexBuffers();
+  void createVertexBuffer();
+
+  void createIndexBuffer();
 
   void createCommandBuffers();
 
@@ -199,8 +205,6 @@ private:
   void initVulkan();
 
   void mainLoop();
-
-  void cleanUp();
 };
 } // namespace rtvc
 

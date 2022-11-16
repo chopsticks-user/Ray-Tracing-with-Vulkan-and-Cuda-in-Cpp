@@ -150,6 +150,10 @@
 	[
 		{
 			"backtrace" : 2,
+			"id" : "Utility::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 2,
 			"id" : "Renderer::@6890427a1f51a3e7e1df"
 		},
 		{
@@ -159,10 +163,6 @@
 		{
 			"backtrace" : 2,
 			"id" : "ProxyFuncs::@6890427a1f51a3e7e1df"
-		},
-		{
-			"backtrace" : 2,
-			"id" : "Utility::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "Application::@6890427a1f51a3e7e1df",

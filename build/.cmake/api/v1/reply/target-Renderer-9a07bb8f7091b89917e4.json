@@ -155,16 +155,16 @@
 	"dependencies" : 
 	[
 		{
+			"backtrace" : 4,
+			"id" : "Utility::@6890427a1f51a3e7e1df"
+		},
+		{
 			"backtrace" : 3,
 			"id" : "Vertex::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 2,
 			"id" : "ProxyFuncs::@6890427a1f51a3e7e1df"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "Utility::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "Renderer::@6890427a1f51a3e7e1df",

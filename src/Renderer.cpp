@@ -807,7 +807,7 @@ void rtvc::RenderApplication::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
   vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void rtvc::RenderApplication::createVertexBuffers() {
+void rtvc::RenderApplication::createVertexBuffer() {
   using rtvc::resources::shaders::triangle;
 
   VkDeviceSize bufferSize = sizeof(triangle[0]) * triangle.size();
@@ -835,6 +835,35 @@ void rtvc::RenderApplication::createVertexBuffers() {
   vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
+void rtvc::RenderApplication::createIndexBuffer() {
+  using rtvc::resources::shaders::indices;
+  using rtvc::resources::shaders::triangle;
+
+  VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+  VkBuffer stagingBuffer;
+  VkDeviceMemory stagingBufferMemory;
+  createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+               stagingBuffer, stagingBufferMemory);
+
+  void *data;
+  vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+  memcpy(data, triangle.data(), static_cast<size_t>(bufferSize));
+  vkUnmapMemory(device, stagingBufferMemory);
+
+  createBuffer(
+      bufferSize,
+      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+  copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+  vkDestroyBuffer(device, stagingBuffer, nullptr);
+  vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
 void rtvc::RenderApplication::createCommandBuffers() {
   commandBuffers.resize(max_frames_in_flight);
 
@@ -851,6 +880,8 @@ void rtvc::RenderApplication::createCommandBuffers() {
 
 void rtvc::RenderApplication::recordCommandBuffer(VkCommandBuffer commandBuffer,
                                                   uint32_t imageIndex) {
+  using rtvc::resources::shaders::indices;
+
   VkCommandBufferBeginInfo beginInfo{};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.flags = 0;
@@ -876,11 +907,30 @@ void rtvc::RenderApplication::recordCommandBuffer(VkCommandBuffer commandBuffer,
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     graphicsPipeline);
 
+  // VkViewport viewport{};
+  // viewport.x = 0.0f;
+  // viewport.y = 0.0f;
+  // viewport.width = static_cast<float>(swapChainExtent.width);
+  // viewport.height = static_cast<float>(swapChainExtent.height);
+  // viewport.minDepth = 0.0f;
+  // viewport.maxDepth = 1.0f;
+  // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+  // VkRect2D scissor{};
+  // scissor.offset = {0, 0};
+  // scissor.extent = swapChainExtent;
+  // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
   VkBuffer vertexBuffers[] = {vertexBuffer};
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-  vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+  vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+  // vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+  vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0,
+                   0, 0);
 
   vkCmdEndRenderPass(commandBuffer);
 
@@ -960,7 +1010,8 @@ void rtvc::RenderApplication::initVulkan() {
   createGraphicsPipeline();
   createFramebuffers();
   createCommandPool();
-  createVertexBuffers();
+  createVertexBuffer();
+  createIndexBuffer();
   createCommandBuffers();
   createSyncObjects();
 }
@@ -1082,8 +1133,11 @@ void rtvc::RenderApplication::mainLoop() {
   vkDeviceWaitIdle(device);
 }
 
-void rtvc::RenderApplication::cleanUp() {
+rtvc::RenderApplication::~RenderApplication() {
   cleanUpSwapChain();
+
+  vkDestroyBuffer(device, indexBuffer, nullptr);
+  vkFreeMemory(device, indexBufferMemory, nullptr);
 
   vkDestroyBuffer(device, vertexBuffer, nullptr);
   vkFreeMemory(device, vertexBufferMemory, nullptr);
@@ -1114,5 +1168,4 @@ void rtvc::RenderApplication::run() {
   initWindow();
   initVulkan();
   mainLoop();
-  cleanUp();
 }
