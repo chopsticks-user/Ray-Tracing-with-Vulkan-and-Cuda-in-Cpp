@@ -38,6 +38,13 @@ getAvailableDeviceExtensionList(VkPhysicalDevice physicalDevice,
 std::vector<std::string> getRequiredInstanceExtensionList();
 
 /**
+ * @brief Get the Available Instance Layer List object
+ *
+ * @return std::vector<VkLayerProperties>
+ */
+std::vector<VkLayerProperties> getAvailableInstanceLayerList();
+
+/**
  * @brief Get the Physical Device List object
  *
  * @param instance
@@ -65,6 +72,6 @@ VkPhysicalDeviceProperties2
 getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
                               void *pNextProperty);
 
-} // namespace vkh
+} /* namespace vkh */
 
 #endif /* VK_GET_LIST_HPP */

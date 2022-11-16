@@ -31,6 +31,18 @@ GLFWwindow *createWindow(int width, int height,
 VkInstance createInstance(const VkInstanceCreateInfo *pCreateInfo,
                           const VkAllocationCallbacks *pAllocator = nullptr);
 
-} // namespace vkh
+/**
+ * @brief Create a Device object
+ *
+ * @param physicalDevice
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkDevice
+ */
+VkDevice createDevice(VkPhysicalDevice physicalDevice,
+                      const VkDeviceCreateInfo *pCreateInfo,
+                      const VkAllocationCallbacks *pAllocator = nullptr);
+
+} /* namespace vkh */
 
 #endif /* VK_CREATE_OBJECT_HPP */

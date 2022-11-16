@@ -46,6 +46,14 @@ std::vector<std::string> getRequiredInstanceExtensionList() {
   return requiredInstanceExtensions;
 }
 
+std::vector<VkLayerProperties> getAvailableInstanceLayerList() {
+  uint32_t layerCount;
+  vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+  std::vector<VkLayerProperties> availableLayers{layerCount};
+  vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+  return availableLayers;
+}
+
 std::vector<VkPhysicalDevice> getPhysicalDeviceList(VkInstance instance) {
   uint32_t physicalDeviceCount;
   vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
@@ -78,4 +86,4 @@ getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
   return properties;
 }
 
-} // namespace vkh
+} /* namespace vkh */

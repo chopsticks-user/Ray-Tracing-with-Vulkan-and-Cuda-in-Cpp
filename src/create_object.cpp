@@ -16,4 +16,16 @@ VkInstance createInstance(const VkInstanceCreateInfo *pCreateInfo,
   }
   return instance;
 }
-} // namespace vkh
+
+VkDevice createDevice(VkPhysicalDevice physicalDevice,
+                      const VkDeviceCreateInfo *pCreateInfo,
+                      const VkAllocationCallbacks *pAllocator) {
+  VkDevice device;
+  if (vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, &device) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to a create device.");
+  }
+  return device;
+}
+
+} /* namespace vkh */

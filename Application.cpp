@@ -9,14 +9,16 @@ int protected_main() {
   auto appInfo = vkh::makeApplicationInfo();
   auto createInfo = vkh::makeInstanceCreateInfo(&appInfo);
   auto instance = vkh::createInstance(&createInfo);
-
   auto physicalDeviceList = vkh::getPhysicalDeviceList(instance);
-  for (const auto &device : physicalDeviceList) {
-    auto properties = vkh::getPhysicalDevicePropertyList(device);
-    std::cout << properties.vendorID << '\n';
+
+  auto layerList = vkh::getAvailableInstanceLayerList();
+  for (const auto &layer : layerList) {
+    std::cout << layer.layerName << '\n';
   }
 
-  vkDestroyInstance(instance, nullptr);
+  
+
+  vkh::destroyInstance(instance, nullptr);
 
   glfwTerminate();
   return EXIT_SUCCESS;

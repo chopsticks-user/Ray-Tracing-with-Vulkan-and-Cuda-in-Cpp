@@ -28,6 +28,29 @@ makeInstanceCreateInfo(const VkApplicationInfo *appInfo,
                        uint32_t enabledLayerCount = 0,
                        const char *const *ppEnabledLayerNames = nullptr,
                        const void *pNext = nullptr);
-} // namespace vkh
+
+/**
+ * @brief
+ *
+ * @param queueCreateInfoCount
+ * @param pQueueCreateInfos
+ * @param enabledExtensionCount
+ * @param ppEnabledExtensionNames
+ * @param enabledLayerCount
+ * @param ppEnabledLayerNames
+ * @param pEnabledFeatures
+ * @param pNext
+ * @return VkDeviceCreateInfo
+ */
+VkDeviceCreateInfo
+makeDeviceCreateInfo(uint32_t queueCreateInfoCount,
+                     const VkDeviceQueueCreateInfo *pQueueCreateInfos,
+                     uint32_t enabledExtensionCount = 0,
+                     const char *const *ppEnabledExtensionNames = nullptr,
+                     const VkPhysicalDeviceFeatures *pEnabledFeatures = nullptr,
+                     uint32_t enabledLayerCount = 0,
+                     const char *const *ppEnabledLayerNames = nullptr,
+                     const void *pNext = nullptr);
+} /* namespace vkh */
 
 #endif /* VK_MAKE_INFO_HPP */
