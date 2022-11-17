@@ -6,6 +6,8 @@
 
 #include "get_list.hpp"
 
+#include <memory>
+
 namespace vkh {
 /**
  * @brief
@@ -38,8 +40,6 @@ makeInstanceCreateInfo(const VkApplicationInfo *appInfo,
  *
  * @param queueCreateInfoCount
  * @param pQueueCreateInfos
- * @param enabledExtensionCount
- * @param ppEnabledExtensionNames
  * @param enabledLayerCount
  * @param ppEnabledLayerNames
  * @param pEnabledFeatures
@@ -49,8 +49,6 @@ makeInstanceCreateInfo(const VkApplicationInfo *appInfo,
 VkDeviceCreateInfo
 makeDeviceCreateInfo(uint32_t queueCreateInfoCount,
                      const VkDeviceQueueCreateInfo *pQueueCreateInfos,
-                     uint32_t enabledExtensionCount = 0,
-                     const char *const *ppEnabledExtensionNames = nullptr,
                      const VkPhysicalDeviceFeatures *pEnabledFeatures = nullptr,
                      uint32_t enabledLayerCount = 0,
                      const char *const *ppEnabledLayerNames = nullptr,

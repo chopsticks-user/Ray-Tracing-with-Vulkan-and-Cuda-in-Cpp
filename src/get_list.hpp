@@ -73,6 +73,15 @@ VkPhysicalDeviceProperties2
 getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
                               void *pNextProperty);
 
+/**
+ * @brief Get the Physical Device Queue Property List object
+ *
+ * @param physicalDevice
+ * @return std::vector<VkQueueFamilyProperties>
+ */
+std::vector<VkQueueFamilyProperties>
+getPhysicalDeviceQueuePropertyList(VkPhysicalDevice physicalDevice);
+
 } /* namespace vkh */
 
 #endif /* VK_GET_LIST_HPP */

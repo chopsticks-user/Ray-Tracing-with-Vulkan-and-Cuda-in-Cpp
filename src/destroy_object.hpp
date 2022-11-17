@@ -27,7 +27,7 @@ void destroyInstance(VkInstance instance,
  * @param device
  * @param pAllocator
  */
-void destroyDevice(VkDevice *device,
+void destroyDevice(VkDevice device,
                    const VkAllocationCallbacks *pAllocator = nullptr);
 
 } /* namespace vkh */

@@ -90,4 +90,16 @@ getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
   return properties;
 }
 
+std::vector<VkQueueFamilyProperties>
+getPhysicalDeviceQueuePropertyList(VkPhysicalDevice physicalDevice) {
+  uint32_t queueFamilyPropertyCount;
+  vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
+                                           &queueFamilyPropertyCount, nullptr);
+  std::vector<VkQueueFamilyProperties> queueFamilyProperties{
+      queueFamilyPropertyCount};
+  vkGetPhysicalDeviceQueueFamilyProperties(
+      physicalDevice, &queueFamilyPropertyCount, queueFamilyProperties.data());
+  return queueFamilyProperties;
+}
+
 } /* namespace vkh */
