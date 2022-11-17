@@ -15,6 +15,10 @@ void VulkanApp::createInstance() {
       static_cast<uint32_t>(this->layers.size()), this->layers.data(),
       (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo);
   this->instance = vkh::createInstance(&createInfo);
+
+  for (const auto &ext : extensions) {
+    std::cout << ext << '\n';
+  }
 }
 
 void VulkanApp::createDebugMessenger() {
@@ -37,17 +41,12 @@ void VulkanApp::createDevice() {
       for (std::size_t i = 0; i < queueFamilies.size(); ++i) {
         if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
           indices.graphicsFamily = i;
-          //   std::cout << "graphics: " << indices.graphicsFamily.value() <<
-          //   '\n';
         }
         if (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
           indices.computeFamily = i;
-          //   std::cout << "compute: " << indices.computeFamily.value() <<
-          //   '\n';
         }
       }
       if (indices.isComplete()) {
-        std::cout << physDevPropList.deviceName << '\n';
         selectedPhysDev = physicalDevice;
         selectedIndices.graphicsFamily = indices.graphicsFamily;
         selectedIndices.computeFamily = indices.computeFamily;
@@ -60,6 +59,7 @@ void VulkanApp::createDevice() {
   }
 
   /* Setup the selected queue families' createInfos */
+
   VkDeviceQueueCreateInfo queueCreateInfos[2];
   const float queuePriorities[2] = {1.0f, 0.8f};
   queueCreateInfos[0] = vkh::makeDeviceQueueCreateInfo(
@@ -67,19 +67,34 @@ void VulkanApp::createDevice() {
   queueCreateInfos[1] = vkh::makeDeviceQueueCreateInfo(
       selectedIndices.computeFamily.value(), 1, &queuePriorities[1]);
 
-  /* Setup the selected device's createInfo */
-
   /* Create the logical device */
+
+  VkPhysicalDeviceFeatures deviceFeatures{};
   auto deviceCreateInfo = vkh::makeDeviceCreateInfo(
-      2, queueCreateInfos, nullptr, static_cast<uint32_t>(this->layers.size()),
-      this->layers.data());
+      2, queueCreateInfos, &deviceFeatures,
+      static_cast<uint32_t>(this->layers.size()), this->layers.data());
   this->device = vkh::createDevice(selectedPhysDev, &deviceCreateInfo);
+
+  /* Get queue handles */
+
+  vkGetDeviceQueue(this->device, selectedIndices.graphicsFamily.value(), 0,
+                   &this->graphicsQueue);
+  vkGetDeviceQueue(this->device, selectedIndices.computeFamily.value(), 0,
+                   &this->computeQueue);
+}
+
+void VulkanApp::createSurface() {
+  if (glfwCreateWindowSurface(this->instance, this->window, nullptr,
+                              &this->surface) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create window surface.");
+  }
 }
 
 VulkanApp::VulkanApp() {
   createWindow();
   createInstance();
   createDebugMessenger();
+  createSurface();
   createDevice();
 }
 
@@ -87,13 +102,25 @@ VulkanApp::~VulkanApp() {
   vkh::destroyDevice(this->device);
   vkh::destroyDebugUtilsMessengerEXT(this->instance, this->debugMessenger,
                                      nullptr);
+  vkDestroySurfaceKHR(this->instance, this->surface, nullptr);
   vkh::destroyInstance(this->instance, nullptr);
   glfwDestroyWindow(this->window);
   glfwTerminate();
 }
 
 void VulkanApp::run() {
-  while (!glfwWindowShouldClose(this->window)) {
+  vkh::Timer time_total;
+  const double sec_to_mics = 1'000'000.0;
+  while (!glfwWindowShouldClose(window)) {
+    vkh::Timer time_circle;
+
     glfwPollEvents();
+
+    if (time_total.current() >= sec_to_mics) {
+      std::cout << sec_to_mics / time_circle.current() << " FPS\n";
+      time_total.reset();
+    }
   }
+
+  vkDeviceWaitIdle(this->device);
 }

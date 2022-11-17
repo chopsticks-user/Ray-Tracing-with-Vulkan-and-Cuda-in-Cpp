@@ -22,7 +22,7 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
               [[maybe_unused]] void *pUserData) {
   if (messageSeverity > VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-    std::cerr << pCallbackData->pMessage << '\n' << std::endl;
+    std::cerr << '\n' << pCallbackData->pMessage << std::endl;
   }
   return VK_FALSE;
 }

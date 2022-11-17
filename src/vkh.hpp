@@ -5,6 +5,7 @@
 #include "destroy_object.hpp"
 #include "get_list.hpp"
 #include "make_info.hpp"
+#include "utility.hpp"
 #include "validation_layers.hpp"
 
 #include <optional>
@@ -31,26 +32,40 @@ public:
 
 private:
   /* Step 0: Setup GLFW and window */
+
   GLFWwindow *window;
   void createWindow();
 
   /* Step 1: Create an instance */
+
   VkInstance instance;
   void createInstance();
 
-  /* Step 2: Setup debug messenger */
+  /* Step 2: Setup validation layers */
+
   const std::vector<const char *> layers = {"VK_LAYER_KHRONOS_validation"};
   VkDebugUtilsMessengerEXT debugMessenger;
+
   void createDebugMessenger();
 
-  /* Step 3: Create a logical device */
+  /* Step 3: Create a window surface */
+
+  VkSurfaceKHR surface;
+
+  void createSurface();
+
+  /* Step 4: Create a logical device */
+
   VkDevice device;
+  VkQueue graphicsQueue;
+  VkQueue computeQueue;
+
   void selectQueueFamilies();
   void queryPhysicalDeviceProperties();
   void selectPhysicalDevice();
   void createDevice();
 
-  /* Step 4:  */
+  /* Step 5: Create a swap chain */
 };
 
 #endif /* VKH_HPP */
