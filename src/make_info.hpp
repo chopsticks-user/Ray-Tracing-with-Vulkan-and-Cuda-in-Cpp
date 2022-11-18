@@ -1,10 +1,12 @@
 #ifndef VKH_MAKE_INFO_HPP
 #define VKH_MAKE_INFO_HPP
 
+#include "get_list.hpp"
+
+#ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
-#include "get_list.hpp"
+#endif /* GLFW_INCLUDE_VULKAN */
 
 #include <memory>
 

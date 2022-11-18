@@ -28,4 +28,14 @@ VkDevice createDevice(VkPhysicalDevice physicalDevice,
   return device;
 }
 
+VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow *window,
+                           const VkAllocationCallbacks *allocator) {
+  VkSurfaceKHR surface;
+  if (glfwCreateWindowSurface(instance, window, allocator, &surface) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create window surface.");
+  }
+  return surface;
+}
+
 } /* namespace vkh */

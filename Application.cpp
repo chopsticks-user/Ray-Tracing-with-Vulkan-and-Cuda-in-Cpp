@@ -1,3 +1,4 @@
+#include <config.hpp>
 #include <vkh.hpp>
 
 #include <iostream>
@@ -6,7 +7,6 @@
 int protected_main() {
   VulkanApp app;
   app.run();
-  // std::cout << 2 & 1 << '\n';
   return EXIT_SUCCESS;
 }
 

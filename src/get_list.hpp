@@ -1,12 +1,14 @@
 #ifndef VKH_GET_LIST_HPP
 #define VKH_GET_LIST_HPP
 
+#ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#endif /* GLFW_INCLUDE_VULKAN */
 
+#include <optional>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace vkh {
@@ -80,7 +82,17 @@ getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
  * @return std::vector<VkQueueFamilyProperties>
  */
 std::vector<VkQueueFamilyProperties>
-getPhysicalDeviceQueuePropertyList(VkPhysicalDevice physicalDevice);
+getPhysicalDeviceQueueFamilyPropertyList(VkPhysicalDevice physicalDevice);
+
+std::vector<std::optional<VkQueueFamilyProperties>>
+getGraphicsQueueFamilyPropertyList(VkPhysicalDevice physicalDevice);
+
+std::vector<std::optional<VkQueueFamilyProperties>>
+getComputeQueueFamilyPropertyList(VkPhysicalDevice physicalDevice);
+
+std::vector<std::optional<VkQueueFamilyProperties>>
+getPresentQueueFamilyPropertyList(VkPhysicalDevice physicalDevice,
+                                  VkSurfaceKHR surface);
 
 } /* namespace vkh */
 

@@ -13,4 +13,9 @@ void destroyDevice(VkDevice device, const VkAllocationCallbacks *pAllocator) {
   vkDestroyDevice(device, pAllocator);
 }
 
+void destroySurface(VkInstance instance, VkSurfaceKHR surface,
+                    const VkAllocationCallbacks *pAllocator) {
+  vkDestroySurfaceKHR(instance, surface, pAllocator);
+}
+
 } /* namespace vkh */

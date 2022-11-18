@@ -1,8 +1,11 @@
 #ifndef VKH_CREATE_OBJECT_HPP
 #define VKH_CREATE_OBJECT_HPP
 
+#ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#endif /* GLFW_INCLUDE_VULKAN */
+
 #include <stdexcept>
 
 namespace vkh {
@@ -42,6 +45,17 @@ VkInstance createInstance(const VkInstanceCreateInfo *pCreateInfo,
 VkDevice createDevice(VkPhysicalDevice physicalDevice,
                       const VkDeviceCreateInfo *pCreateInfo,
                       const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Surface object
+ *
+ * @param instance
+ * @param window
+ * @param allocator
+ * @return VkSurfaceKHR
+ */
+VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow *window,
+                           const VkAllocationCallbacks *allocator = nullptr);
 
 } /* namespace vkh */
 

@@ -2,7 +2,7 @@
 
 void VulkanApp::createWindow() {
   glfwInit();
-  this->window = vkh::createWindow(800, 600);
+  window = vkh::createWindow(800, 600);
 }
 
 void VulkanApp::createInstance() {
@@ -12,9 +12,9 @@ void VulkanApp::createInstance() {
   vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
   auto createInfo = vkh::makeInstanceCreateInfo(
       &appInfo, static_cast<uint32_t>(extensions.size()), extensions.data(),
-      static_cast<uint32_t>(this->layers.size()), this->layers.data(),
+      static_cast<uint32_t>(layers.size()), layers.data(),
       (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo);
-  this->instance = vkh::createInstance(&createInfo);
+  instance = vkh::createInstance(&createInfo);
 
   for (const auto &ext : extensions) {
     std::cout << ext << '\n';
@@ -22,35 +22,43 @@ void VulkanApp::createInstance() {
 }
 
 void VulkanApp::createDebugMessenger() {
-  this->debugMessenger = vkh::createDebugMessenger(this->instance);
+  debugMessenger = vkh::createDebugMessenger(instance);
+}
+
+std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
+VulkanApp::selectQueueFamily(VkPhysicalDevice physicalDevice) {
+  auto graphicsFamilies =
+      vkh::getGraphicsQueueFamilyPropertyList(physicalDevice);
+  auto computeFamilies = vkh::getComputeQueueFamilyPropertyList(physicalDevice);
+  auto presentFamilies =
+      vkh::getPresentQueueFamilyPropertyList(physicalDevice, surface);
+
+  /* Find a queue that is capable of handling graphics, computing, and
+  presentation commands */
+  for (size_t i = 0; i < graphicsFamilies.size(); ++i) {
+    if ((graphicsFamilies[i].has_value() && computeFamilies[i].has_value()) &&
+        presentFamilies[i].has_value()) {
+      return {{static_cast<uint32_t>(i), graphicsFamilies[i].value()}};
+    }
+  }
+  return {};
 }
 
 void VulkanApp::createDevice() {
-
-  /* Select a suitable physical device */
-  auto physicalDeviceList = vkh::getPhysicalDeviceList(this->instance);
+  /* Select a suitable physical device and one of its queue families */
+  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance);
   VkPhysicalDevice selectedPhysDev = VK_NULL_HANDLE;
-  QueueFamilyIndices selectedIndices;
+  std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
+      selectedQueueFamily;
   for (const auto &physicalDevice : physicalDeviceList) {
     auto physDevPropList = vkh::getPhysicalDevicePropertyList(physicalDevice);
+    /* Only selected a discrete GPU that has a queue family supporting
+    graphics, computing, and presentation commands */
     if (physDevPropList.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-      /* Select queue families */
-      QueueFamilyIndices indices;
-      auto queueFamilies =
-          vkh::getPhysicalDeviceQueuePropertyList(physicalDevice);
-      for (std::size_t i = 0; i < queueFamilies.size(); ++i) {
-        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-          indices.graphicsFamily = i;
-        }
-        if (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
-          indices.computeFamily = i;
-        }
-      }
-      if (indices.isComplete()) {
+      if (auto returnedQueueFamily = selectQueueFamily(physicalDevice);
+          returnedQueueFamily.has_value()) {
+        selectedQueueFamily = returnedQueueFamily;
         selectedPhysDev = physicalDevice;
-        selectedIndices.graphicsFamily = indices.graphicsFamily;
-        selectedIndices.computeFamily = indices.computeFamily;
-        break;
       }
     }
   }
@@ -58,36 +66,26 @@ void VulkanApp::createDevice() {
     throw std::runtime_error("Failed to select a physical device.");
   }
 
-  /* Setup the selected queue families' createInfos */
-
-  VkDeviceQueueCreateInfo queueCreateInfos[2];
-  const float queuePriorities[2] = {1.0f, 0.8f};
-  queueCreateInfos[0] = vkh::makeDeviceQueueCreateInfo(
-      selectedIndices.graphicsFamily.value(), 1, &queuePriorities[0]);
-  queueCreateInfos[1] = vkh::makeDeviceQueueCreateInfo(
-      selectedIndices.computeFamily.value(), 1, &queuePriorities[1]);
+  /* Set up the selected queue family's creation info */
+  uint32_t selectedIndex = selectedQueueFamily.value().first;
+  VkDeviceQueueCreateInfo queueCreateInfo;
+  const float queuePriority = 1.0f;
+  queueCreateInfo = vkh::makeDeviceQueueCreateInfo(
+      selectedQueueFamily.value().first, 1, &queuePriority);
 
   /* Create the logical device */
-
   VkPhysicalDeviceFeatures deviceFeatures{};
   auto deviceCreateInfo = vkh::makeDeviceCreateInfo(
-      2, queueCreateInfos, &deviceFeatures,
-      static_cast<uint32_t>(this->layers.size()), this->layers.data());
-  this->device = vkh::createDevice(selectedPhysDev, &deviceCreateInfo);
+      1, &queueCreateInfo, &deviceFeatures,
+      static_cast<uint32_t>(layers.size()), layers.data());
+  device = vkh::createDevice(selectedPhysDev, &deviceCreateInfo);
 
-  /* Get queue handles */
-
-  vkGetDeviceQueue(this->device, selectedIndices.graphicsFamily.value(), 0,
-                   &this->graphicsQueue);
-  vkGetDeviceQueue(this->device, selectedIndices.computeFamily.value(), 0,
-                   &this->computeQueue);
+  /* Get a queue handle */
+  vkGetDeviceQueue(device, selectedIndex, 0, &queue);
 }
 
 void VulkanApp::createSurface() {
-  if (glfwCreateWindowSurface(this->instance, this->window, nullptr,
-                              &this->surface) != VK_SUCCESS) {
-    throw std::runtime_error("Failed to create window surface.");
-  }
+  surface = vkh::createSurface(instance, window);
 }
 
 VulkanApp::VulkanApp() {
@@ -99,12 +97,11 @@ VulkanApp::VulkanApp() {
 }
 
 VulkanApp::~VulkanApp() {
-  vkh::destroyDevice(this->device);
-  vkh::destroyDebugUtilsMessengerEXT(this->instance, this->debugMessenger,
-                                     nullptr);
-  vkDestroySurfaceKHR(this->instance, this->surface, nullptr);
-  vkh::destroyInstance(this->instance, nullptr);
-  glfwDestroyWindow(this->window);
+  vkh::destroyDevice(device);
+  vkh::destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+  vkh::destroySurface(instance, surface);
+  vkh::destroyInstance(instance, nullptr);
+  glfwDestroyWindow(window);
   glfwTerminate();
 }
 
@@ -122,5 +119,5 @@ void VulkanApp::run() {
     }
   }
 
-  vkDeviceWaitIdle(this->device);
+  vkDeviceWaitIdle(device);
 }

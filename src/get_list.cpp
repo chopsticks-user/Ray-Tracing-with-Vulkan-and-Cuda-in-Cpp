@@ -91,7 +91,7 @@ getPhysicalDevicePropertyList(VkPhysicalDevice physicalDevice,
 }
 
 std::vector<VkQueueFamilyProperties>
-getPhysicalDeviceQueuePropertyList(VkPhysicalDevice physicalDevice) {
+getPhysicalDeviceQueueFamilyPropertyList(VkPhysicalDevice physicalDevice) {
   uint32_t queueFamilyPropertyCount;
   vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
                                            &queueFamilyPropertyCount, nullptr);
@@ -102,4 +102,54 @@ getPhysicalDeviceQueuePropertyList(VkPhysicalDevice physicalDevice) {
   return queueFamilyProperties;
 }
 
+std::vector<std::optional<VkQueueFamilyProperties>>
+getGraphicsQueueFamilyPropertyList(VkPhysicalDevice physicalDevice) {
+  auto queueFamilyProps =
+      getPhysicalDeviceQueueFamilyPropertyList(physicalDevice);
+  std::vector<std::optional<VkQueueFamilyProperties>> graphicsQueueFamilies{
+      queueFamilyProps.size()};
+  std::size_t index = 0;
+  for (const auto &queueFamilyProp : queueFamilyProps) {
+    if (queueFamilyProp.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+      graphicsQueueFamilies[index] = queueFamilyProp;
+    }
+  }
+  return graphicsQueueFamilies;
+}
+
+std::vector<std::optional<VkQueueFamilyProperties>>
+getComputeQueueFamilyPropertyList(VkPhysicalDevice physicalDevice) {
+  auto queueFamilyProps =
+      getPhysicalDeviceQueueFamilyPropertyList(physicalDevice);
+  std::vector<std::optional<VkQueueFamilyProperties>> computeQueueFamilies{
+      queueFamilyProps.size()};
+  std::size_t index = 0;
+  for (const auto &queueFamilyProp : queueFamilyProps) {
+    if (queueFamilyProp.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+      computeQueueFamilies[index] = queueFamilyProp;
+    }
+    ++index;
+  }
+  return computeQueueFamilies;
+}
+
+std::vector<std::optional<VkQueueFamilyProperties>>
+getPresentQueueFamilyPropertyList(VkPhysicalDevice physicalDevice,
+                                  VkSurfaceKHR surface) {
+  auto queueFamilyProps =
+      getPhysicalDeviceQueueFamilyPropertyList(physicalDevice);
+  std::vector<std::optional<VkQueueFamilyProperties>> presentQueueFamilies{
+      queueFamilyProps.size()};
+  std::size_t index = 0;
+  for (const auto &queueFamilyProp : queueFamilyProps) {
+    VkBool32 presentSupported = false;
+    vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, index, surface,
+                                         &presentSupported);
+    if (presentSupported) {
+      presentQueueFamilies[index] = queueFamilyProp;
+    }
+    ++index;
+  }
+  return presentQueueFamilies;
+}
 } /* namespace vkh */
