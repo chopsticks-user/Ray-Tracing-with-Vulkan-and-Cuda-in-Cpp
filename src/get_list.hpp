@@ -115,6 +115,16 @@ std::vector<VkSurfaceFormatKHR>
 getPhysicalDeviceSurfaceFormatList(VkPhysicalDevice physicalDevice,
                                    VkSurfaceKHR surface);
 
-} /* namespace vkh */
+/**
+ * @brief Get the Physical Device Surface Present Modes object
+ *
+ * @param physicalDevice
+ * @param surface
+ * @return std::vector<VkPresentModeKHR>
+ */
+std::vector<VkPresentModeKHR>
+getPhysicalDeviceSurfacePresentModeList(VkPhysicalDevice physicalDevice,
+                                        VkSurfaceKHR surface);
 
+} /* namespace vkh */
 #endif /* VK_GET_LIST_HPP */

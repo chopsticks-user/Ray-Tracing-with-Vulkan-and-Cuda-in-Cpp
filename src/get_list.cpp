@@ -157,8 +157,10 @@ VkSurfaceCapabilitiesKHR
 getPhysicalDeviceSurfaceCapabilities(VkPhysicalDevice physicalDevice,
                                      VkSurfaceKHR surface) {
   VkSurfaceCapabilitiesKHR surfaceCapabilities{};
-  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface,
-                                            &surfaceCapabilities);
+  if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+          physicalDevice, surface, &surfaceCapabilities) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get surface capabilities.");
+  }
   return surfaceCapabilities;
 }
 
@@ -166,12 +168,33 @@ std::vector<VkSurfaceFormatKHR>
 getPhysicalDeviceSurfaceFormatList(VkPhysicalDevice physicalDevice,
                                    VkSurfaceKHR surface) {
   uint32_t surfaceFormatCount;
-  vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface,
-                                       &surfaceFormatCount, nullptr);
-  std::vector<VkSurfaceFormatKHR> surfaceFormats{};
-  vkGetPhysicalDeviceSurfaceFormatsKHR(
-      physicalDevice, surface, &surfaceFormatCount, surfaceFormats.data());
+  if (vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface,
+                                           &surfaceFormatCount,
+                                           nullptr) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get surface format list.");
+  }
+  std::vector<VkSurfaceFormatKHR> surfaceFormats{surfaceFormatCount};
+  if (vkGetPhysicalDeviceSurfaceFormatsKHR(
+          physicalDevice, surface, &surfaceFormatCount,
+          surfaceFormats.data()) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get surface format list.");
+  }
   return surfaceFormats;
+}
+std::vector<VkPresentModeKHR>
+getPhysicalDeviceSurfacePresentModeList(VkPhysicalDevice physicalDevice,
+                                        VkSurfaceKHR surface) {
+  uint32_t presentModeCount;
+  if (vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
+                                                &presentModeCount, nullptr)) {
+    throw std::runtime_error("Failed to get surface present mode list.");
+  }
+  std::vector<VkPresentModeKHR> presentModes{presentModeCount};
+  if (vkGetPhysicalDeviceSurfacePresentModesKHR(
+          physicalDevice, surface, &presentModeCount, presentModes.data())) {
+    throw std::runtime_error("Failed to get surface present mode list.");
+  }
+  return presentModes;
 }
 
 } /* namespace vkh */

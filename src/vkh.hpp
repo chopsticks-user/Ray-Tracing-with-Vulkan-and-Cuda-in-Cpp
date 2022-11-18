@@ -89,8 +89,10 @@ private:
 
   /* Included when selecting a physical device */
   bool checkDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
+  bool checkDeviceSwapchainSupport(VkPhysicalDevice physicalDevice);
 
-  VkSwapchainCreateInfoKHR populateSwapchainCreateInfoKHR();
+  VkSurfaceFormatKHR selectSurfaceFormat();
+  VkSwapchainCreateInfoKHR populateSwapchainCreateInfo();
 
   void createSwapchain();
 };
