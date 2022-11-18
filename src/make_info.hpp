@@ -51,6 +51,8 @@ makeInstanceCreateInfo(const VkApplicationInfo *appInfo,
 VkDeviceCreateInfo
 makeDeviceCreateInfo(uint32_t queueCreateInfoCount,
                      const VkDeviceQueueCreateInfo *pQueueCreateInfos,
+                     uint32_t enabledExtensionCount = 0,
+                     const char *const *ppEnabledExtensionNames = nullptr,
                      const VkPhysicalDeviceFeatures *pEnabledFeatures = nullptr,
                      uint32_t enabledLayerCount = 0,
                      const char *const *ppEnabledLayerNames = nullptr,
@@ -69,6 +71,8 @@ VkDeviceQueueCreateInfo makeDeviceQueueCreateInfo(uint32_t queueFamilyIndex,
                                                   uint32_t queueCount,
                                                   const float *pQueuePriorities,
                                                   const void *pNext = nullptr);
+
+// VkSwapchainCreateInfoKHR makeSwapchainCreateInfo();
 
 } /* namespace vkh */
 

@@ -8,7 +8,9 @@
 #include "utility.hpp"
 #include "validation_layers.hpp"
 
+#include <map>
 #include <optional>
+#include <string>
 #include <utility>
 
 struct QueueFamilyIndices {
@@ -59,6 +61,8 @@ private:
   void createSurface();
 
   /* Step 4: Create a logical device */
+
+  VkPhysicalDevice physicalDevice;
   VkDevice device;
 
   /* For graphics, computing, and presentation */
@@ -68,13 +72,27 @@ private:
   selectQueueFamily(VkPhysicalDevice physicalDevice);
 
   /* Create a logical device after succesfully selecting a physical device
-  and one of its queue families by calling the selectQueueFamily function */
+  and one of its queue families by calling the selectQueueFamily function. */
   void createDevice();
 
-  /* Step 5: Create a swapchain */
+  /* Step 5: Create a swapchain to render results to the surface */
   VkSwapchainKHR swapchain;
 
-  void createSwapchian();
+  /* Presentable images. Only one image is displayed at a time,
+  the others are queued for presentation. A presentable image  must be
+  used after the image is returned by vkAccquireNextImageKHR and before
+  it is released by vkQueuePresentKHR. */
+  std::vector<VkImage> images;
+
+  std::vector<const char *> deviceExtensions = {
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+  /* Included when selecting a physical device */
+  bool checkDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
+
+  VkSwapchainCreateInfoKHR populateSwapchainCreateInfoKHR();
+
+  void createSwapchain();
 };
 
 #endif /* VKH_HPP */

@@ -50,7 +50,7 @@ public:
           << ' ' << this->time_unit << "\n";
   }
 
-  double current() const {
+  auto current() const {
     return std::chrono::duration_cast<DurationType>(
                std::chrono::steady_clock::now() - start)
         .count();
@@ -59,18 +59,19 @@ public:
   void reset() { start = std::chrono::steady_clock::now(); }
 };
 
-inline double rand(double min, double max) {
+inline double rand(double min_value, double max_value) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<> dis(min, max);
+  std::uniform_real_distribution<> dis(min_value, max_value);
   return dis(gen);
 }
 
 template <typename ItTp>
-inline void rand(double min, double max, ItTp it_begin, ItTp it_end) {
+inline void rand(double min_value, double max_value, ItTp it_begin,
+                 ItTp it_end) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<> dis(min, max);
+  std::uniform_real_distribution<> dis(min_value, max_value);
   while (it_begin != it_end)
     *(it_begin++) = dis(gen);
 }

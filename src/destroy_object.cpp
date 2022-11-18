@@ -18,4 +18,9 @@ void destroySurface(VkInstance instance, VkSurfaceKHR surface,
   vkDestroySurfaceKHR(instance, surface, pAllocator);
 }
 
+void destroySwapchain(VkDevice device, VkSwapchainKHR swapchain,
+                      const VkAllocationCallbacks *pAllocator) {
+  vkDestroySwapchainKHR(device, swapchain, pAllocator);
+}
+
 } /* namespace vkh */

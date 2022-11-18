@@ -27,18 +27,20 @@ VkInstanceCreateInfo makeInstanceCreateInfo(
   return createInfo;
 }
 
-VkDeviceCreateInfo
-makeDeviceCreateInfo(uint32_t queueCreateInfoCount,
-                     const VkDeviceQueueCreateInfo *pQueueCreateInfos,
-                     const VkPhysicalDeviceFeatures *pEnabledFeatures,
-                     uint32_t enabledLayerCount,
-                     const char *const *ppEnabledLayerNames,
-                     const void *pNext) {
+VkDeviceCreateInfo makeDeviceCreateInfo(
+    uint32_t queueCreateInfoCount,
+    const VkDeviceQueueCreateInfo *pQueueCreateInfos,
+    uint32_t enabledExtensionCount, const char *const *ppEnabledExtensionNames,
+    const VkPhysicalDeviceFeatures *pEnabledFeatures,
+    uint32_t enabledLayerCount, const char *const *ppEnabledLayerNames,
+    const void *pNext) {
   VkDeviceCreateInfo deviceCreateInfo{};
   deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
   deviceCreateInfo.pNext = pNext;
   deviceCreateInfo.queueCreateInfoCount = queueCreateInfoCount;
   deviceCreateInfo.pQueueCreateInfos = pQueueCreateInfos;
+  deviceCreateInfo.enabledExtensionCount = enabledExtensionCount;
+  deviceCreateInfo.ppEnabledExtensionNames = ppEnabledExtensionNames;
   deviceCreateInfo.pEnabledFeatures = pEnabledFeatures;
   deviceCreateInfo.enabledLayerCount = enabledLayerCount;
   deviceCreateInfo.ppEnabledLayerNames = ppEnabledLayerNames;

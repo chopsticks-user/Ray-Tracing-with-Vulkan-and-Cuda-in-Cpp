@@ -93,6 +93,27 @@ getComputeQueueFamilyPropertyList(VkPhysicalDevice physicalDevice);
 std::vector<std::optional<VkQueueFamilyProperties>>
 getPresentQueueFamilyPropertyList(VkPhysicalDevice physicalDevice,
                                   VkSurfaceKHR surface);
+/**
+ * @brief Get the Physical Device Surface Capabilities object
+ *
+ * @param physicalDevice
+ * @param surface
+ * @return VkSurfaceCapabilitiesKHR
+ */
+VkSurfaceCapabilitiesKHR
+getPhysicalDeviceSurfaceCapabilities(VkPhysicalDevice physicalDevice,
+                                     VkSurfaceKHR surface);
+
+/**
+ * @brief Get the Physical Device Surface Format List object
+ *
+ * @param physicalDevice
+ * @param surface
+ * @return std::vector<VkSurfaceFormatKHR>
+ */
+std::vector<VkSurfaceFormatKHR>
+getPhysicalDeviceSurfaceFormatList(VkPhysicalDevice physicalDevice,
+                                   VkSurfaceKHR surface);
 
 } /* namespace vkh */
 

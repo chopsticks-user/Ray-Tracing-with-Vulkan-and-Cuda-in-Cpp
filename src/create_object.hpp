@@ -57,6 +57,18 @@ VkDevice createDevice(VkPhysicalDevice physicalDevice,
 VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow *window,
                            const VkAllocationCallbacks *allocator = nullptr);
 
+/**
+ * @brief Create a Swapchain object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkSwapchainKHR
+ */
+VkSwapchainKHR
+createSwapchain(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
+                const VkAllocationCallbacks *pAllocator = nullptr);
+
 } /* namespace vkh */
 
 #endif /* VK_CREATE_OBJECT_HPP */

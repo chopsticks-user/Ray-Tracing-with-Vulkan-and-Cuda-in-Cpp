@@ -38,4 +38,15 @@ VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow *window,
   return surface;
 }
 
+VkSwapchainKHR createSwapchain(VkDevice device,
+                               const VkSwapchainCreateInfoKHR *pCreateInfo,
+                               const VkAllocationCallbacks *pAllocator) {
+  VkSwapchainKHR swapchain{};
+  if (vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, &swapchain) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create a swapchain.");
+  }
+  return swapchain;
+}
+
 } /* namespace vkh */

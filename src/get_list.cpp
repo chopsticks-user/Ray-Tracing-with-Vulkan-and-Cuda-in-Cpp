@@ -140,7 +140,7 @@ getPresentQueueFamilyPropertyList(VkPhysicalDevice physicalDevice,
       getPhysicalDeviceQueueFamilyPropertyList(physicalDevice);
   std::vector<std::optional<VkQueueFamilyProperties>> presentQueueFamilies{
       queueFamilyProps.size()};
-  std::size_t index = 0;
+  uint32_t index = 0;
   for (const auto &queueFamilyProp : queueFamilyProps) {
     VkBool32 presentSupported = false;
     vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, index, surface,
@@ -152,4 +152,26 @@ getPresentQueueFamilyPropertyList(VkPhysicalDevice physicalDevice,
   }
   return presentQueueFamilies;
 }
+
+VkSurfaceCapabilitiesKHR
+getPhysicalDeviceSurfaceCapabilities(VkPhysicalDevice physicalDevice,
+                                     VkSurfaceKHR surface) {
+  VkSurfaceCapabilitiesKHR surfaceCapabilities{};
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface,
+                                            &surfaceCapabilities);
+  return surfaceCapabilities;
+}
+
+std::vector<VkSurfaceFormatKHR>
+getPhysicalDeviceSurfaceFormatList(VkPhysicalDevice physicalDevice,
+                                   VkSurfaceKHR surface) {
+  uint32_t surfaceFormatCount;
+  vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface,
+                                       &surfaceFormatCount, nullptr);
+  std::vector<VkSurfaceFormatKHR> surfaceFormats{};
+  vkGetPhysicalDeviceSurfaceFormatsKHR(
+      physicalDevice, surface, &surfaceFormatCount, surfaceFormats.data());
+  return surfaceFormats;
+}
+
 } /* namespace vkh */
