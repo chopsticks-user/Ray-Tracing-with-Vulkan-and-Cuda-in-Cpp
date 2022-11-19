@@ -1,5 +1,4 @@
-#include <config.hpp>
-#include <vkh.hpp>
+#include <vulkan_app.hpp>
 
 #include <iostream>
 #include <typeinfo>
@@ -7,6 +6,7 @@
 int protected_main() {
   VulkanApp app;
   app.run();
+  app.writeInfo("src/info.log");
   return EXIT_SUCCESS;
 }
 

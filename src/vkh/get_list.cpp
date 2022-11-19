@@ -2,6 +2,14 @@
 
 namespace vkh {
 
+std::vector<VkLayerProperties> getAvailableInstanceLayerPropertyList() {
+  uint32_t layerCount;
+  vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+  std::vector<VkLayerProperties> availableLayers{layerCount};
+  vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+  return availableLayers;
+}
+
 std::vector<VkExtensionProperties>
 getAvailableInstanceExtensionList(const char *pLayerName) {
   uint32_t propertyCount;
@@ -35,17 +43,13 @@ getAvailableDeviceExtensionList(VkPhysicalDevice physicalDevice,
   return deviceExtensions;
 }
 
-std::vector<const char *>
-getRequiredInstanceExtensionNameList(bool enableValidationLayers) {
+std::vector<const char *> getRequiredInstanceExtensionNameList() {
   uint32_t requiredExtensionCount;
   const char **ppRequiredExtensions =
       glfwGetRequiredInstanceExtensions(&requiredExtensionCount);
   std::vector<const char *> requiredInstanceExtensions{requiredExtensionCount};
   for (uint32_t i = 0; i < requiredExtensionCount; ++i) {
     requiredInstanceExtensions[i] = ppRequiredExtensions[i];
-  }
-  if (enableValidationLayers) {
-    requiredInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   }
   return requiredInstanceExtensions;
 }

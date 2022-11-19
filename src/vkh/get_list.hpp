@@ -13,6 +13,13 @@
 
 namespace vkh {
 /**
+ * @brief Get the Available Instance Layer Property List object
+ *
+ * @return std::vector<VkLayerProperties>
+ */
+std::vector<VkLayerProperties> getAvailableInstanceLayerPropertyList();
+
+/**
  * @brief Get the Available Instance Extension List object
  *
  * @param pLayerName
@@ -37,8 +44,7 @@ getAvailableDeviceExtensionList(VkPhysicalDevice physicalDevice,
  *
  * @return std::vector<const char *>
  */
-std::vector<const char *>
-getRequiredInstanceExtensionNameList(bool enableValidationLayers = false);
+std::vector<const char *> getRequiredInstanceExtensionNameList();
 
 /**
  * @brief Get the Available Instance Layer List object
