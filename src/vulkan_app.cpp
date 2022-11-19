@@ -98,24 +98,38 @@ void VulkanApp::createDevice() {
 
   /* Set up the selected queue family's creation info */
   uint32_t selectedIndex = selectedQueueFamily.value().first;
-  VkDeviceQueueCreateInfo queueCreateInfo;
   const float queuePriority = 1.0f;
-  queueCreateInfo = vkh::makeDeviceQueueCreateInfo(
-      selectedQueueFamily.value().first, 1, &queuePriority);
+
+  VkDeviceQueueCreateInfo queueInfo{};
+  queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  queueInfo.pNext = nullptr;
+  queueInfo.queueFamilyIndex = selectedIndex;
+  queueInfo.queueCount = 1;
+  queueInfo.pQueuePriorities = &queuePriority;
 
   /* Create the logical device */
   VkPhysicalDeviceFeatures deviceFeatures{};
-  auto deviceCreateInfo = vkh::makeDeviceCreateInfo(
-      1, &queueCreateInfo, static_cast<uint32_t>(deviceExtensions.size()),
-      deviceExtensions.data(), &deviceFeatures,
-      static_cast<uint32_t>(instanceLayers.size()), instanceLayers.data());
+
+  VkDeviceCreateInfo deviceCreateInfo{};
+  deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  deviceCreateInfo.pNext = nullptr;
+  deviceCreateInfo.queueCreateInfoCount = 1;
+  deviceCreateInfo.pQueueCreateInfos = &queueInfo;
+  deviceCreateInfo.enabledExtensionCount =
+      static_cast<uint32_t>(deviceExtensions.size());
+  deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+  deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+  deviceCreateInfo.enabledLayerCount =
+      static_cast<uint32_t>(instanceLayers.size());
+  deviceCreateInfo.ppEnabledLayerNames = instanceLayers.data();
+
   device = vkh::createDevice(selectedPhysDev, &deviceCreateInfo);
 
   /* Get a queue handle */
   vkGetDeviceQueue(device, selectedIndex, 0, &queue);
 
   /* Store the selected device for later uses */
-  this->physicalDevice = selectedPhysDev;
+  physicalDevice = selectedPhysDev;
 }
 
 bool VulkanApp::checkDeviceExtensionSupport(VkPhysicalDevice physDev) {

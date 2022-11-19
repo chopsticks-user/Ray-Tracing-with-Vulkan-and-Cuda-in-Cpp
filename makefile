@@ -27,7 +27,7 @@ $(ENTRY_NAME): $(ENTRY_NAME).cpp
 test: MDFLAGS += -DGLFW_INCLUDE_VULKAN
 test: build-debug
 	@./build/$(ENTRY_NAME)
-
+	
 # compile-shaders:
 # 	@mkdir -p build/shaders
 # 	glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
@@ -48,3 +48,4 @@ run-release: build-release
 	
 clean:
 	@rm -rf build/*
+	@cp MangoHud.conf build/MangoHud.conf

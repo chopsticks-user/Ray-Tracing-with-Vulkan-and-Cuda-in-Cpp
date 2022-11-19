@@ -51,7 +51,7 @@ private:
 
   /* Step 2: Setup layers */
   const std::vector<const char *> instanceLayers = {
-      "VK_LAYER_KHRONOS_validation"};
+      "VK_LAYER_KHRONOS_validation", "VK_LAYER_MANGOHUD_overlay"};
 
   /* Debug messenger of validation layers */
   VkDebugUtilsMessengerEXT debugMessenger;

@@ -39,6 +39,7 @@
 		VK_LAYER_INTEL_nullhw
 	2.2 Required:
 		VK_LAYER_KHRONOS_validation
+		VK_LAYER_MANGOHUD_overlay
 
 3. Physical devices:
 	3.1 Device 1 (selected):
