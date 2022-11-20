@@ -122,6 +122,8 @@ private:
   /* Step 7: Create a graphics pipeline */
   VkPipeline graphicsPipeline;
 
+  void createGraphicsPipeline();
+
   /* Step : Command buffers */
 
   /**

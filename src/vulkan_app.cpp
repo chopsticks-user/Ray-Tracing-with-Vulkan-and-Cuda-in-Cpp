@@ -323,6 +323,10 @@ void VulkanApp::createImageViews() {
   }
 }
 
+void VulkanApp::createGraphicsPipeline() {
+  //
+}
+
 void VulkanApp::createCommandPool() {
   VkCommandPoolCreateInfo cmdPoolInfo{};
   cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -349,6 +353,7 @@ VulkanApp::VulkanApp() {
   createDevice();
   createSwapchain();
   createImageViews();
+  createGraphicsPipeline();
 
   createCommandPool();
 }

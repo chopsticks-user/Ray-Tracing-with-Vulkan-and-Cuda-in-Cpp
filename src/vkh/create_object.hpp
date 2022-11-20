@@ -7,6 +7,7 @@
 #endif /* GLFW_INCLUDE_VULKAN */
 
 #include <stdexcept>
+#include <tuple>
 #include <vector>
 
 namespace vkh {
@@ -82,61 +83,59 @@ VkImageView createImageView(VkDevice device,
                             const VkImageViewCreateInfo *pCreateInfo,
                             const VkAllocationCallbacks *pAllocator = nullptr);
 
-/**
- * @brief Create a Compute Pipeline object
- *
- * @param device
- * @param pipelineCache
- * @param createInfos
- * @param pAllocator
- * @return VkPipeline
- */
-VkPipeline
-createComputePipeline(VkDevice device, VkPipelineCache pipelineCache,
-                      const VkComputePipelineCreateInfo *pCreateInfo,
-                      const VkAllocationCallbacks *pAllocator = nullptr);
+enum PipelineType { Compute, Graphics, RayTracingKHR, RayTracingNV };
 
-/**
- * @brief Create a Compute Pipelines object
- *
- * @param device
- * @param pipelineCache
- * @param createInfos
- * @param pAllocator
- * @return std::vector<VkPipeline>
- */
+template <size_t index, typename... Args>
+using static_switch =
+    typename std::tuple_element<index, std::tuple<Args...>>::type;
+
+// template <size_t index, int... Args>
+// using static_switch_function =
+//     typename std::tuple_element<index, std::make_tuple{Args, ...}>::type;
+
+template <PipelineType pipelineType>
+using pipelineInfoType = static_switch<
+    pipelineType, VkComputePipelineCreateInfo, VkGraphicsPipelineCreateInfo,
+    VkRayTracingPipelineCreateInfoKHR, VkRayTracingPipelineCreateInfoNV>;
+
+template <PipelineType pipelineType = Graphics>
 std::vector<VkPipeline>
-createComputePipelines(VkDevice device, VkPipelineCache pipelineCache,
-                       std::vector<VkComputePipelineCreateInfo> createInfos,
-                       const VkAllocationCallbacks *pAllocator = nullptr);
-
-/**
- * @brief Create a Graphics Pipeline object
- *
- * @param device
- * @param pipelineCache
- * @param createInfos
- * @param pAllocator
- * @return VkPipeline
- */
-VkPipeline
-createGraphicsPipeline(VkDevice device, VkPipelineCache pipelineCache,
-                       const VkComputePipelineCreateInfo *pCreateInfo,
-                       const VkAllocationCallbacks *pAllocator = nullptr);
-
-/**
- * @brief Create a Graphics Pipelines object
- *
- * @param device
- * @param pipelineCache
- * @param createInfos
- * @param pAllocator
- * @return std::vector<VkPipeline>
- */
-std::vector<VkPipeline>
-createGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache,
-                        std::vector<VkComputePipelineCreateInfo> createInfos,
-                        const VkAllocationCallbacks *pAllocator = nullptr);
+createPipelines(VkDevice device, VkPipelineCache pipelineCache,
+                const std::vector<pipelineInfoType<pipelineType>> &createInfos,
+                const VkAllocationCallbacks *pAllocator = nullptr) {
+  uint32_t pipelineCount = static_cast<uint32_t>(createInfos.size());
+  std::vector<VkPipeline> pipelines{pipelineCount};
+  VkResult result;
+  switch (pipelineType) {
+  case Compute:
+    result = vkCreateComputePipelines(device, pipelineCache, pipelineCount,
+                                      createInfos.data(), pAllocator,
+                                      pipelines.data());
+    break;
+  case Graphics:
+    result = vkCreateGraphicsPipelines(device, pipelineCache, pipelineCount,
+                                       createInfos.data(), pAllocator,
+                                       pipelines.data());
+    break;
+  case RayTracingKHR:
+    result = vkCreateRayTracingPipelinesKHR(device, pipelineCache,
+                                            pipelineCount, createInfos.data(),
+                                            pAllocator, pipelines.data());
+    break;
+  case RayTracingNV:
+    result = vkCreateRayTracingPipelinesNV(device, pipelineCache, pipelineCount,
+                                           createInfos.data(), pAllocator,
+                                           pipelines.data());
+    break;
+  default:
+    throw std::runtime_error("Unknown pipeline type.");
+    break;
+  }
+  if (result != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create pipelines.");
+  }
+  return pipelines;
+}
 
 /**
  * @brief Create a Command Pool object

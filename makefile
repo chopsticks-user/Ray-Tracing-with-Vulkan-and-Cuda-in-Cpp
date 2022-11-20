@@ -28,11 +28,11 @@ test: MDFLAGS += -DGLFW_INCLUDE_VULKAN
 test: build-debug
 	@./build/$(ENTRY_NAME)
 	
-# compile-shaders:
-# 	@mkdir -p build/shaders
-# 	glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
-# 	glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
-# 	@echo "Shaders compiled successfully.\n"
+compile-shaders:
+	@mkdir -p build/shaders
+	glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
+	glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
+	@echo "Shaders compiled successfully.\n"
 
 build-debug: clean compile-shaders $(ENTRY_NAME)
 
