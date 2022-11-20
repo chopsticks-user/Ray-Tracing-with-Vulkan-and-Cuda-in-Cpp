@@ -18,8 +18,8 @@ INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src -
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
-	$(COMPILER) $(BIN_FLAGS) $(INCLUDE_DIRS) -o build/$(ENTRY_NAME) $(SOURCE_PATHS) $(LDFLAGS) $(MDFLAGS)
-	objdump $(OBJDUMP_FLAGS) build/$(ENTRY_NAME) > build/$(ENTRY_NAME).dump
+	@$(COMPILER) $(BIN_FLAGS) $(INCLUDE_DIRS) -o build/$(ENTRY_NAME) $(SOURCE_PATHS) $(LDFLAGS) $(MDFLAGS)
+	@objdump $(OBJDUMP_FLAGS) build/$(ENTRY_NAME) > build/$(ENTRY_NAME).dump
 	@echo "Build successfully.\n"
 
 .PHONY: compile-shaders build-debug build-release run-debug run-release clean test
@@ -30,9 +30,9 @@ test: build-debug
 	
 compile-shaders:
 	@mkdir -p build/shaders
-	glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
-	glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
-	@echo "Shaders compiled successfully.\n"
+	@glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
+	@glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
+	@echo "Shaders compiled successfully."
 
 build-debug: clean compile-shaders $(ENTRY_NAME)
 

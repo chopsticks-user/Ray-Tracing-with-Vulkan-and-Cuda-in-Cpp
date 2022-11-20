@@ -60,31 +60,38 @@ VkImageView createImageView(VkDevice device,
   return imageView;
 }
 
-// VkPipeline createPipeline(VkDevice device, VkPipelineCache pipelineCache,
-//                           const VkComputePipelineCreateInfo *pCreateInfo,
-//                           const VkAllocationCallbacks *pAllocator) {
-//   VkPipeline computePipeline;
-//   if (vkCreateComputePipelines(device, pipelineCache, 1, pCreateInfo,
-//                                pAllocator, &computePipeline) != VK_SUCCESS) {
-//     throw std::runtime_error("Failed to create a compute pipeline.");
-//   }
-//   return computePipeline;
-// }
+VkShaderModule createShaderModule(VkDevice device,
+                                  const std::vector<char> &shaderCode,
+                                  const VkAllocationCallbacks *pAllocator) {
+  VkShaderModuleCreateInfo shaderModuleInfo{};
+  shaderModuleInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  shaderModuleInfo.codeSize = shaderCode.size();
+  shaderModuleInfo.pCode =
+      reinterpret_cast<const uint32_t *>(shaderCode.data());
+  shaderModuleInfo.pNext = nullptr;
 
-// std::vector<VkPipeline>
-// createPipelines(VkDevice device, VkPipelineCache pipelineCache,
-//                 std::vector<VkComputePipelineCreateInfo> createInfos,
-//                 const VkAllocationCallbacks *pAllocator) {
-//   size_t createInfoCount = createInfos.size();
-//   std::vector<VkPipeline> computePipelines{createInfoCount};
-//   if (vkCreateComputePipelines(device, pipelineCache,
-//                                static_cast<uint32_t>(createInfoCount),
-//                                createInfos.data(), pAllocator,
-//                                computePipelines.data()) != VK_SUCCESS) {
-//     throw std::runtime_error("Failed to create compute pipelines.");
-//   }
-//   return computePipelines;
-// }
+  VkShaderModule shaderModule;
+  if (vkCreateShaderModule(device, &shaderModuleInfo, pAllocator,
+                           &shaderModule) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create shader module.");
+  }
+  return shaderModule;
+}
+
+VkShaderModule createShaderModule(VkDevice device, std::string shaderCodePath,
+                                  const VkAllocationCallbacks *pAllocator) {
+  std::ifstream file(shaderCodePath, std::ios::ate | std::ios::binary);
+  if (!file.is_open()) {
+    throw std::runtime_error("Failed to open " + shaderCodePath);
+  }
+  size_t bufferSize = static_cast<size_t>(file.tellg());
+  std::vector<char> buffer(bufferSize);
+  file.seekg(0);
+  file.read(buffer.data(), bufferSize);
+  file.close();
+
+  return createShaderModule(device, buffer, pAllocator);
+}
 
 VkCommandPool createCommandPool(VkDevice device,
                                 const VkCommandPoolCreateInfo *pCreateInfo,

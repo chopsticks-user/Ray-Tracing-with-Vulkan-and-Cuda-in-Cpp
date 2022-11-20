@@ -28,6 +28,11 @@ void destroyImageView(VkDevice device, VkImageView imageView,
   vkDestroyImageView(device, imageView, pAllocator);
 }
 
+void destroyShaderModule(VkDevice device, VkShaderModule shaderModule,
+                         const VkAllocationCallbacks *pAllocator) {
+  vkDestroyShaderModule(device, shaderModule, pAllocator);
+}
+
 void destroyPipeline(VkDevice device, VkPipeline pipeline,
                      const VkAllocationCallbacks *pAllocator) {
   vkDestroyPipeline(device, pipeline, pAllocator);

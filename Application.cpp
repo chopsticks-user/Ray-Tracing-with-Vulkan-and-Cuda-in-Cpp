@@ -6,7 +6,7 @@
 int protected_main() {
   VulkanApp app;
   app.run();
-  app.writeInfo("src/info.log");
+  app.writeInfo("info.log");
   return EXIT_SUCCESS;
 }
 

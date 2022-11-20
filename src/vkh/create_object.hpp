@@ -6,7 +6,9 @@
 #include <GLFW/glfw3.h>
 #endif /* GLFW_INCLUDE_VULKAN */
 
+#include <fstream>
 #include <stdexcept>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -82,6 +84,30 @@ createSwapchain(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
 VkImageView createImageView(VkDevice device,
                             const VkImageViewCreateInfo *pCreateInfo,
                             const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Shader Module object
+ *
+ * @param device
+ * @param shaderCode
+ * @param pAllocator
+ * @return VkShaderModule
+ */
+VkShaderModule
+createShaderModule(VkDevice device, const std::vector<char> &shaderCode,
+                   const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Shader Module object
+ *
+ * @param device
+ * @param shaderCodePath
+ * @param pAllocator
+ * @return VkShaderModule
+ */
+VkShaderModule
+createShaderModule(VkDevice device, std::string shaderCodePath,
+                   const VkAllocationCallbacks *pAllocator = nullptr);
 
 enum PipelineType { Compute, Graphics, RayTracingKHR, RayTracingNV };
 

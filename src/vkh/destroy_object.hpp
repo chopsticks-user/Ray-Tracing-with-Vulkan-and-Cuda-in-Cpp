@@ -68,6 +68,16 @@ void destroyImageView(VkDevice device, VkImageView imageView,
  * @brief
  *
  * @param device
+ * @param shaderModule
+ * @param pAllocator
+ */
+void destroyShaderModule(VkDevice device, VkShaderModule shaderModule,
+                         const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief
+ *
+ * @param device
  * @param pipeline
  * @param pAllocator
  * @return * void
