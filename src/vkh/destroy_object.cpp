@@ -23,4 +23,26 @@ void destroySwapchain(VkDevice device, VkSwapchainKHR swapchain,
   vkDestroySwapchainKHR(device, swapchain, pAllocator);
 }
 
+void destroyImageView(VkDevice device, VkImageView imageView,
+                      const VkAllocationCallbacks *pAllocator) {
+  vkDestroyImageView(device, imageView, pAllocator);
+}
+
+void destroyPipeline(VkDevice device, VkPipeline pipeline,
+                     const VkAllocationCallbacks *pAllocator) {
+  vkDestroyPipeline(device, pipeline, pAllocator);
+}
+
+void destroyPipelines(VkDevice device, std::vector<VkPipeline> pipelines,
+                      const VkAllocationCallbacks *pAllocator) {
+  for (auto &pipeline : pipelines) {
+    vkDestroyPipeline(device, pipeline, pAllocator);
+  }
+}
+
+void destroyCommandPool(VkDevice device, VkCommandPool commandPool,
+                        const VkAllocationCallbacks *pAllocator) {
+  vkDestroyCommandPool(device, commandPool, pAllocator);
+}
+
 } /* namespace vkh */

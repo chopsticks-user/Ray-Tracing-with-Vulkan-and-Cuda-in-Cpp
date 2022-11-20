@@ -49,4 +49,79 @@ VkSwapchainKHR createSwapchain(VkDevice device,
   return swapchain;
 }
 
+VkImageView createImageView(VkDevice device,
+                            const VkImageViewCreateInfo *pCreateInfo,
+                            const VkAllocationCallbacks *pAllocator) {
+  VkImageView imageView;
+  if (vkCreateImageView(device, pCreateInfo, pAllocator, &imageView) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create an image view.");
+  }
+  return imageView;
+}
+
+VkPipeline createComputePipeline(VkDevice device, VkPipelineCache pipelineCache,
+                                 const VkComputePipelineCreateInfo *pCreateInfo,
+                                 const VkAllocationCallbacks *pAllocator) {
+  VkPipeline computePipeline;
+  if (vkCreateComputePipelines(device, pipelineCache, 1, pCreateInfo,
+                               pAllocator, &computePipeline) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create a compute pipeline.");
+  }
+  return computePipeline;
+}
+
+std::vector<VkPipeline>
+createComputePipelines(VkDevice device, VkPipelineCache pipelineCache,
+                       std::vector<VkComputePipelineCreateInfo> createInfos,
+                       const VkAllocationCallbacks *pAllocator) {
+  size_t createInfoCount = createInfos.size();
+  std::vector<VkPipeline> computePipelines{createInfoCount};
+  if (vkCreateComputePipelines(device, pipelineCache,
+                               static_cast<uint32_t>(createInfoCount),
+                               createInfos.data(), pAllocator,
+                               computePipelines.data()) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create compute pipelines.");
+  }
+  return computePipelines;
+}
+
+VkPipeline
+createGraphicsPipeline(VkDevice device, VkPipelineCache pipelineCache,
+                       const VkGraphicsPipelineCreateInfo *pCreateInfo,
+                       const VkAllocationCallbacks *pAllocator) {
+  VkPipeline graphicsPipeline;
+  if (vkCreateGraphicsPipelines(device, pipelineCache, 1, pCreateInfo,
+                                pAllocator, &graphicsPipeline) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create a graphics pipeline.");
+  }
+  return graphicsPipeline;
+}
+
+std::vector<VkPipeline>
+createGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache,
+                        std::vector<VkGraphicsPipelineCreateInfo> createInfos,
+                        const VkAllocationCallbacks *pAllocator) {
+  size_t createInfoCount = createInfos.size();
+  std::vector<VkPipeline> graphicsPipelines{createInfoCount};
+  if (vkCreateGraphicsPipelines(device, pipelineCache,
+                                static_cast<uint32_t>(createInfoCount),
+                                createInfos.data(), pAllocator,
+                                graphicsPipelines.data()) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create graphics pipelines.");
+  }
+  return graphicsPipelines;
+}
+
+VkCommandPool createCommandPool(VkDevice device,
+                                const VkCommandPoolCreateInfo *pCreateInfo,
+                                const VkAllocationCallbacks *pAllocator) {
+  VkCommandPool commandPool{};
+  if (vkCreateCommandPool(device, pCreateInfo, pAllocator, &commandPool) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create command pool.");
+  }
+  return commandPool;
+}
+
 } /* namespace vkh */

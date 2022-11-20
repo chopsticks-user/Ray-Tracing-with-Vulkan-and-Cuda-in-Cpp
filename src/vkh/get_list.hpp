@@ -132,5 +132,15 @@ std::vector<VkPresentModeKHR>
 getPhysicalDeviceSurfacePresentModeList(VkPhysicalDevice physicalDevice,
                                         VkSurfaceKHR surface);
 
+/**
+ * @brief Get the Swapchain Images object
+ *
+ * @param device
+ * @param swapchain
+ * @return std::vector<VkImage>
+ */
+std::vector<VkImage> getSwapchainImages(VkDevice device,
+                                        VkSwapchainKHR swapchain);
+
 } /* namespace vkh */
 #endif /* VK_GET_LIST_HPP */

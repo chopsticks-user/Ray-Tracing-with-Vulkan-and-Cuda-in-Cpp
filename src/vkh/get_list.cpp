@@ -201,4 +201,19 @@ getPhysicalDeviceSurfacePresentModeList(VkPhysicalDevice physicalDevice,
   return presentModes;
 }
 
+std::vector<VkImage> getSwapchainImages(VkDevice device,
+                                        VkSwapchainKHR swapchain) {
+  uint32_t swapchainImageCount;
+  if (vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount,
+                              nullptr) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get swapchain images");
+  }
+  std::vector<VkImage> swapchainImages{swapchainImageCount};
+  if (vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount,
+                              swapchainImages.data()) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get swapchain images");
+  }
+  return swapchainImages;
+}
+
 } /* namespace vkh */

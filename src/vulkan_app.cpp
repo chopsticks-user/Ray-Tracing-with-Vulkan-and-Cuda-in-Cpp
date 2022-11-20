@@ -130,6 +130,9 @@ void VulkanApp::createDevice() {
 
   /* Store the selected device for later uses */
   physicalDevice = selectedPhysDev;
+
+  /* Store the index of the selected queue family */
+  queueFamilyIndex = selectedIndex;
 }
 
 bool VulkanApp::checkDeviceExtensionSupport(VkPhysicalDevice physDev) {
@@ -169,6 +172,10 @@ VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
 
   /* Images of the swapchain can be used to create a VkImageView with a
   different format than what the swapchain was create with. */
+  /* If flags contains VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR then the
+  pNext chain must include a VkImageFormatListCreateInfo structure with a
+  viewFormatCount greater than zero and pViewFormats must have an element
+  equal to imageFormat */
   // swapchainCreateInfo.flags = VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
 
   swapchainCreateInfo.surface = surface;
@@ -201,6 +208,7 @@ VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
       break;
     }
   }
+  swapchain.format = swapchainCreateInfo.imageFormat;
 
   /* imageExtent is the size (in pixels) of the swapchain
   image(s). The behavior is platform-dependent if the image
@@ -217,6 +225,7 @@ VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
     imageExtentHeight = surfaceCapabilities.maxImageExtent.height;
   }
   swapchainCreateInfo.imageExtent = {imageExtentWidth, imageExtentHeight};
+  swapchain.extent = swapchainCreateInfo.imageExtent;
 
   /* imageArrayLayers is the number of views in a multiview/stereo surface. For
   non-stereoscopic-3D applications, this value is 1. */
@@ -277,6 +286,61 @@ void VulkanApp::createSwapchain() {
   swapchain.self = vkh::createSwapchain(device, &swapchainCreateInfo);
 }
 
+void VulkanApp::createImageViews() {
+  images = vkh::getSwapchainImages(device, swapchain.self);
+  size_t imageCount = images.size();
+  imageViews.resize(imageCount);
+  for (size_t i = 0; i < imageCount; ++i) {
+    VkImageViewCreateInfo imageViewInfo{};
+    imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    imageViewInfo.pNext = nullptr;
+    // imageViewInfo.flags =
+    imageViewInfo.image = images[i];
+
+    /* treat images as 2D textures */
+    imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+
+    imageViewInfo.format = swapchain.format;
+
+    /* default mapping */
+    imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+    /* color aspect */
+    imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+    /* In stereographic 3D applications, create a swapchain with multiple
+    layers before creating multiple image views for each images representing
+    the views for the left and right eyes by accessing different layers */
+    imageViewInfo.subresourceRange.baseMipLevel = 0;
+    imageViewInfo.subresourceRange.levelCount = 1;
+    imageViewInfo.subresourceRange.baseArrayLayer = 0;
+    imageViewInfo.subresourceRange.layerCount = 1;
+
+    imageViews[i] = vkh::createImageView(device, &imageViewInfo);
+  }
+}
+
+void VulkanApp::createCommandPool() {
+  VkCommandPoolCreateInfo cmdPoolInfo{};
+  cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  cmdPoolInfo.pNext = nullptr;
+  /* allows any command buffer allocated from a
+  pool to be individually reset to the initial state; either by calling
+  vkResetCommandBuffer, or via the implicit reset when calling
+  vkBeginCommandBuffer. If this flag is not set on a pool, then
+  vkResetCommandBuffer must not be called for any command buffer allocated
+  from that pool. */
+  cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+  /* All command buffers allocated from this command pool must be
+  submitted on queues from the same queue family. */
+  cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
+
+  commandPool = vkh::createCommandPool(device, &cmdPoolInfo);
+}
+
 VulkanApp::VulkanApp() {
   createWindow();
   createInstance();
@@ -284,15 +348,23 @@ VulkanApp::VulkanApp() {
   createSurface();
   createDevice();
   createSwapchain();
+  createImageViews();
+
+  createCommandPool();
 }
 
 VulkanApp::~VulkanApp() {
+  vkh::destroyCommandPool(device, commandPool);
+
+  for (auto &imageView : imageViews) {
+    vkh::destroyImageView(device, imageView);
+  }
   vkh::destroySwapchain(device, swapchain.self);
   vkh::destroyDevice(device);
   vkh::destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
   vkh::destroySurface(instance, surface);
   vkh::destroyInstance(instance, nullptr);
-  glfwDestroyWindow(window);
+  vkh::destroyWindow(window);
   glfwTerminate();
 }
 
@@ -303,8 +375,8 @@ void VulkanApp::run() {
     vkh::Timer time_circle;
     glfwPollEvents();
 
-    for (int i = 0; i < 1'000'000; ++i) {
-    }
+    // for (int i = 0; i < 1'000'000; ++i) {
+    // }
 
     double current = static_cast<double>(time_total.current());
     if (current >= sec_to_mics) {

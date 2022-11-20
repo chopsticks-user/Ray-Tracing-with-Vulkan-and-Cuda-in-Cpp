@@ -69,6 +69,7 @@ private:
 
   /* For graphics, computing, and presentation */
   VkQueue queue;
+  uint32_t queueFamilyIndex;
 
   bool checkDeviceProperties(VkPhysicalDevice physDev);
 
@@ -79,25 +80,25 @@ private:
   and one of its queue families by calling the selectQueueFamily function. */
   void createDevice();
 
-  /* Step 5: Create a swapchain to render results to the surface */
+  /* Step 5: Create a swapchain to render results to the surface
+  vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
+  swapChainImages.resize(imageCount);
+  vkGetSwapchainImagesKHR(device, swapChain, &imageCount,
+                          swapChainImages.data()); */
   struct SwapChainWrapper {
 
     /* A swapchain instance */
     VkSwapchainKHR self;
 
-    /* Presentable images. Only one image is displayed at a time,
-    the others are queued for presentation. A presentable image  must be
-    used after the image is returned by vkAccquireNextImageKHR and before
-    it is released by vkQueuePresentKHR. */
-    std::vector<VkImage> images;
-
     VkFormat format;
 
     VkExtent2D extent;
+
   } swapchain;
 
   std::vector<const char *> deviceExtensions = {
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+      VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
 
   /* Included when selecting a physical device */
   bool checkDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
@@ -107,7 +108,32 @@ private:
 
   void createSwapchain();
 
-  /* Step 6:  */
+  /* Step 6: Create image views */
+  std::vector<VkImageView> imageViews;
+
+  /* Presentable images. Only one image is displayed at a time,
+  the others are queued for presentation. A presentable image  must be
+  used after the image is returned by vkAccquireNextImageKHR and before
+  it is released by vkQueuePresentKHR. */
+  std::vector<VkImage> images;
+
+  void createImageViews();
+
+  /* Step 7: Create a graphics pipeline */
+  VkPipeline graphicsPipeline;
+
+  /* Step : Command buffers */
+
+  /**
+   * @brief Command pools are externally synchronized, meaning that a command
+   * pool must not be used concurrently in multiple threads. That includes use
+   * via recording commands on any command buffers allocated from the pool, as
+   * well as operations that allocate, free, and reset command buffers or the
+   * pool itself.
+   */
+  VkCommandPool commandPool;
+
+  void createCommandPool();
 };
 
 // class Instance {

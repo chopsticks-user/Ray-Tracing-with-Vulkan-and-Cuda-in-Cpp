@@ -7,6 +7,7 @@
 #endif /* GLFW_INCLUDE_VULKAN */
 
 #include <stdexcept>
+#include <vector>
 
 namespace vkh {
 /**
@@ -68,6 +69,86 @@ VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow *window,
 VkSwapchainKHR
 createSwapchain(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
                 const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Image View object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkImageView
+ */
+VkImageView createImageView(VkDevice device,
+                            const VkImageViewCreateInfo *pCreateInfo,
+                            const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Compute Pipeline object
+ *
+ * @param device
+ * @param pipelineCache
+ * @param createInfos
+ * @param pAllocator
+ * @return VkPipeline
+ */
+VkPipeline
+createComputePipeline(VkDevice device, VkPipelineCache pipelineCache,
+                      const VkComputePipelineCreateInfo *pCreateInfo,
+                      const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Compute Pipelines object
+ *
+ * @param device
+ * @param pipelineCache
+ * @param createInfos
+ * @param pAllocator
+ * @return std::vector<VkPipeline>
+ */
+std::vector<VkPipeline>
+createComputePipelines(VkDevice device, VkPipelineCache pipelineCache,
+                       std::vector<VkComputePipelineCreateInfo> createInfos,
+                       const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Graphics Pipeline object
+ *
+ * @param device
+ * @param pipelineCache
+ * @param createInfos
+ * @param pAllocator
+ * @return VkPipeline
+ */
+VkPipeline
+createGraphicsPipeline(VkDevice device, VkPipelineCache pipelineCache,
+                       const VkComputePipelineCreateInfo *pCreateInfo,
+                       const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Graphics Pipelines object
+ *
+ * @param device
+ * @param pipelineCache
+ * @param createInfos
+ * @param pAllocator
+ * @return std::vector<VkPipeline>
+ */
+std::vector<VkPipeline>
+createGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache,
+                        std::vector<VkComputePipelineCreateInfo> createInfos,
+                        const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Command Pool object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkCommandPool
+ */
+VkCommandPool
+createCommandPool(VkDevice device, const VkCommandPoolCreateInfo *pCreateInfo,
+                  const VkAllocationCallbacks *pAllocator = nullptr);
 
 } /* namespace vkh */
 
