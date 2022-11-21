@@ -325,10 +325,10 @@ void VulkanApp::createImageViews() {
 
 void VulkanApp::createGraphicsPipeline() {
   vkh::ShaderModuleWrapper shaderModule{};
-  shaderModule.vertex =
-      vkh::createShaderModule(device, "build/shaders/triangle_vert.spv");
-  shaderModule.fragment =
-      vkh::createShaderModule(device, "build/shaders/triangle_frag.spv");
+  shaderModule.vertex = vkh::createShaderModule(device, "build/shaders/"
+                                                        "triangle_vert.spv");
+  shaderModule.fragment = vkh::createShaderModule(device, "build/shaders/"
+                                                          "triangle_frag.spv");
 
   // std::vector<VkGraphicsPipelineCreateInfo>
   // graphicsPipelineCreateInfos{};
@@ -517,8 +517,8 @@ void VulkanApp::createGraphicsPipeline() {
 
   std::vector<VkGraphicsPipelineCreateInfo> pipelineInfoWrapper{pipelineInfo};
 
-  graphicsPipeline.self =
-      vkh::createPipelines(device, VK_NULL_HANDLE, pipelineInfoWrapper)[0];
+  graphicsPipeline.self = vkh::createPipelines(device, graphicsPipeline.cache,
+                                               pipelineInfoWrapper)[0];
 
   vkh::destroyShaderModule(device, shaderModule.vertex);
   vkh::destroyShaderModule(device, shaderModule.fragment);

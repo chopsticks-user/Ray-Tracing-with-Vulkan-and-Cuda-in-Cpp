@@ -116,6 +116,17 @@ VkRenderPass createRenderPass(VkDevice device,
   return renderPass;
 }
 
+VkFramebuffer createFrameBuffer(VkDevice device,
+                                const VkFramebufferCreateInfo *pCreateInfo,
+                                const VkAllocationCallbacks *pAllocator) {
+  VkFramebuffer framebuffer;
+  if (vkCreateFramebuffer(device, pCreateInfo, pAllocator, &framebuffer) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create framebuffer.");
+  }
+  return framebuffer;
+}
+
 VkCommandPool createCommandPool(VkDevice device,
                                 const VkCommandPoolCreateInfo *pCreateInfo,
                                 const VkAllocationCallbacks *pAllocator) {

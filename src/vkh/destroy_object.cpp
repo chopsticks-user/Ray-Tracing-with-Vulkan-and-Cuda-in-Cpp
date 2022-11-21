@@ -55,6 +55,11 @@ void destroyPipelines(VkDevice device, std::vector<VkPipeline> pipelines,
   }
 }
 
+void destroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
+                        const VkAllocationCallbacks *pAllocator) {
+  vkDestroyFramebuffer(device, framebuffer, pAllocator);
+}
+
 void destroyCommandPool(VkDevice device, VkCommandPool commandPool,
                         const VkAllocationCallbacks *pAllocator) {
   vkDestroyCommandPool(device, commandPool, pAllocator);

@@ -165,19 +165,7 @@ createPipelines(VkDevice device, VkPipelineCache pipelineCache,
     result = vkCreateGraphicsPipelines(device, pipelineCache, pipelineCount,
                                        createInfos.data(), pAllocator,
                                        pipelines.data());
-  }
-  // else if (pipelineType == RayTracingKHR) {
-  //   result = vkCreateRayTracingPipelinesKHR(device, pipelineCache,
-  //                                           pipelineCount,
-  //                                           createInfos.data(), pAllocator,
-  //                                           pipelines.data());
-  // } else if (pipelineType == RayTracingNV) {
-  //   result = vkCreateRayTracingPipelinesNV(device, pipelineCache,
-  //   pipelineCount,
-  //                                          createInfos.data(), pAllocator,
-  //                                          pipelines.data());
-  // }
-  else {
+  } else {
     throw std::runtime_error("Unknown pipeline type.");
   }
   if (result != VK_SUCCESS) {
@@ -185,6 +173,18 @@ createPipelines(VkDevice device, VkPipelineCache pipelineCache,
   }
   return pipelines;
 }
+
+/**
+ * @brief Create a Frame Buffer object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkFramebuffer
+ */
+VkFramebuffer
+createFrameBuffer(VkDevice device, const VkFramebufferCreateInfo *pCreateInfo,
+                  const VkAllocationCallbacks *pAllocator = nullptr);
 
 /**
  * @brief Create a Command Pool object

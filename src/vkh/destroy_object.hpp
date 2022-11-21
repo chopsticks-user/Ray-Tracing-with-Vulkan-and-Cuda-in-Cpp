@@ -112,6 +112,16 @@ void destroyPipelines(VkDevice device, std::vector<VkPipeline> pipelines,
  * @brief
  *
  * @param device
+ * @param framebuffer
+ * @param pAllocator
+ */
+void destroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
+                        const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief
+ *
+ * @param device
  * @param commandPool
  * @param pAllocator
  */
