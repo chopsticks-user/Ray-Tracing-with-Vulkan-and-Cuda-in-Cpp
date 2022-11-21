@@ -20,6 +20,7 @@ struct GraphicsPipelineWrapper {
   VkPipelineCache cache = nullptr;
   VkRenderPass renderPass = nullptr;
 };
+
 } /* namespace vkh */
 
 #endif /* VKH_WRAPPER_HPP */

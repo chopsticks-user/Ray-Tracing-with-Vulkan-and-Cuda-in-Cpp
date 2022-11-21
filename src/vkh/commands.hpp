@@ -21,6 +21,22 @@ std::vector<VkCommandBuffer>
 allocateCommandBuffers(VkDevice device,
                        const VkCommandBufferAllocateInfo *pAllocateInfo);
 
+/**
+ * @brief
+ *
+ * @param commandBuffer
+ * @param pBeginInfo
+ */
+void beginCommandBuffer(VkCommandBuffer commandBuffer,
+                        const VkCommandBufferBeginInfo *pBeginInfo);
+
+/**
+ * @brief
+ *
+ * @param commandBuffer
+ */
+void endCommandBuffer(VkCommandBuffer commandBuffer);
+
 } /* namespace vkh */
 
 #endif /* VKH_COMMAND_BUFFERS_HPP */

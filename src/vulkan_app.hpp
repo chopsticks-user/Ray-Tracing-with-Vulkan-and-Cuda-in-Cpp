@@ -130,6 +130,23 @@ private:
   void createCommandPool();
 
   void createCommandBuffer();
+
+  void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+  /* Step 10: Synchronization and cache control */
+  struct SyncWrapper {
+    VkSemaphore imageAvailableSemaphore = nullptr;
+
+    VkSemaphore renderFinisedSemaphore = nullptr;
+
+    VkFence inFlightFence = nullptr;
+
+  } sync;
+
+  void createSynchronizationObjects();
+
+  /* Step 11: Render */
+  void render();
 };
 
 // class Instance {

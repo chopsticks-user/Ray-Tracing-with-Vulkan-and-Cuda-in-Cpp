@@ -567,6 +567,61 @@ void VulkanApp::createCommandBuffer() {
   vkh::allocateCommandBuffers(device, &cmdBufferAllocInfo);
 }
 
+void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
+                                    uint32_t imageIndex) {
+  /* Begin recording a command buffer */
+  VkCommandBufferBeginInfo cmdBufferBeginInfo{};
+  cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  cmdBufferBeginInfo.flags = 0;
+  cmdBufferBeginInfo.pInheritanceInfo = nullptr;
+  vkh::beginCommandBuffer(cmdBuffer, &cmdBufferBeginInfo);
+
+  /* Start a render pass */
+  VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+
+  VkRenderPassBeginInfo renderPassBeginInfo{};
+  renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassBeginInfo.renderPass = graphicsPipeline.renderPass;
+  renderPassBeginInfo.framebuffer = framebuffers[imageIndex];
+  renderPassBeginInfo.renderArea.offset = {0, 0};
+  renderPassBeginInfo.renderArea.extent = swapchain.extent;
+  renderPassBeginInfo.clearValueCount = 1;
+  renderPassBeginInfo.pClearValues = &clearColor;
+
+  vkCmdBeginRenderPass(cmdBuffer, &renderPassBeginInfo,
+                       VK_SUBPASS_CONTENTS_INLINE);
+
+  /* Drawing commands */
+  vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    graphicsPipeline.self);
+
+  static const uint32_t vertexCount = 3;
+  static const uint32_t instanceCount = 1;
+  static const uint32_t firstVertex = 0;
+  static const uint32_t firstInstance = 0;
+  vkCmdDraw(cmdBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+
+  /* End recording the command buffer */
+  vkCmdEndRenderPass(cmdBuffer);
+  vkh::endCommandBuffer(cmdBuffer);
+}
+
+void VulkanApp::createSynchronizationObjects() {
+  //
+}
+
+void VulkanApp::render() {
+  /* Wait for the previous frame to finish */
+
+  /* Acquire an image frome the swapchain */
+
+  /* Record a command buffer which draws the scene onto that image */
+
+  /* Submit the recorded command buffer */
+
+  /* Present the swapchain image */
+}
+
 VulkanApp::VulkanApp() {
   createWindow();
   createInstance();
@@ -578,6 +633,8 @@ VulkanApp::VulkanApp() {
   createGraphicsPipeline();
   createFramebuffer();
   createCommandPool();
+  createCommandBuffer();
+  createSynchronizationObjects();
 }
 
 VulkanApp::~VulkanApp() {
@@ -602,13 +659,12 @@ VulkanApp::~VulkanApp() {
 
 void VulkanApp::run() {
   vkh::Timer time_total;
-  const double sec_to_mics = 1'000'000.0;
+  static const double sec_to_mics = 1'000'000.0;
   while (!glfwWindowShouldClose(window)) {
     vkh::Timer time_circle;
     glfwPollEvents();
 
-    // for (int i = 0; i < 1'000'000; ++i) {
-    // }
+    render();
 
     double current = static_cast<double>(time_total.current());
     if (current >= sec_to_mics) {

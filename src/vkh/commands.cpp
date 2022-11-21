@@ -18,4 +18,17 @@ allocateCommandBuffers(VkDevice device,
   return commandBuffers;
 }
 
+void beginCommandBuffer(VkCommandBuffer commandBuffer,
+                        const VkCommandBufferBeginInfo *pBeginInfo) {
+  if (vkBeginCommandBuffer(commandBuffer, pBeginInfo) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to begin command buffer.");
+  }
+}
+
+void endCommandBuffer(VkCommandBuffer commandBuffer) {
+  if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to end command buffer.");
+  }
+}
+
 } /* namespace vkh */
