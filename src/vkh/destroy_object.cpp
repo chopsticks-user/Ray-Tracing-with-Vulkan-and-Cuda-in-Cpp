@@ -33,6 +33,16 @@ void destroyShaderModule(VkDevice device, VkShaderModule shaderModule,
   vkDestroyShaderModule(device, shaderModule, pAllocator);
 }
 
+void destroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout,
+                           const VkAllocationCallbacks *pAllocator) {
+  vkDestroyPipelineLayout(device, pipelineLayout, pAllocator);
+}
+
+void destroyRenderPass(VkDevice device, VkRenderPass renderPass,
+                       const VkAllocationCallbacks *pAllocator) {
+  vkDestroyRenderPass(device, renderPass, pAllocator);
+}
+
 void destroyPipeline(VkDevice device, VkPipeline pipeline,
                      const VkAllocationCallbacks *pAllocator) {
   vkDestroyPipeline(device, pipeline, pAllocator);

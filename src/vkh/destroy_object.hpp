@@ -78,6 +78,26 @@ void destroyShaderModule(VkDevice device, VkShaderModule shaderModule,
  * @brief
  *
  * @param device
+ * @param pipelineLayout
+ * @param pCallbacks
+ */
+void destroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout,
+                           const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief
+ *
+ * @param device
+ * @param renderPass
+ * @param pAllocator
+ */
+void destroyRenderPass(VkDevice device, VkRenderPass renderPass,
+                       const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief
+ *
+ * @param device
  * @param pipeline
  * @param pAllocator
  * @return * void
