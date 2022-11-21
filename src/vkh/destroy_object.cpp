@@ -65,4 +65,14 @@ void destroyCommandPool(VkDevice device, VkCommandPool commandPool,
   vkDestroyCommandPool(device, commandPool, pAllocator);
 }
 
+void destroySemaphore(VkDevice device, VkSemaphore semaphore,
+                      const VkAllocationCallbacks *pAllocator) {
+  vkDestroySemaphore(device, semaphore, pAllocator);
+}
+
+void destroyFence(VkDevice device, VkFence fence,
+                  const VkAllocationCallbacks *pAllocator) {
+  vkDestroyFence(device, fence, pAllocator);
+}
+
 } /* namespace vkh */

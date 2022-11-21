@@ -198,6 +198,29 @@ VkCommandPool
 createCommandPool(VkDevice device, const VkCommandPoolCreateInfo *pCreateInfo,
                   const VkAllocationCallbacks *pAllocator = nullptr);
 
+/**
+ * @brief Create a Semaphore object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkSemaphore
+ */
+VkSemaphore createSemaphore(VkDevice device,
+                            const VkSemaphoreCreateInfo *pCreateInfo,
+                            const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Fence object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkFence
+ */
+VkFence createFence(VkDevice device, const VkFenceCreateInfo *pCreateInfo,
+                    const VkAllocationCallbacks *pAllocator = nullptr);
+
 } /* namespace vkh */
 
 #endif /* VK_CREATE_OBJECT_HPP */

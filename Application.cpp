@@ -6,7 +6,7 @@
 int protected_main() {
   VulkanApp app;
   app.run();
-  app.writeInfo("info.log");
+  app.writeInfo("/home/xunililak/Code/Projects/4-RTVulkan/info.log");
   return EXIT_SUCCESS;
 }
 

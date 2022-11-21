@@ -325,10 +325,12 @@ void VulkanApp::createImageViews() {
 
 void VulkanApp::createGraphicsPipeline() {
   vkh::ShaderModuleWrapper shaderModule{};
-  shaderModule.vertex = vkh::createShaderModule(device, "build/shaders/"
-                                                        "triangle_vert.spv");
-  shaderModule.fragment = vkh::createShaderModule(device, "build/shaders/"
-                                                          "triangle_frag.spv");
+  shaderModule.vertex = vkh::createShaderModule(
+      device, "/home/xunililak/Code/Projects/4-RTVulkan/build/shaders/"
+              "triangle_vert.spv");
+  shaderModule.fragment = vkh::createShaderModule(
+      device, "/home/xunililak/Code/Projects/4-RTVulkan/build/shaders/"
+              "triangle_frag.spv");
 
   // std::vector<VkGraphicsPipelineCreateInfo>
   // graphicsPipelineCreateInfos{};
@@ -486,6 +488,14 @@ void VulkanApp::createGraphicsPipeline() {
   subpass.colorAttachmentCount = 1;
   subpass.pColorAttachments = &colorAttachmentRef;
 
+  VkSubpassDependency subPassDep{}; /* Needed when rendering */
+  subPassDep.srcSubpass = VK_SUBPASS_EXTERNAL;
+  subPassDep.dstSubpass = 0;
+  subPassDep.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  subPassDep.srcAccessMask = 0;
+  subPassDep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  subPassDep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
   VkRenderPassCreateInfo renderPassInfo{};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
   renderPassInfo.pNext = nullptr;
@@ -493,6 +503,8 @@ void VulkanApp::createGraphicsPipeline() {
   renderPassInfo.pAttachments = &colorAttachment;
   renderPassInfo.subpassCount = 1;
   renderPassInfo.pSubpasses = &subpass;
+  renderPassInfo.dependencyCount = 1;
+  renderPassInfo.pDependencies = &subPassDep;
   graphicsPipeline.renderPass = vkh::createRenderPass(device, &renderPassInfo);
 
   /* Create a graphics pipeline */
@@ -563,8 +575,8 @@ void VulkanApp::createCommandBuffer() {
   cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   cmdBufferAllocInfo.commandPool = commandPool;
   cmdBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  cmdBufferAllocInfo.commandBufferCount = 1;
-  vkh::allocateCommandBuffers(device, &cmdBufferAllocInfo);
+  cmdBufferAllocInfo.commandBufferCount = commandBufferCount;
+  commandBuffer = vkh::allocateCommandBuffers(device, &cmdBufferAllocInfo)[0];
 }
 
 void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
@@ -607,19 +619,66 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
 }
 
 void VulkanApp::createSynchronizationObjects() {
-  //
+  VkSemaphoreCreateInfo semaphoreInfo{};
+  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+  sync.imageAvailableSemaphore = vkh::createSemaphore(device, &semaphoreInfo);
+  sync.renderFinisedSemaphore = vkh::createSemaphore(device, &semaphoreInfo);
+
+  VkFenceCreateInfo fenceInfo{};
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+  sync.inFlightFence = vkh::createFence(device, &fenceInfo);
 }
 
 void VulkanApp::render() {
   /* Wait for the previous frame to finish */
+  vkWaitForFences(device, 1, &sync.inFlightFence, VK_TRUE, UINT64_MAX);
+  vkResetFences(device, 1, &sync.inFlightFence);
 
   /* Acquire an image frome the swapchain */
+  uint32_t imageIndex;
+  vkAcquireNextImageKHR(device, swapchain.self, UINT64_MAX,
+                        sync.imageAvailableSemaphore, VK_NULL_HANDLE,
+                        &imageIndex);
 
   /* Record a command buffer which draws the scene onto that image */
+  vkResetCommandBuffer(commandBuffer, 0);
+  recordCommandBuffer(commandBuffer, imageIndex);
 
   /* Submit the recorded command buffer */
+  static const uint32_t submitCount = 1;
+  std::vector<VkSemaphore> waitSemaphores = {sync.imageAvailableSemaphore};
+  std::vector<VkPipelineStageFlags> waitStages = {
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+  std::vector<VkSemaphore> signalSemaphores = {sync.renderFinisedSemaphore};
+
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
+  submitInfo.pWaitSemaphores = waitSemaphores.data();
+  submitInfo.pWaitDstStageMask = waitStages.data();
+  submitInfo.commandBufferCount = commandBufferCount;
+  submitInfo.pCommandBuffers = &commandBuffer;
+  submitInfo.signalSemaphoreCount =
+      static_cast<uint32_t>(signalSemaphores.size());
+  submitInfo.pSignalSemaphores = signalSemaphores.data();
+
+  if (vkQueueSubmit(queue, submitCount, &submitInfo, sync.inFlightFence) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to submit draw command buffer.");
+  }
 
   /* Present the swapchain image */
+  VkPresentInfoKHR presentInfo{};
+  presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+  presentInfo.waitSemaphoreCount =
+      static_cast<uint32_t>(signalSemaphores.size());
+  presentInfo.pWaitSemaphores = signalSemaphores.data();
+  presentInfo.swapchainCount = swapchainCount;
+  presentInfo.pSwapchains = &swapchain.self;
+  presentInfo.pImageIndices = &imageIndex;
+  presentInfo.pResults = nullptr;
+  vkQueuePresentKHR(queue, &presentInfo);
 }
 
 VulkanApp::VulkanApp() {
@@ -638,6 +697,9 @@ VulkanApp::VulkanApp() {
 }
 
 VulkanApp::~VulkanApp() {
+  vkh::destroySemaphore(device, sync.imageAvailableSemaphore);
+  vkh::destroySemaphore(device, sync.renderFinisedSemaphore);
+  vkh::destroyFence(device, sync.inFlightFence);
   vkh::destroyCommandPool(device, commandPool);
   for (auto &framebuffer : framebuffers) {
     vkh::destroyFramebuffer(device, framebuffer);
@@ -658,20 +720,9 @@ VulkanApp::~VulkanApp() {
 }
 
 void VulkanApp::run() {
-  vkh::Timer time_total;
-  static const double sec_to_mics = 1'000'000.0;
   while (!glfwWindowShouldClose(window)) {
-    vkh::Timer time_circle;
     glfwPollEvents();
-
     render();
-
-    double current = static_cast<double>(time_total.current());
-    if (current >= sec_to_mics) {
-      std::cout << sec_to_mics / static_cast<double>(time_circle.current())
-                << " FPS\n";
-      time_total.reset();
-    }
   }
   vkDeviceWaitIdle(device);
 }

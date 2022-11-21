@@ -138,4 +138,24 @@ VkCommandPool createCommandPool(VkDevice device,
   return commandPool;
 }
 
+VkSemaphore createSemaphore(VkDevice device,
+                            const VkSemaphoreCreateInfo *pCreateInfo,
+                            const VkAllocationCallbacks *pAllocator) {
+  VkSemaphore semaphore;
+  if (vkCreateSemaphore(device, pCreateInfo, pAllocator, &semaphore) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create semaphore.");
+  }
+  return semaphore;
+}
+
+VkFence createFence(VkDevice device, const VkFenceCreateInfo *pCreateInfo,
+                    const VkAllocationCallbacks *pAllocator) {
+  VkFence fence;
+  if (vkCreateFence(device, pCreateInfo, pAllocator, &fence) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create fence.");
+  }
+  return fence;
+}
+
 } /* namespace vkh */

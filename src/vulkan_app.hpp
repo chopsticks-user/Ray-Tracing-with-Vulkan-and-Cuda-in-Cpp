@@ -66,11 +66,7 @@ private:
   and one of its queue families by calling the selectQueueFamily function. */
   void createDevice();
 
-  /* Step 5: Create a swapchain to render results to the surface
-  vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
-  swapChainImages.resize(imageCount);
-  vkGetSwapchainImagesKHR(device, swapChain, &imageCount,
-                          swapChainImages.data()); */
+  /* Step 5: Create a swapchain to render results to the surface */
   struct SwapChainWrapper {
 
     /* A swapchain instance */
@@ -81,6 +77,8 @@ private:
     VkExtent2D extent;
 
   } swapchain;
+
+  const uint32_t swapchainCount = 1;
 
   std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -108,6 +106,8 @@ private:
   /* Step 7: Create a graphics pipeline */
   vkh::GraphicsPipelineWrapper graphicsPipeline;
 
+  const uint32_t graphicsPipelineCount = 1;
+
   void createGraphicsPipeline();
 
   /* Step 8: Create framebuffers */
@@ -118,6 +118,8 @@ private:
   /* Step 9: Command buffers */
   VkCommandBuffer commandBuffer;
 
+  // std::vector<VkCommandBuffer> commandBuffers;
+
   /**
    * @brief Command pools are externally synchronized, meaning that a command
    * pool must not be used concurrently in multiple threads. That includes use
@@ -126,6 +128,8 @@ private:
    * pool itself.
    */
   VkCommandPool commandPool;
+
+  const uint32_t commandBufferCount = 1;
 
   void createCommandPool();
 

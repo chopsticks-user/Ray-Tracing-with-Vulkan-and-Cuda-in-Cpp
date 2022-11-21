@@ -128,6 +128,26 @@ void destroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
 void destroyCommandPool(VkDevice device, VkCommandPool commandPool,
                         const VkAllocationCallbacks *pAllocator = nullptr);
 
+/**
+ * @brief
+ *
+ * @param device
+ * @param semaphore
+ * @param pAllocator
+ */
+void destroySemaphore(VkDevice device, VkSemaphore semaphore,
+                      const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief
+ *
+ * @param device
+ * @param fence
+ * @param pAllocator
+ */
+void destroyFence(VkDevice device, VkFence fence,
+                  const VkAllocationCallbacks *pAllocator = nullptr);
+
 } /* namespace vkh */
 
 #endif /* VKH_DESTROY_OBJECT_HPP */
