@@ -9,13 +9,6 @@
 #include <string>
 #include <utility>
 
-struct Shader {
-  VkShaderModule vertex;
-  VkShaderModule fragment;
-
-  static constexpr uint32_t shaderTypeCount = 2;
-};
-
 class VulkanApp {
 public:
   VulkanApp();
@@ -113,12 +106,7 @@ private:
   void createImageViews();
 
   /* Step 7: Create a graphics pipeline */
-  std::vector<VkPipeline> graphicsPipelines;
-
-  VkPipelineLayout pipelineLayout;
-
-  void createPipelineLayout();
-  void createRenderPass();
+  vkh::GraphicsPipelineWrapper graphicsPipeline;
 
   void createGraphicsPipeline();
 

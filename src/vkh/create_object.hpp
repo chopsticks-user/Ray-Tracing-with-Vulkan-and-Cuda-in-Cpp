@@ -157,30 +157,28 @@ createPipelines(VkDevice device, VkPipelineCache pipelineCache,
   uint32_t pipelineCount = static_cast<uint32_t>(createInfos.size());
   std::vector<VkPipeline> pipelines{pipelineCount};
   VkResult result;
-  switch (pipelineType) {
-  case Compute:
+  if constexpr (pipelineType == Compute) {
     result = vkCreateComputePipelines(device, pipelineCache, pipelineCount,
                                       createInfos.data(), pAllocator,
                                       pipelines.data());
-    break;
-  case Graphics:
+  } else if (pipelineType == Graphics) {
     result = vkCreateGraphicsPipelines(device, pipelineCache, pipelineCount,
                                        createInfos.data(), pAllocator,
                                        pipelines.data());
-    break;
-  case RayTracingKHR:
-    result = vkCreateRayTracingPipelinesKHR(device, pipelineCache,
-                                            pipelineCount, createInfos.data(),
-                                            pAllocator, pipelines.data());
-    break;
-  case RayTracingNV:
-    result = vkCreateRayTracingPipelinesNV(device, pipelineCache, pipelineCount,
-                                           createInfos.data(), pAllocator,
-                                           pipelines.data());
-    break;
-  default:
+  }
+  // else if (pipelineType == RayTracingKHR) {
+  //   result = vkCreateRayTracingPipelinesKHR(device, pipelineCache,
+  //                                           pipelineCount,
+  //                                           createInfos.data(), pAllocator,
+  //                                           pipelines.data());
+  // } else if (pipelineType == RayTracingNV) {
+  //   result = vkCreateRayTracingPipelinesNV(device, pipelineCache,
+  //   pipelineCount,
+  //                                          createInfos.data(), pAllocator,
+  //                                          pipelines.data());
+  // }
+  else {
     throw std::runtime_error("Unknown pipeline type.");
-    break;
   }
   if (result != VK_SUCCESS) {
     throw std::runtime_error("Failed to create pipelines.");

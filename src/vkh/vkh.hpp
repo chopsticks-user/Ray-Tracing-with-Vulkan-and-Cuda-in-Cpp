@@ -6,5 +6,6 @@
 #include "get_list.hpp"
 #include "utility.hpp"
 #include "validation_layers.hpp"
+#include "wrapper.hpp"
 
 #endif /* VKH_HPP */
