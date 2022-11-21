@@ -183,7 +183,7 @@ createPipelines(VkDevice device, VkPipelineCache pipelineCache,
  * @return VkFramebuffer
  */
 VkFramebuffer
-createFrameBuffer(VkDevice device, const VkFramebufferCreateInfo *pCreateInfo,
+createFramebuffer(VkDevice device, const VkFramebufferCreateInfo *pCreateInfo,
                   const VkAllocationCallbacks *pAllocator = nullptr);
 
 /**

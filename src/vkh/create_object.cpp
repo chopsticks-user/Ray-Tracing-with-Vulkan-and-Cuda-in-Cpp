@@ -116,7 +116,7 @@ VkRenderPass createRenderPass(VkDevice device,
   return renderPass;
 }
 
-VkFramebuffer createFrameBuffer(VkDevice device,
+VkFramebuffer createFramebuffer(VkDevice device,
                                 const VkFramebufferCreateInfo *pCreateInfo,
                                 const VkAllocationCallbacks *pAllocator) {
   VkFramebuffer framebuffer;

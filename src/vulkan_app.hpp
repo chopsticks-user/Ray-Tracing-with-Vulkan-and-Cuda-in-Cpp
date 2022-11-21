@@ -110,7 +110,13 @@ private:
 
   void createGraphicsPipeline();
 
-  /* Step : Command buffers */
+  /* Step 8: Create framebuffers */
+  std::vector<VkFramebuffer> framebuffers;
+
+  void createFramebuffer();
+
+  /* Step 9: Command buffers */
+  VkCommandBuffer commandBuffer;
 
   /**
    * @brief Command pools are externally synchronized, meaning that a command
@@ -122,6 +128,8 @@ private:
   VkCommandPool commandPool;
 
   void createCommandPool();
+
+  void createCommandBuffer();
 };
 
 // class Instance {

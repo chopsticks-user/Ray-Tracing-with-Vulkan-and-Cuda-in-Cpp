@@ -524,6 +524,22 @@ void VulkanApp::createGraphicsPipeline() {
   vkh::destroyShaderModule(device, shaderModule.fragment);
 }
 
+void VulkanApp::createFramebuffer() {
+  framebuffers.resize(imageViews.size());
+  for (size_t i = 0; i < imageViews.size(); ++i) {
+    std::vector<VkImageView> attachments{imageViews[i]};
+    VkFramebufferCreateInfo framebufferInfo{};
+    framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    framebufferInfo.renderPass = graphicsPipeline.renderPass;
+    framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+    framebufferInfo.pAttachments = attachments.data();
+    framebufferInfo.width = swapchain.extent.width;
+    framebufferInfo.height = swapchain.extent.height;
+    framebufferInfo.layers = 1;
+    framebuffers[i] = vkh::createFramebuffer(device, &framebufferInfo);
+  }
+}
+
 void VulkanApp::createCommandPool() {
   VkCommandPoolCreateInfo cmdPoolInfo{};
   cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -542,6 +558,15 @@ void VulkanApp::createCommandPool() {
   commandPool = vkh::createCommandPool(device, &cmdPoolInfo);
 }
 
+void VulkanApp::createCommandBuffer() {
+  VkCommandBufferAllocateInfo cmdBufferAllocInfo{};
+  cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  cmdBufferAllocInfo.commandPool = commandPool;
+  cmdBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  cmdBufferAllocInfo.commandBufferCount = 1;
+  vkh::allocateCommandBuffers(device, &cmdBufferAllocInfo);
+}
+
 VulkanApp::VulkanApp() {
   createWindow();
   createInstance();
@@ -551,13 +576,15 @@ VulkanApp::VulkanApp() {
   createSwapchain();
   createImageViews();
   createGraphicsPipeline();
-
+  createFramebuffer();
   createCommandPool();
 }
 
 VulkanApp::~VulkanApp() {
   vkh::destroyCommandPool(device, commandPool);
-
+  for (auto &framebuffer : framebuffers) {
+    vkh::destroyFramebuffer(device, framebuffer);
+  }
   vkh::destroyPipeline(device, graphicsPipeline.self);
   vkh::destroyPipelineLayout(device, graphicsPipeline.layout);
   vkh::destroyRenderPass(device, graphicsPipeline.renderPass);
