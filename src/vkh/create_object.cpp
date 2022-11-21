@@ -93,6 +93,29 @@ VkShaderModule createShaderModule(VkDevice device, std::string shaderCodePath,
   return createShaderModule(device, buffer, pAllocator);
 }
 
+VkPipelineLayout
+createPipelineLayout(VkDevice device,
+                     const VkPipelineLayoutCreateInfo *pCreateInfo,
+                     const VkAllocationCallbacks *pAllocator) {
+  VkPipelineLayout pipelineLayout;
+  if (vkCreatePipelineLayout(device, pCreateInfo, pAllocator,
+                             &pipelineLayout) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create pipeline layout.");
+  }
+  return pipelineLayout;
+}
+
+VkRenderPass createRenderPass(VkDevice device,
+                              const VkRenderPassCreateInfo *pCreateInfo,
+                              const VkAllocationCallbacks *pAllocator) {
+  VkRenderPass renderPass;
+  if (vkCreateRenderPass(device, pCreateInfo, pAllocator, &renderPass) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create pipeline layout.");
+  }
+  return renderPass;
+}
+
 VkCommandPool createCommandPool(VkDevice device,
                                 const VkCommandPoolCreateInfo *pCreateInfo,
                                 const VkAllocationCallbacks *pAllocator) {

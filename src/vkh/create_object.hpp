@@ -109,6 +109,31 @@ VkShaderModule
 createShaderModule(VkDevice device, std::string shaderCodePath,
                    const VkAllocationCallbacks *pAllocator = nullptr);
 
+/**
+ * @brief Create a Pipeline Layout object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkPipelineLayout
+ */
+VkPipelineLayout
+createPipelineLayout(VkDevice device,
+                     const VkPipelineLayoutCreateInfo *pCreateInfo,
+                     const VkAllocationCallbacks *pAllocator = nullptr);
+
+/**
+ * @brief Create a Render Pass object
+ *
+ * @param device
+ * @param pCreateInfo
+ * @param pAllocator
+ * @return VkRenderPass
+ */
+VkRenderPass
+createRenderPass(VkDevice device, const VkRenderPassCreateInfo *pCreateInfo,
+                 const VkAllocationCallbacks *pAllocator = nullptr);
+
 enum PipelineType { Compute, Graphics, RayTracingKHR, RayTracingNV };
 
 template <size_t index, typename... Args>

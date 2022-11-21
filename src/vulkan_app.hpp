@@ -9,18 +9,11 @@
 #include <string>
 #include <utility>
 
-struct QueueFamilyIndices {
-  std::optional<uint32_t> graphics;
-  std::optional<uint32_t> compute;
-  std::optional<uint32_t> present;
+struct Shader {
+  VkShaderModule vertex;
+  VkShaderModule fragment;
 
-  bool isComplete() { return graphics.has_value() && compute.has_value(); }
-};
-
-struct Queues {
-  VkQueue graphics;
-  VkQueue compute;
-  VkQueue present;
+  static constexpr uint32_t shaderTypeCount = 2;
 };
 
 class VulkanApp {
@@ -120,7 +113,12 @@ private:
   void createImageViews();
 
   /* Step 7: Create a graphics pipeline */
-  VkPipeline graphicsPipeline;
+  std::vector<VkPipeline> graphicsPipelines;
+
+  VkPipelineLayout pipelineLayout;
+
+  void createPipelineLayout();
+  void createRenderPass();
 
   void createGraphicsPipeline();
 
