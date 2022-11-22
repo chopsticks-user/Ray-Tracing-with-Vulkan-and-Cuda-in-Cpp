@@ -1,12 +1,11 @@
 #include <vulkan_app.hpp>
 
 #include <iostream>
-#include <typeinfo>
 
 int protected_main() {
   VulkanApp app;
   app.run();
-  app.writeInfo("/home/xunililak/Code/Projects/4-RTVulkan/info.log");
+  app.writeInfo("info.log");
   return EXIT_SUCCESS;
 }
 

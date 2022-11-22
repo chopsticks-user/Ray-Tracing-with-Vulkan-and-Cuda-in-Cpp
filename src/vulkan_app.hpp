@@ -78,6 +78,9 @@ private:
 
   } swapchain;
 
+  const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+  // const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+
   const uint32_t swapchainCount = 1;
 
   std::vector<const char *> deviceExtensions = {
@@ -113,10 +116,24 @@ private:
   /* Step 8: Create framebuffers */
   std::vector<VkFramebuffer> framebuffers;
 
-  void createFramebuffer();
+  void createFramebuffers();
 
-  /* Step 9: Command buffers */
-  VkCommandBuffer commandBuffer;
+  /* Step 9: Recreate swapchain */
+  void recreateSwapchain();
+
+  void cleanupSwapchain();
+
+  bool framebufferResized = false;
+
+  static void framebufferResizeCallback(GLFWwindow *windowInstance, int width,
+                                        int height);
+
+  /* Step 10: Command buffers */
+
+  /* Affects the number of command buffers, semaphores, and fences */
+  const size_t maxFramesInFlight = 2;
+
+  std::vector<VkCommandBuffer> commandBuffers;
 
   // std::vector<VkCommandBuffer> commandBuffers;
 
@@ -129,50 +146,23 @@ private:
    */
   VkCommandPool commandPool;
 
-  const uint32_t commandBufferCount = 1;
-
   void createCommandPool();
 
   void createCommandBuffer();
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-  /* Step 10: Synchronization and cache control */
+  /* Step 11: Synchronization and cache control */
   struct SyncWrapper {
-    VkSemaphore imageAvailableSemaphore = nullptr;
-
-    VkSemaphore renderFinisedSemaphore = nullptr;
-
-    VkFence inFlightFence = nullptr;
-
+    std::vector<VkSemaphore> imageAvailableSemaphore;
+    std::vector<VkSemaphore> renderFinisedSemaphore;
+    std::vector<VkFence> inFlightFence;
+    size_t currentFrame = 0;
   } sync;
 
   void createSynchronizationObjects();
 
-  /* Step 11: Render */
+  /* Step : Render */
   void render();
 };
-
-// class Instance {
-// public:
-//   Instance(const VkInstanceCreateInfo *pCreateInfo,
-//            const VkAllocationCallbacks *pAllocator = nullptr) {
-//     if (vkCreateInstance(pCreateInfo, pAllocator, &ref) != VK_SUCCESS) {
-//       throw std::runtime_error("Failed to create an instance.");
-//     }
-//   }
-
-//   ~Instance() { vkDestroyInstance(ref, pAlloc); }
-
-//   Instance() = delete;
-//   Instance(const Instance &) = delete;
-//   Instance(Instance &&) = delete;
-//   Instance &operator=(const Instance &) = delete;
-//   Instance &operator=(Instance &&) = delete;
-
-// private:
-//   VkInstance ref;
-//   const VkAllocationCallbacks *pAlloc;
-// };
-
 #endif /* VULKAN_APP_HPP */

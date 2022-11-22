@@ -4,7 +4,7 @@ namespace vkh {
 GLFWwindow *createWindow(int width, int height, const char *title,
                          GLFWmonitor *monitor, GLFWwindow *share) {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  // glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   return glfwCreateWindow(width, height, title, monitor, share);
 }
 

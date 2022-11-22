@@ -20,7 +20,7 @@ $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
 	@$(COMPILER) $(BIN_FLAGS) $(INCLUDE_DIRS) -o build/$(ENTRY_NAME) $(SOURCE_PATHS) $(LDFLAGS) $(MDFLAGS)
 	@objdump $(OBJDUMP_FLAGS) build/$(ENTRY_NAME) > build/$(ENTRY_NAME).dump
-	@echo "Build successfully.\n"
+	@echo "Build successfully."
 
 .PHONY: compile-shaders build-debug build-release run-debug run-release clean test
 
