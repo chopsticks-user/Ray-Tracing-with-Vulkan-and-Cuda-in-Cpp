@@ -2,6 +2,22 @@
 
 namespace vkh {
 
+VkCommandBuffer
+allocateCommandBuffer(VkDevice device,
+                      const VkCommandBufferAllocateInfo *pAllocateInfo) {
+  if (pAllocateInfo->commandBufferCount != 1) {
+    throw std::runtime_error(
+        "VkCommandBufferAllocateInfo::commandBufferCount != 1, use "
+        "{allocateCommandBuffers} instead.");
+  }
+  VkCommandBuffer commandBuffer;
+  if (vkAllocateCommandBuffers(device, pAllocateInfo, &commandBuffer) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to allocate command buffers.");
+  }
+  return commandBuffer;
+}
+
 std::vector<VkCommandBuffer>
 allocateCommandBuffers(VkDevice device,
                        const VkCommandBufferAllocateInfo *pAllocateInfo) {

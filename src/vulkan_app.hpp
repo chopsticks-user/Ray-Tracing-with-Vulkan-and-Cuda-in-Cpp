@@ -164,15 +164,31 @@ private:
 
   void createSynchronizationObjects();
 
-  /* Step 12: Buffers to store vertex data */
+  /* Step 12: Buffers */
   /* Before {createCommandBuffers()} and after {createCommandPool()} */
   VkBuffer vertexBuffer;
   VkDeviceMemory vertexBufferMemory;
+  VkBuffer indexBuffer;
+  VkDeviceMemory indexBufferMemory;
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
 
-  void createVertexBuffers();
+  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+                    VkMemoryPropertyFlags property, VkBuffer &buffer,
+                    VkDeviceMemory &bufferMemory);
+
+  void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
+
+  void createVertexBuffer();
+
+  void createIndexBuffer();
+
+  /* Step 13: Resource descriptors */
+  /* Usage of descriptors consists of three parts:
+  • Specify a descriptor layout during pipeline creation
+  • Allocate a descriptor set from a descriptor pool
+  • Bind the descriptor set during rendering */
 
   /* Last step : Render */
   void render();

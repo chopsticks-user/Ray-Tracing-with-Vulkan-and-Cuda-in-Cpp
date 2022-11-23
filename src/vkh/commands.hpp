@@ -10,6 +10,18 @@
 #include <vector>
 
 namespace vkh {
+
+/**
+ * @brief
+ *
+ * @param device
+ * @param pAllocateInfo
+ * @return VkCommandBuffer
+ */
+VkCommandBuffer
+allocateCommandBuffer(VkDevice device,
+                      const VkCommandBufferAllocateInfo *pAllocateInfo);
+
 /**
  * @brief
  *

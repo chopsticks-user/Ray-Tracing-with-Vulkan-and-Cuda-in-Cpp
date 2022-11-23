@@ -62,6 +62,8 @@ VulkanApp::selectQueueFamily(VkPhysicalDevice physDev) {
 
   /* Find a queue that is capable of handling graphics, computing, and
   supporting presentation to the surface */
+  /* any queue family with {VK_QUEUE_GRAPHICS_BIT} or {VK_QUEUE_COMPUTE_BIT}
+  capabilities already implicitly support {VK_QUEUE_TRANSFER_BIT} operations */
   for (size_t i = 0; i < graphicsFamilies.size(); ++i) {
     if ((graphicsFamilies[i].has_value() && computeFamilies[i].has_value()) &&
         presentFamilies[i].has_value()) {
@@ -613,58 +615,6 @@ void VulkanApp::createCommandPool() {
   commandPool = vkh::createCommandPool(device, &cmdPoolInfo);
 }
 
-uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
-                                   VkMemoryPropertyFlags propFlags) {
-  VkPhysicalDeviceMemoryProperties memoryProperties;
-  vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
-  for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
-    if (typeFilter & (1 << i) &&
-        (memoryProperties.memoryTypes[i].propertyFlags & propFlags) ==
-            propFlags) {
-      return i;
-    }
-  }
-  throw std::runtime_error("Failed to find suitable memory type.");
-}
-
-void VulkanApp::createVertexBuffers() {
-  static constexpr uint32_t vertexBufferCount = 1;
-  VkBufferCreateInfo bufferInfo{};
-  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  bufferInfo.size =
-      vertexBufferCount * sizeof(shader::triangle[0]) * shader::triangle.size();
-  bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-  if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("Failed creating vertex buffer.");
-  }
-
-  VkMemoryRequirements memoryRequirements;
-  vkGetBufferMemoryRequirements(device, vertexBuffer, &memoryRequirements);
-
-  VkMemoryAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  allocInfo.allocationSize = memoryRequirements.size;
-  allocInfo.memoryTypeIndex =
-      findMemoryType(memoryRequirements.memoryTypeBits,
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                         VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-  if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("Failed to allocate vertex buffer memory.");
-  }
-  vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
-
-  /* Copy the vertex data to the buffer */
-  void *data;
-  vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-  std::memcpy(data, shader::triangle.data(),
-              static_cast<size_t>(bufferInfo.size));
-  vkUnmapMemory(device, vertexBufferMemory);
-}
-
 void VulkanApp::createCommandBuffers() {
   VkCommandBufferAllocateInfo cmdBufferAllocInfo{};
   cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -703,20 +653,178 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
   vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     graphicsPipeline.self);
 
-  /* Binding the vertex buffers */
+  /* Bind the buffers */
   VkBuffer vertexBuffers[] = {vertexBuffer};
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
 
+  /* Bind if using index buffers */
+  vkCmdBindIndexBuffer(cmdBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+  /* Draw the vertex buffers */
+  // static const uint32_t instanceCount = 1;
+  // static const uint32_t firstVertex = 0;
+  // static const uint32_t firstInstance = 0;
+  // vkCmdDraw(cmdBuffer,
+  //           static_cast<uint32_t>(shader::triangle_vertex_data.size()),
+  //           instanceCount, firstVertex, firstInstance);
+
+  /* Draw the index buffers */
   static const uint32_t instanceCount = 1;
-  static const uint32_t firstVertex = 0;
+  static const uint32_t firstIndex = 0;
+  static const uint32_t vertexOffset = 0;
   static const uint32_t firstInstance = 0;
-  vkCmdDraw(cmdBuffer, static_cast<uint32_t>(shader::triangle.size()),
-            instanceCount, firstVertex, firstInstance);
+  vkCmdDrawIndexed(cmdBuffer,
+                   static_cast<uint32_t>(shader::triangle_indices.size()),
+                   instanceCount, firstIndex, vertexOffset, firstInstance);
 
   /* 4. End recording the command buffer */
   vkCmdEndRenderPass(cmdBuffer);
   vkh::endCommandBuffer(cmdBuffer);
+}
+
+uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
+                                   VkMemoryPropertyFlags propFlags) {
+  VkPhysicalDeviceMemoryProperties memoryProperties;
+  vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+  for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
+    if (typeFilter & (1 << i) &&
+        (memoryProperties.memoryTypes[i].propertyFlags & propFlags) ==
+            propFlags) {
+      return i;
+    }
+  }
+  throw std::runtime_error("Failed to find suitable memory type.");
+}
+
+void VulkanApp::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+                             VkMemoryPropertyFlags propertyFlags,
+                             VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+  [[maybe_unused]] static constexpr uint32_t vertexBufferCount = 1;
+  VkBufferCreateInfo bufferInfo{};
+  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferInfo.size = size;
+  bufferInfo.usage = usage;
+  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+  if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+    throw std::runtime_error("Failed creating vertex buffer.");
+  }
+
+  VkMemoryRequirements memoryRequirements;
+  vkGetBufferMemoryRequirements(device, buffer, &memoryRequirements);
+
+  VkMemoryAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memoryRequirements.size;
+  allocInfo.memoryTypeIndex =
+      findMemoryType(memoryRequirements.memoryTypeBits, propertyFlags);
+  if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to allocate vertex buffer memory.");
+  }
+  vkBindBufferMemory(device, buffer, bufferMemory, 0);
+}
+
+void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
+  VkCommandBufferAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  allocInfo.commandPool = commandPool;
+  allocInfo.commandBufferCount = 1;
+
+  VkCommandBuffer commandBuffer =
+      vkh::allocateCommandBuffer(device, &allocInfo);
+
+  VkCommandBufferBeginInfo beginInfo{};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+  vkh::beginCommandBuffer(commandBuffer, &beginInfo);
+
+  VkBufferCopy copyRegion{};
+  copyRegion.srcOffset = 0;
+  copyRegion.dstOffset = 0;
+  copyRegion.size = size;
+  vkCmdCopyBuffer(commandBuffer, src, dst, 1, &copyRegion);
+
+  vkh::endCommandBuffer(commandBuffer);
+
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &commandBuffer;
+
+  /* Submit and wait on this transfer to complete before cleaning up
+  the command buffer */
+  vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+  vkQueueWaitIdle(queue);
+  vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+}
+
+void VulkanApp::createVertexBuffer() {
+  VkDeviceSize bufferSize = sizeof(shader::triangle_index_data[0]) *
+                            shader::triangle_index_data.size();
+
+  /* Create a host visible buffer as temporary buffer */
+  VkBuffer stagingBuffer;
+  VkDeviceMemory stagingBufferMemory;
+  createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+               stagingBuffer, stagingBufferMemory);
+
+  /* Copy the vertices data to the staging buffer */
+  void *data;
+  vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+  std::memcpy(data, shader::triangle_index_data.data(),
+              static_cast<size_t>(bufferSize));
+  vkUnmapMemory(device, stagingBufferMemory);
+
+  /* Create a device local buffer as actual vertex buffer */
+  createBuffer(
+      bufferSize,
+      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+
+  /* Copy the data from the staging buffer to the device buffer */
+  copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+  /* Clean the staging buffer */
+  vkDestroyBuffer(device, stagingBuffer, nullptr);
+  vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
+void VulkanApp::createIndexBuffer() {
+  VkDeviceSize bufferSize =
+      sizeof(shader::triangle_indices[0]) * shader::triangle_indices.size();
+
+  /* Create a host visible buffer as temporary buffer */
+  VkBuffer stagingBuffer;
+  VkDeviceMemory stagingBufferMemory;
+  createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+               stagingBuffer, stagingBufferMemory);
+
+  /* Copy the vertices data to the staging buffer */
+  void *data;
+  vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+  std::memcpy(data, shader::triangle_indices.data(),
+              static_cast<size_t>(bufferSize));
+  vkUnmapMemory(device, stagingBufferMemory);
+
+  /* Create a device local buffer as actual vertex buffer */
+  createBuffer(
+      bufferSize,
+      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+  /* Copy the data from the staging buffer to the device buffer */
+  copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+  /* Clean the staging buffer */
+  vkDestroyBuffer(device, stagingBuffer, nullptr);
+  vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
 void VulkanApp::createSynchronizationObjects() {
@@ -822,13 +930,16 @@ VulkanApp::VulkanApp() {
   createGraphicsPipeline();
   createFramebuffers();
   createCommandPool();
-  createVertexBuffers();
+  createVertexBuffer();
+  createIndexBuffer();
   createCommandBuffers();
   createSynchronizationObjects();
 }
 
 VulkanApp::~VulkanApp() {
   cleanupSwapchain();
+  vkDestroyBuffer(device, indexBuffer, nullptr);
+  vkFreeMemory(device, indexBufferMemory, nullptr);
   vkDestroyBuffer(device, vertexBuffer, nullptr);
   vkFreeMemory(device, vertexBufferMemory, nullptr);
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
