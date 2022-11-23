@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #endif /* GLFW_INCLUDE_VULKAN */
 
+#include "utility.hpp"
+
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -133,16 +135,6 @@ createPipelineLayout(VkDevice device,
 VkRenderPass
 createRenderPass(VkDevice device, const VkRenderPassCreateInfo *pCreateInfo,
                  const VkAllocationCallbacks *pAllocator = nullptr);
-
-enum PipelineType { Compute, Graphics, RayTracingKHR, RayTracingNV };
-
-template <size_t index, typename... Args>
-using static_switch =
-    typename std::tuple_element<index, std::tuple<Args...>>::type;
-
-// template <size_t index, int... Args>
-// using static_switch_function =
-//     typename std::tuple_element<index, std::make_tuple{Args, ...}>::type;
 
 template <PipelineType pipelineType>
 using pipelineInfoType = static_switch<

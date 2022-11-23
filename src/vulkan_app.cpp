@@ -356,13 +356,17 @@ void VulkanApp::createGraphicsPipeline() {
                                                     fragShaderStageInfo};
 
   /*  */
+  auto bindingDescription = vkh::Vertex2D_RGB::getBindingDescription();
+  auto attributeDescriptions = vkh::Vertex2D_RGB::getAttributeDescriptions();
+
   VkPipelineVertexInputStateCreateInfo vertInputInfo{};
   vertInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertInputInfo.vertexBindingDescriptionCount = 0;
-  vertInputInfo.pVertexBindingDescriptions = nullptr;
-  vertInputInfo.vertexAttributeDescriptionCount = 0;
-  vertInputInfo.pVertexAttributeDescriptions = nullptr;
+  vertInputInfo.vertexBindingDescriptionCount = 1;
+  vertInputInfo.pVertexBindingDescriptions = &bindingDescription;
+  vertInputInfo.vertexAttributeDescriptionCount =
+      static_cast<uint32_t>(attributeDescriptions.size());
+  vertInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
   /*  */
   VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
@@ -609,7 +613,26 @@ void VulkanApp::createCommandPool() {
   commandPool = vkh::createCommandPool(device, &cmdPoolInfo);
 }
 
-void VulkanApp::createCommandBuffer() {
+uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags) {
+  //
+}
+
+void VulkanApp::createVertexBuffers() {
+  static constexpr uint32_t vertexBufferCount = 1;
+  VkBufferCreateInfo bufferInfo{};
+  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferInfo.size =
+      vertexBufferCount * sizeof(shader::triangle[0]) * shader::triangle.size();
+  bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+  if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed creating vertex buffer.");
+  }
+}
+
+void VulkanApp::createCommandBuffers() {
   VkCommandBufferAllocateInfo cmdBufferAllocInfo{};
   cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   cmdBufferAllocInfo.commandPool = commandPool;
@@ -761,18 +784,20 @@ VulkanApp::VulkanApp() {
   createGraphicsPipeline();
   createFramebuffers();
   createCommandPool();
-  createCommandBuffer();
+  createVertexBuffers();
+  createCommandBuffers();
   createSynchronizationObjects();
 }
 
 VulkanApp::~VulkanApp() {
+  cleanupSwapchain();
+  vkDestroyBuffer(device, vertexBuffer, nullptr);
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     vkh::destroySemaphore(device, sync.imageAvailableSemaphore[i]);
     vkh::destroySemaphore(device, sync.renderFinisedSemaphore[i]);
     vkh::destroyFence(device, sync.inFlightFence[i]);
   }
   vkh::destroyCommandPool(device, commandPool);
-  cleanupSwapchain();
   vkh::destroyDevice(device);
   vkh::destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
   vkh::destroySurface(instance, surface);

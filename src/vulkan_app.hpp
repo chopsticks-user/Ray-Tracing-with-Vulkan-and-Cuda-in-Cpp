@@ -1,6 +1,7 @@
 #ifndef VULKAN_APP_HPP
 #define VULKAN_APP_HPP
 
+#include "resources.hpp"
 #include "vkh/vkh.hpp"
 
 #include <fstream>
@@ -148,7 +149,7 @@ private:
 
   void createCommandPool();
 
-  void createCommandBuffer();
+  void createCommandBuffers();
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
@@ -162,7 +163,16 @@ private:
 
   void createSynchronizationObjects();
 
-  /* Step : Render */
+  /* Step 12: Buffers to store vertex data */
+  /* Before {createCommandBuffers()} and after {createCommandPool()} */
+  VkBuffer vertexBuffer;
+
+  /* Query memory requirements */
+  uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
+
+  void createVertexBuffers();
+
+  /* Last step : Render */
   void render();
 };
 #endif /* VULKAN_APP_HPP */

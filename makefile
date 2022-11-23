@@ -14,7 +14,7 @@ MDFLAGS =
 
 SHADERS_DIR = resources/shaders
 SOURCE_PATHS = $(ENTRY_NAME).cpp src/vkh/*.cpp src/*.cpp
-INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src -I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh
+INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src -I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh -I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build

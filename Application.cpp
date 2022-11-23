@@ -1,6 +1,6 @@
 #include <vulkan_app.hpp>
 
-#include <iostream>
+// #include <typeinfo>
 
 int protected_main() {
   VulkanApp app;
