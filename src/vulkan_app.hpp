@@ -190,7 +190,7 @@ private:
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
 
-  /* Last step : Render */
+  /* Last step: Render */
   void render();
 };
 #endif /* VULKAN_APP_HPP */

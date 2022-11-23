@@ -53,6 +53,12 @@ template <PositionDim positionDim = P3, ColorDim colorDim = C3> struct Vertex {
   }
 };
 
+struct UniformBufferObject {
+  glm::mat4 model;
+  glm::mat4 view;
+  glm::mat4 proj;
+};
+
 typedef Vertex<P2, C3> Vertex2D_RGB;
 typedef Vertex<P2, C4> Vertex2D_RGBA;
 typedef Vertex<P3, C3> Vertex3D_RGB;

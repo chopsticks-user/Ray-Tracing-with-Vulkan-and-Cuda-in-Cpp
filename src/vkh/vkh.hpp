@@ -5,9 +5,9 @@
 #include "create_object.hpp"
 #include "destroy_object.hpp"
 #include "get_list.hpp"
+#include "structures.hpp"
 #include "utility.hpp"
 #include "validation_layers.hpp"
-#include "vertex.hpp"
 #include "wrapper.hpp"
 
 #endif /* VKH_HPP */
