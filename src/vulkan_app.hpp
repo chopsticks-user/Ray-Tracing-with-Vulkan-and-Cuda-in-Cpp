@@ -4,6 +4,7 @@
 #include "resources.hpp"
 #include "vkh/vkh.hpp"
 
+#include <cstring>
 #include <fstream>
 #include <map>
 #include <optional>
@@ -166,6 +167,7 @@ private:
   /* Step 12: Buffers to store vertex data */
   /* Before {createCommandBuffers()} and after {createCommandPool()} */
   VkBuffer vertexBuffer;
+  VkDeviceMemory vertexBufferMemory;
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);

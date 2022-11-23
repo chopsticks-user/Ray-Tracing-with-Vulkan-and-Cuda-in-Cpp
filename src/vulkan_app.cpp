@@ -613,8 +613,18 @@ void VulkanApp::createCommandPool() {
   commandPool = vkh::createCommandPool(device, &cmdPoolInfo);
 }
 
-uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags) {
-  //
+uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
+                                   VkMemoryPropertyFlags propFlags) {
+  VkPhysicalDeviceMemoryProperties memoryProperties;
+  vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+  for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
+    if (typeFilter & (1 << i) &&
+        (memoryProperties.memoryTypes[i].propertyFlags & propFlags) ==
+            propFlags) {
+      return i;
+    }
+  }
+  throw std::runtime_error("Failed to find suitable memory type.");
 }
 
 void VulkanApp::createVertexBuffers() {
@@ -630,6 +640,29 @@ void VulkanApp::createVertexBuffers() {
       VK_SUCCESS) {
     throw std::runtime_error("Failed creating vertex buffer.");
   }
+
+  VkMemoryRequirements memoryRequirements;
+  vkGetBufferMemoryRequirements(device, vertexBuffer, &memoryRequirements);
+
+  VkMemoryAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memoryRequirements.size;
+  allocInfo.memoryTypeIndex =
+      findMemoryType(memoryRequirements.memoryTypeBits,
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                         VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+  if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to allocate vertex buffer memory.");
+  }
+  vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
+
+  /* Copy the vertex data to the buffer */
+  void *data;
+  vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+  std::memcpy(data, shader::triangle.data(),
+              static_cast<size_t>(bufferInfo.size));
+  vkUnmapMemory(device, vertexBufferMemory);
 }
 
 void VulkanApp::createCommandBuffers() {
@@ -644,14 +677,14 @@ void VulkanApp::createCommandBuffers() {
 
 void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
                                     uint32_t imageIndex) {
-  /* Begin recording a command buffer */
+  /* 1. Begin recording a command buffer */
   VkCommandBufferBeginInfo cmdBufferBeginInfo{};
   cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   cmdBufferBeginInfo.flags = 0;
   cmdBufferBeginInfo.pInheritanceInfo = nullptr;
   vkh::beginCommandBuffer(cmdBuffer, &cmdBufferBeginInfo);
 
-  /* Start a render pass */
+  /* 2. Start a render pass */
   VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
 
   VkRenderPassBeginInfo renderPassBeginInfo{};
@@ -666,17 +699,22 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
   vkCmdBeginRenderPass(cmdBuffer, &renderPassBeginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
 
-  /* Drawing commands */
+  /* 3. Drawing commands */
   vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     graphicsPipeline.self);
 
-  static const uint32_t vertexCount = 3;
+  /* Binding the vertex buffers */
+  VkBuffer vertexBuffers[] = {vertexBuffer};
+  VkDeviceSize offsets[] = {0};
+  vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
+
   static const uint32_t instanceCount = 1;
   static const uint32_t firstVertex = 0;
   static const uint32_t firstInstance = 0;
-  vkCmdDraw(cmdBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+  vkCmdDraw(cmdBuffer, static_cast<uint32_t>(shader::triangle.size()),
+            instanceCount, firstVertex, firstInstance);
 
-  /* End recording the command buffer */
+  /* 4. End recording the command buffer */
   vkCmdEndRenderPass(cmdBuffer);
   vkh::endCommandBuffer(cmdBuffer);
 }
@@ -792,6 +830,7 @@ VulkanApp::VulkanApp() {
 VulkanApp::~VulkanApp() {
   cleanupSwapchain();
   vkDestroyBuffer(device, vertexBuffer, nullptr);
+  vkFreeMemory(device, vertexBufferMemory, nullptr);
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     vkh::destroySemaphore(device, sync.imageAvailableSemaphore[i]);
     vkh::destroySemaphore(device, sync.renderFinisedSemaphore[i]);
