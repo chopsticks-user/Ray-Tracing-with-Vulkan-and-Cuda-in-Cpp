@@ -195,8 +195,14 @@ private:
   • Bind the descriptor set during rendering */
 
   VkDescriptorSetLayout descriptorSetLayout;
+  VkDescriptorPool descriptorPool;
+  std::vector<VkDescriptorSet> descriptorSets;
 
   void createDescriptorSetLayout();
+
+  void createDescriptorPool();
+
+  void createDescriptorSets();
 
   /* Last step: Render */
   void render();

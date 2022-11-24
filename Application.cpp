@@ -3,7 +3,7 @@
 int protected_main() {
   VulkanApp app;
   app.run();
-  app.writeInfo("info.log");
+  app.writeInfo(vkh::absoluteDirectory + "/info.log");
   return EXIT_SUCCESS;
 }
 

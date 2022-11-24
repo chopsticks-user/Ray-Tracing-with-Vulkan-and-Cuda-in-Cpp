@@ -10,4 +10,13 @@
 #include "validation_layers.hpp"
 #include "wrapper.hpp"
 
+#include <filesystem>
+
+namespace vkh {
+
+inline const std::string absoluteDirectory =
+    std::filesystem::current_path().string();
+
+} /* namespace vkh */
+
 #endif /* VKH_HPP */

@@ -329,13 +329,12 @@ void VulkanApp::createImageViews() {
 
 void VulkanApp::createGraphicsPipeline() {
   vkh::ShaderModuleWrapper shaderModule{};
-  shaderModule.vertex = vkh::createShaderModule(device, "build/shaders/"
-                                                        "triangle_vert.spv");
-  shaderModule.fragment = vkh::createShaderModule(device, "build/shaders/"
-                                                          "triangle_frag.spv");
-
-  // std::vector<VkGraphicsPipelineCreateInfo>
-  // graphicsPipelineCreateInfos{};
+  shaderModule.vertex = vkh::createShaderModule(
+      device, vkh::absoluteDirectory + "/build/shaders/"
+                                       "triangle_vert.spv");
+  shaderModule.fragment = vkh::createShaderModule(
+      device, vkh::absoluteDirectory + "/build/shaders/"
+                                       "triangle_frag.spv");
 
   /*  */
   VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -408,7 +407,7 @@ void VulkanApp::createGraphicsPipeline() {
   rastStateInfo.polygonMode = VK_POLYGON_MODE_FILL;
   rastStateInfo.lineWidth = 1.0f;
   rastStateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
-  rastStateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+  rastStateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
   rastStateInfo.depthBiasEnable = VK_FALSE;
   rastStateInfo.depthBiasConstantFactor = 0.0f;
   rastStateInfo.depthBiasClamp = 0.0f;
@@ -574,10 +573,14 @@ void VulkanApp::recreateSwapchain() {
   createImageViews();
   createGraphicsPipeline();
   createFramebuffers();
-  createUniformBuffers();
+  // createUniformBuffers();
 }
 
 void VulkanApp::cleanupSwapchain() {
+  // for (size_t i = 0; i < maxFramesInFlight; ++i) {
+  //   vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+  //   vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+  // }
   for (auto &framebuffer : framebuffers) {
     vkh::destroyFramebuffer(device, framebuffer);
   }
@@ -588,10 +591,6 @@ void VulkanApp::cleanupSwapchain() {
     vkh::destroyImageView(device, imageView);
   }
   vkh::destroySwapchain(device, swapchain.self);
-  for (size_t i = 0; i < maxFramesInFlight; ++i) {
-    vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-    vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
-  }
 }
 
 void VulkanApp::framebufferResizeCallback(GLFWwindow *windowInstance,
@@ -662,6 +661,11 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
   VkBuffer vertexBuffers[] = {vertexBuffer};
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
+
+  /* Bind the descriptor sets */
+  vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          graphicsPipeline.layout, 0, 1, descriptorSets.data(),
+                          0, nullptr);
 
   /* Bind if using index buffers */
   vkCmdBindIndexBuffer(cmdBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
@@ -899,13 +903,66 @@ void VulkanApp::createDescriptorSetLayout() {
   uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
   uboLayoutBinding.pImmutableSamplers = nullptr;
 
-  VkDescriptorSetLayoutCreateInfo layoutInfo;
+  VkDescriptorSetLayoutCreateInfo layoutInfo{};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = 1;
   layoutInfo.pBindings = &uboLayoutBinding;
   if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr,
                                   &descriptorSetLayout) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create descriptor set layout.");
+  }
+}
+
+void VulkanApp::createDescriptorPool() {
+  VkDescriptorPoolSize descriptorPoolSize{};
+  descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  descriptorPoolSize.descriptorCount = static_cast<uint32_t>(maxFramesInFlight);
+
+  VkDescriptorPoolCreateInfo descriptorPoolInfo{};
+  descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  descriptorPoolInfo.poolSizeCount = 1;
+  descriptorPoolInfo.pPoolSizes = &descriptorPoolSize;
+  descriptorPoolInfo.maxSets = static_cast<uint32_t>(maxFramesInFlight);
+
+  if (vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr,
+                             &descriptorPool) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create descriptor pool.");
+  }
+}
+
+void VulkanApp::createDescriptorSets() {
+  std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
+                                             descriptorSetLayout};
+  VkDescriptorSetAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFramesInFlight);
+  allocInfo.pSetLayouts = layouts.data();
+
+  descriptorSets.resize(maxFramesInFlight);
+  if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to allocate descriptor sets.");
+  }
+
+  for (size_t i = 0; i < maxFramesInFlight; ++i) {
+    VkDescriptorBufferInfo bufferInfo{};
+    bufferInfo.buffer = uniformBuffers[i];
+    bufferInfo.offset = 0;
+    bufferInfo.range = sizeof(vkh::UniformBufferObject);
+
+    VkWriteDescriptorSet descriptorWrite{};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = descriptorSets[i];
+    descriptorWrite.dstBinding = 0;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pBufferInfo = &bufferInfo;
+    descriptorWrite.pImageInfo = nullptr;
+    descriptorWrite.pTexelBufferView = nullptr;
+
+    vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
   }
 }
 
@@ -942,7 +999,7 @@ void VulkanApp::render() {
       sync.renderFinisedSemaphore[sync.currentFrame]};
 
   /* Update after the acquired swapchain image is available */
-  updateUniformBuffer(imageIndex);
+  updateUniformBuffer(static_cast<uint32_t>(sync.currentFrame));
 
   VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -999,12 +1056,19 @@ VulkanApp::VulkanApp() {
   createVertexBuffer();
   createIndexBuffer();
   createUniformBuffers();
+  createDescriptorPool();
+  createDescriptorSets();
   createCommandBuffers();
   createSynchronizationObjects();
 }
 
 VulkanApp::~VulkanApp() {
   cleanupSwapchain();
+  for (size_t i = 0; i < maxFramesInFlight; ++i) {
+    vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+    vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+  }
+  vkDestroyDescriptorPool(device, descriptorPool, nullptr);
   vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
   vkDestroyBuffer(device, indexBuffer, nullptr);
   vkFreeMemory(device, indexBufferMemory, nullptr);
