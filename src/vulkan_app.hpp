@@ -4,6 +4,13 @@
 #include "resources.hpp"
 #include "vkh/vkh.hpp"
 
+#ifndef GLM_FORCE_RADIANS
+#define GLM_FORCE_RADIANS
+#endif /* GLM_FORCE_RADIANS */
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
 #include <cstring>
 #include <fstream>
 #include <map>
@@ -69,16 +76,7 @@ private:
   void createDevice();
 
   /* Step 5: Create a swapchain to render results to the surface */
-  struct SwapChainWrapper {
-
-    /* A swapchain instance */
-    VkSwapchainKHR self;
-
-    VkFormat format;
-
-    VkExtent2D extent;
-
-  } swapchain;
+  vkh::SwapChainWrapper swapchain;
 
   const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
   // const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
@@ -170,6 +168,8 @@ private:
   VkDeviceMemory vertexBufferMemory;
   VkBuffer indexBuffer;
   VkDeviceMemory indexBufferMemory;
+  std::vector<VkBuffer> uniformBuffers;
+  std::vector<VkDeviceMemory> uniformBuffersMemory;
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
@@ -184,11 +184,19 @@ private:
 
   void createIndexBuffer();
 
+  void createUniformBuffers();
+
+  void updateUniformBuffer(uint32_t imageIndex);
+
   /* Step 13: Resource descriptors */
   /* Usage of descriptors consists of three parts:
   • Specify a descriptor layout during pipeline creation
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
+
+  VkDescriptorSetLayout descriptorSetLayout;
+
+  void createDescriptorSetLayout();
 
   /* Last step: Render */
   void render();

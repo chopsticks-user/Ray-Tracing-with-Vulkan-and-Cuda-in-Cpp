@@ -1,7 +1,5 @@
 #include <vulkan_app.hpp>
 
-// #include <typeinfo>
-
 int protected_main() {
   VulkanApp app;
   app.run();

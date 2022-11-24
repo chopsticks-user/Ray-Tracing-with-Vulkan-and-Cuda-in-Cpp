@@ -21,6 +21,12 @@ struct GraphicsPipelineWrapper {
   VkRenderPass renderPass = nullptr;
 };
 
+struct SwapChainWrapper {
+  VkSwapchainKHR self;
+  VkFormat format;
+  VkExtent2D extent;
+};
+
 } /* namespace vkh */
 
 #endif /* VKH_WRAPPER_HPP */
