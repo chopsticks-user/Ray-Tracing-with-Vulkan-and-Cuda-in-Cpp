@@ -22,10 +22,12 @@ class Window {
   typedef GLFWwindow *pGLFWwindow;
 
 public:
-  Window() : _window{vkh::createWindow(800, 600)} {};
+  Window() : _window{vkh::createWindow(800, 600)} { _isOwner = true; };
   Window(int width, int height, const char *title = "Vulkan Application",
          GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr)
-      : _window{vkh::createWindow(width, height, title, monitor, share)} {}
+      : _window{vkh::createWindow(width, height, title, monitor, share)} {
+    _isOwner = true;
+  }
   Window(const Window &) = delete;
   Window(Window &&rhs) { _moveDataFrom(std::move(rhs)); }
   Window &operator=(const Window &) = delete;
@@ -43,21 +45,26 @@ public:
 
 private:
   pGLFWwindow _window;
-  bool _isOwner = true;
+  bool _isOwner = false;
 
   void _moveDataFrom(Window &&rhs) {
     _window = rhs._window;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };
 
 class Instance {
 public:
-  Instance() = default;
+  Instance() {
+    _instance = customInitialize();
+    _isOwner = true;
+  }
   Instance(VkInstanceCreateInfo *pCreateInfo,
            const VkAllocationCallbacks *pAllocator = nullptr)
       : _pAllocator{pAllocator} {
     _instance = vkh::createInstance(pCreateInfo, pAllocator);
+    _isOwner = true;
   }
   Instance(const Instance &) = delete;
   Instance(Instance &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -74,14 +81,47 @@ public:
   }
   const VkInstance &ref() const noexcept { return _instance; }
 
+  static VkInstance customInitialize() {
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "Vulkan Application";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "No Engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_3;
+
+    std::vector<const char *> requiredExtensions{
+        vkh::getRequiredInstanceExtensionNameList()};
+    requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+    std::vector<const char *> layers = {"VK_LAYER_KHRONOS_validation",
+                                        "VK_LAYER_MANGOHUD_overlay"};
+
+    auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
+    vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
+
+    VkInstanceCreateInfo instanceInfo{};
+    instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+    instanceInfo.pApplicationInfo = &appInfo;
+    instanceInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+    instanceInfo.ppEnabledLayerNames = layers.data();
+    instanceInfo.enabledExtensionCount =
+        static_cast<uint32_t>(requiredExtensions.size());
+    instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
+
+    return vkh::createInstance(&instanceInfo);
+  }
+
 private:
   VkInstance _instance;
-  const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = true;
+  const VkAllocationCallbacks *_pAllocator = nullptr;
+  bool _isOwner = false;
 
   void _moveDataFrom(Instance &&rhs) {
     _instance = rhs._instance;
     _pAllocator = rhs._pAllocator;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };
@@ -93,6 +133,7 @@ public:
           const VkAllocationCallbacks *pAllocator = nullptr)
       : _instance{instance}, _window{window}, _pAllocator{pAllocator} {
     _surface = vkh::createSurface(instance, window, pAllocator);
+    _isOwner = true;
   }
   Surface(const Surface &) = delete;
   Surface(Surface &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -114,13 +155,14 @@ private:
   VkInstance _instance;
   GLFWwindow *_window;
   const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = true;
+  bool _isOwner = false;
 
   void _moveDataFrom(Surface &&rhs) {
     _surface = rhs._surface;
     _instance = rhs._instance;
     _window = rhs._window;
     _pAllocator = rhs._pAllocator;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };
@@ -132,6 +174,7 @@ public:
          const VkAllocationCallbacks *pAllocator = nullptr)
       : _physicalDevice{physicalDevice}, _pAllocator{pAllocator} {
     _device = vkh::createDevice(physicalDevice, pCreateInfo, pAllocator);
+    _isOwner = true;
   };
   Device(const Device &) = delete;
   Device(Device &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -152,12 +195,13 @@ private:
   VkDevice _device;
   VkPhysicalDevice _physicalDevice;
   const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = true;
+  bool _isOwner = false;
 
   void _moveDataFrom(Device &&rhs) {
     _device = rhs._device;
     _physicalDevice = rhs._physicalDevice;
     _pAllocator = rhs._pAllocator;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };
@@ -172,6 +216,7 @@ public:
                                                             pAllocator} {
     _pipeline =
         vkh::createPipeline(device, pipelineCache, pCreateInfo, pAllocator);
+    _isOwner = true;
   }
   Pipeline(const Pipeline &) = delete;
   Pipeline(Pipeline &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -193,13 +238,14 @@ private:
   VkDevice _device;
   VkPipelineCache _pipelineCache;
   const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = true;
+  bool _isOwner = false;
 
   void _moveDataFrom(Pipeline &&rhs) {
     _pipeline = rhs._pipeline;
     _device = rhs._device;
     _pipelineCache = rhs._pipelineCache;
     _pAllocator = rhs._pAllocator;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };
@@ -217,6 +263,7 @@ public:
       _framebuffers[i] =
           vkh::createFramebuffer(device, &createInfos[i], pAllocator);
     }
+    _isOwner = true;
   }
   Framebuffers(const Framebuffers &) = delete;
   Framebuffers(Framebuffers &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -248,12 +295,13 @@ private:
   std::vector<VkFramebuffer> _framebuffers;
   VkDevice _device;
   const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = true;
+  bool _isOwner = false;
 
   void _moveDataFrom(Framebuffers &&rhs) {
     _framebuffers = rhs._framebuffers;
     _device = rhs._device;
     _pAllocator = rhs._pAllocator;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };
@@ -268,6 +316,7 @@ public:
       throw std::runtime_error("Validation layers are not supported.");
     }
     _debugMessenger = vkh::createDebugMessenger(_instance);
+    _isOwner = true;
   }
   DebugMessenger(const DebugMessenger &) = delete;
   DebugMessenger(DebugMessenger &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -292,12 +341,13 @@ private:
   VkDebugUtilsMessengerEXT _debugMessenger;
   VkInstance _instance;
   const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = true;
+  bool _isOwner = false;
 
   void _moveDataFrom(DebugMessenger &&rhs) {
     _debugMessenger = rhs._debugMessenger;
     _instance = rhs._instance;
     _pAllocator = rhs._pAllocator;
+    _isOwner = true;
     rhs._isOwner = false;
   }
 };

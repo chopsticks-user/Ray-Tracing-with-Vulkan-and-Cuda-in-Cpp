@@ -22,8 +22,6 @@
 		VK_KHR_portability_enumeration
 	1.2 Required:
 		VK_EXT_debug_utils
-		VK_KHR_surface
-		VK_KHR_xcb_surface
 
 2. Instance layers:
 	2.1 Available:
@@ -320,6 +318,10 @@
 			VK_EXT_vertex_attribute_divisor
 			VK_EXT_vertex_input_dynamic_state
 			VK_GOOGLE_decorate_string
+			VK_GOOGLE_hlsl_functionality1
+
+
+ng
 			VK_GOOGLE_hlsl_functionality1
 
 

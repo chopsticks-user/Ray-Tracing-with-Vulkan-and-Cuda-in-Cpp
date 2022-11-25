@@ -1,41 +1,42 @@
 #include "vulkan_app.hpp"
 
 void VulkanApp::createWindow() {
-  glfwInit();
-  window = Window{800, 600};
+  // glfwInit();
+  // window = Window{800, 600};
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
 }
 
 void VulkanApp::createInstance() {
-  VkApplicationInfo appInfo{};
-  appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = "Vulkan Application";
-  appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.pEngineName = "No Engine";
-  appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.apiVersion = VK_API_VERSION_1_3;
+  // VkApplicationInfo appInfo{};
+  // appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+  // appInfo.pApplicationName = "Vulkan Application";
+  // appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+  // appInfo.pEngineName = "No Engine";
+  // appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+  // appInfo.apiVersion = VK_API_VERSION_1_3;
 
-  auto requiredExtensions = vkh::getRequiredInstanceExtensionNameList();
-  for (auto &&extension : requiredExtensions) {
-    instanceExtensions.emplace_back(extension);
-  }
+  // auto requiredExtensions = vkh::getRequiredInstanceExtensionNameList();
+  // for (auto &&extension : requiredExtensions) {
+  //   instanceExtensions.emplace_back(extension);
+  // }
 
-  auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
-  vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
+  // auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
+  // vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
 
-  VkInstanceCreateInfo instanceInfo;
-  instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
-  instanceInfo.pApplicationInfo = &appInfo;
-  instanceInfo.enabledLayerCount = static_cast<uint32_t>(instanceLayers.size());
-  instanceInfo.ppEnabledLayerNames = instanceLayers.data();
-  instanceInfo.enabledExtensionCount =
-      static_cast<uint32_t>(instanceExtensions.size());
-  instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
+  // VkInstanceCreateInfo instanceInfo;
+  // instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  // instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT
+  // *)&debugCreateInfo; instanceInfo.pApplicationInfo = &appInfo;
+  // instanceInfo.enabledLayerCount =
+  // static_cast<uint32_t>(instanceLayers.size());
+  // instanceInfo.ppEnabledLayerNames = instanceLayers.data();
+  // instanceInfo.enabledExtensionCount =
+  //     static_cast<uint32_t>(instanceExtensions.size());
+  // instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
 
-  // instance = vkh::createInstance(&instanceInfo);
-  instance = Instance{&instanceInfo};
+  // // instance = vkh::createInstance(&instanceInfo);
+  // instance = Instance{&instanceInfo};
 }
 
 void VulkanApp::createDebugMessenger() {
@@ -1092,7 +1093,7 @@ VulkanApp::~VulkanApp() {
   // nullptr); vkh::destroySurface(instance.ref(), surface);
   // vkh::destroyInstance(instance, nullptr);
   // vkh::destroyWindow(window.ref());
-  glfwTerminate();
+  // glfwTerminate();
 }
 
 void VulkanApp::run() {
