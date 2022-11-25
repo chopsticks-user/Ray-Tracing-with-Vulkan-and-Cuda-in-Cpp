@@ -2,6 +2,7 @@
 #define VULKAN_APP_HPP
 
 #include "resources.hpp"
+#include "vk_wrappers.hpp"
 #include "vkh/vkh.hpp"
 
 #ifndef GLM_FORCE_RADIANS
@@ -18,340 +19,6 @@
 #include <string>
 #include <utility>
 
-class Window {
-  typedef GLFWwindow *pGLFWwindow;
-
-public:
-  Window() : _window{vkh::createWindow(800, 600)} { _isOwner = true; };
-  Window(int width, int height, const char *title = "Vulkan Application",
-         GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr)
-      : _window{vkh::createWindow(width, height, title, monitor, share)} {
-    _isOwner = true;
-  }
-  Window(const Window &) = delete;
-  Window(Window &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Window &operator=(const Window &) = delete;
-  Window &operator=(Window &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~Window() {
-    if (_isOwner) {
-      vkh::destroyWindow(_window);
-      std::cout << "Window destructor" << '\n';
-    }
-  }
-  const pGLFWwindow &ref() const noexcept { return _window; }
-
-private:
-  pGLFWwindow _window;
-  bool _isOwner = false;
-
-  void _moveDataFrom(Window &&rhs) {
-    _window = rhs._window;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
-class Instance {
-public:
-  Instance() {
-    _instance = customInitialize();
-    _isOwner = true;
-  }
-  Instance(VkInstanceCreateInfo *pCreateInfo,
-           const VkAllocationCallbacks *pAllocator = nullptr)
-      : _pAllocator{pAllocator} {
-    _instance = vkh::createInstance(pCreateInfo, pAllocator);
-    _isOwner = true;
-  }
-  Instance(const Instance &) = delete;
-  Instance(Instance &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Instance &operator=(const Instance &) = delete;
-  Instance &operator=(Instance &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~Instance() {
-    if (_isOwner) {
-      vkh::destroyInstance(_instance, _pAllocator);
-      std::cout << "Instance destructor" << '\n';
-    }
-  }
-  const VkInstance &ref() const noexcept { return _instance; }
-
-  static VkInstance customInitialize() {
-    VkApplicationInfo appInfo{};
-    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Vulkan Application";
-    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_3;
-
-    std::vector<const char *> requiredExtensions{
-        vkh::getRequiredInstanceExtensionNameList()};
-    requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
-    std::vector<const char *> layers = {"VK_LAYER_KHRONOS_validation",
-                                        "VK_LAYER_MANGOHUD_overlay"};
-
-    auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
-    vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
-
-    VkInstanceCreateInfo instanceInfo{};
-    instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
-    instanceInfo.pApplicationInfo = &appInfo;
-    instanceInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
-    instanceInfo.ppEnabledLayerNames = layers.data();
-    instanceInfo.enabledExtensionCount =
-        static_cast<uint32_t>(requiredExtensions.size());
-    instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
-
-    return vkh::createInstance(&instanceInfo);
-  }
-
-private:
-  VkInstance _instance;
-  const VkAllocationCallbacks *_pAllocator = nullptr;
-  bool _isOwner = false;
-
-  void _moveDataFrom(Instance &&rhs) {
-    _instance = rhs._instance;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
-class Surface {
-public:
-  Surface() = default;
-  Surface(VkInstance instance, GLFWwindow *window,
-          const VkAllocationCallbacks *pAllocator = nullptr)
-      : _instance{instance}, _window{window}, _pAllocator{pAllocator} {
-    _surface = vkh::createSurface(instance, window, pAllocator);
-    _isOwner = true;
-  }
-  Surface(const Surface &) = delete;
-  Surface(Surface &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Surface &operator=(const Surface &) = delete;
-  Surface &operator=(Surface &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~Surface() {
-    if (_isOwner) {
-      vkh::destroySurface(_instance, _surface, _pAllocator);
-      std::cout << "Surface destructor" << '\n';
-    }
-  }
-  const VkSurfaceKHR &ref() const noexcept { return _surface; }
-
-private:
-  VkSurfaceKHR _surface;
-  VkInstance _instance;
-  GLFWwindow *_window;
-  const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = false;
-
-  void _moveDataFrom(Surface &&rhs) {
-    _surface = rhs._surface;
-    _instance = rhs._instance;
-    _window = rhs._window;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
-class Device {
-public:
-  Device() = default;
-  Device(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCreateInfo,
-         const VkAllocationCallbacks *pAllocator = nullptr)
-      : _physicalDevice{physicalDevice}, _pAllocator{pAllocator} {
-    _device = vkh::createDevice(physicalDevice, pCreateInfo, pAllocator);
-    _isOwner = true;
-  };
-  Device(const Device &) = delete;
-  Device(Device &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Device &operator=(const Device &) = delete;
-  Device &operator=(Device &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~Device() {
-    if (_isOwner) {
-      vkh::destroyDevice(_device, _pAllocator);
-      std::cout << "Device destructor" << '\n';
-    }
-  }
-  const VkDevice &ref() const noexcept { return _device; }
-
-private:
-  VkDevice _device;
-  VkPhysicalDevice _physicalDevice;
-  const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = false;
-
-  void _moveDataFrom(Device &&rhs) {
-    _device = rhs._device;
-    _physicalDevice = rhs._physicalDevice;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
-template <vkh::PipelineType pipelineType> class Pipeline {
-public:
-  Pipeline() = default;
-  Pipeline(VkDevice device, VkPipelineCache pipelineCache,
-           const vkh::pipelineInfoType<pipelineType> *pCreateInfo,
-           const VkAllocationCallbacks *pAllocator = nullptr)
-      : _device{device}, _pipelineCache{pipelineCache}, _pAllocator{
-                                                            pAllocator} {
-    _pipeline =
-        vkh::createPipeline(device, pipelineCache, pCreateInfo, pAllocator);
-    _isOwner = true;
-  }
-  Pipeline(const Pipeline &) = delete;
-  Pipeline(Pipeline &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Pipeline &operator=(const Pipeline &) = delete;
-  Pipeline &operator=(Pipeline &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~Pipeline() {
-    if (_isOwner) {
-      vkh::destroyPipeline(_device, _pipeline, _pAllocator);
-      std::cout << "Pipeline destructor" << '\n';
-    }
-  }
-  const VkPipeline &ref() const noexcept { return _pipeline; }
-
-private:
-  VkPipeline _pipeline;
-  VkDevice _device;
-  VkPipelineCache _pipelineCache;
-  const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = false;
-
-  void _moveDataFrom(Pipeline &&rhs) {
-    _pipeline = rhs._pipeline;
-    _device = rhs._device;
-    _pipelineCache = rhs._pipelineCache;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
-class Framebuffers {
-public:
-  Framebuffers() = default;
-  Framebuffers(VkDevice device,
-               const std::vector<VkFramebufferCreateInfo> &createInfos,
-               const VkAllocationCallbacks *pAllocator = nullptr)
-      : _device{device}, _pAllocator{pAllocator} {
-    size_t framebufferCount = createInfos.size();
-    _framebuffers.resize(createInfos.size());
-    for (size_t i = 0; i < framebufferCount; ++i) {
-      _framebuffers[i] =
-          vkh::createFramebuffer(device, &createInfos[i], pAllocator);
-    }
-    _isOwner = true;
-  }
-  Framebuffers(const Framebuffers &) = delete;
-  Framebuffers(Framebuffers &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Framebuffers &operator=(const Framebuffers &) = delete;
-  Framebuffers &operator=(Framebuffers &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~Framebuffers() {
-    if (_isOwner) {
-      for (auto &framebuffer : _framebuffers) {
-        vkh::destroyFramebuffer(_device, framebuffer, _pAllocator);
-      }
-      std::cout << "Framebuffers destructor" << '\n';
-    }
-  }
-
-  const VkFramebuffer *ref() const noexcept { return _framebuffers.data(); }
-
-  template <typename SizeType = size_t> auto size() const noexcept {
-    return static_cast<SizeType>(_framebuffers.size());
-  }
-
-  const VkFramebuffer &operator[](size_t index) const noexcept {
-    return _framebuffers[index];
-  }
-
-private:
-  std::vector<VkFramebuffer> _framebuffers;
-  VkDevice _device;
-  const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = false;
-
-  void _moveDataFrom(Framebuffers &&rhs) {
-    _framebuffers = rhs._framebuffers;
-    _device = rhs._device;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
-class DebugMessenger {
-public:
-  DebugMessenger() = default;
-  DebugMessenger(VkInstance instance,
-                 const VkAllocationCallbacks *pAllocator = nullptr)
-      : _instance{instance}, _pAllocator{pAllocator} {
-    if (vkh::checkValidationLayerSupport() == false) {
-      throw std::runtime_error("Validation layers are not supported.");
-    }
-    _debugMessenger = vkh::createDebugMessenger(_instance);
-    _isOwner = true;
-  }
-  DebugMessenger(const DebugMessenger &) = delete;
-  DebugMessenger(DebugMessenger &&rhs) { _moveDataFrom(std::move(rhs)); }
-  DebugMessenger &operator=(const DebugMessenger &) = delete;
-  DebugMessenger &operator=(DebugMessenger &&rhs) {
-    _moveDataFrom(std::move(rhs));
-    return *this;
-  }
-  ~DebugMessenger() {
-    if (_isOwner) {
-      vkh::destroyDebugUtilsMessengerEXT(_instance, _debugMessenger,
-                                         _pAllocator);
-      std::cout << "DebugMessenger destructor" << '\n';
-    }
-  }
-
-  const VkDebugUtilsMessengerEXT &ref() const noexcept {
-    return _debugMessenger;
-  }
-
-private:
-  VkDebugUtilsMessengerEXT _debugMessenger;
-  VkInstance _instance;
-  const VkAllocationCallbacks *_pAllocator;
-  bool _isOwner = false;
-
-  void _moveDataFrom(DebugMessenger &&rhs) {
-    _debugMessenger = rhs._debugMessenger;
-    _instance = rhs._instance;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
-  }
-};
-
 class VulkanApp {
 public:
   VulkanApp();
@@ -367,12 +34,12 @@ public:
 
 private:
   /* Step 0: Setup GLFW and window */
-  Window window;
+  vkw::Window window;
   void createWindow();
 
   /* Step 1: Create an instance */
   // VkInstance instance;
-  Instance instance;
+  vkw::Instance instance;
 
   std::vector<const char *> instanceExtensions = {
       VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
@@ -384,23 +51,22 @@ private:
       "VK_LAYER_KHRONOS_validation", "VK_LAYER_MANGOHUD_overlay"};
 
   /* Debug messenger of validation layers */
-  DebugMessenger debugMessenger;
+  vkw::DebugMessenger debugMessenger;
 
   void createDebugMessenger();
 
   /* Step 3: Create a window surface */
   // VkSurfaceKHR surface;
-  Surface surface;
+  vkw::Surface surface;
 
   void createSurface();
 
   /* Step 4: Create a logical device */
-  Device device;
-  VkPhysicalDevice physicalDevice;
+  vkw::Device device;
 
   /* For graphics, computing, and presentation */
-  VkQueue queue;
-  uint32_t queueFamilyIndex;
+  // VkQueue queue;
+  // uint32_t queueFamilyIndex;
 
   bool checkDeviceProperties(VkPhysicalDevice physDev);
 
@@ -443,7 +109,7 @@ private:
   void createImageViews();
 
   /* Step 7: Create a graphics pipeline */
-  Pipeline<vkh::Graphics> graphicsPipeline;
+  vkw::Pipeline<vkh::Graphics> graphicsPipeline;
   vkh::GraphicsPipelineDepWrapper graphicsPipelineDeps;
 
   const uint32_t graphicsPipelineCount = 1;
@@ -451,7 +117,7 @@ private:
   void createGraphicsPipeline();
 
   /* Step 8: Create framebuffers */
-  Framebuffers framebuffers;
+  vkw::Framebuffers framebuffers;
 
   void createFramebuffers();
 

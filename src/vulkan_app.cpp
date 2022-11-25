@@ -44,11 +44,11 @@ void VulkanApp::createDebugMessenger() {
   //   throw std::runtime_error("Validation layers are not supported.");
   // }
   // debugMessenger = vkh::createDebugMessenger(instance.ref());
-  debugMessenger = DebugMessenger{instance.ref()};
+  debugMessenger = vkw::DebugMessenger{instance.ref()};
 }
 
 void VulkanApp::createSurface() {
-  surface = Surface{instance.ref(), window.ref()};
+  surface = vkw::Surface{instance.ref(), window.ref()};
 }
 
 bool VulkanApp::checkDeviceProperties(VkPhysicalDevice physDev) {
@@ -77,69 +77,70 @@ VulkanApp::selectQueueFamily(VkPhysicalDevice physDev) {
 }
 
 void VulkanApp::createDevice() {
-  /* Select a suitable physical device and one of its queue families */
-  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance.ref());
-  VkPhysicalDevice selectedPhysDev = VK_NULL_HANDLE;
-  std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
-      selectedQueueFamily;
-  for (const auto &physDev : physicalDeviceList) {
-    /* Only selected a discrete GPU that has a queue family supporting
-    graphics, computing, and presentation commands */
-    /* When the application creates a swapchain, the selected physical device
-    must support VK_KHR_swapchain */
-    /* Also, the selected physical device must be compatible with the swapchain
-     that will be created. */
-    if (checkDeviceProperties(physDev) &&
-        checkDeviceExtensionSupport(physDev) &&
-        checkDeviceSwapchainSupport(physDev)) {
-      if (auto returnedQueueFamily = selectQueueFamily(physDev);
-          returnedQueueFamily.has_value()) {
-        selectedQueueFamily = returnedQueueFamily;
-        selectedPhysDev = physDev;
-      }
-    }
-  }
-  if (selectedPhysDev == VK_NULL_HANDLE) {
-    throw std::runtime_error("Failed to select a physical device.");
-  }
+  // /* Select a suitable physical device and one of its queue families */
+  // auto physicalDeviceList = vkh::getPhysicalDeviceList(instance.ref());
+  // VkPhysicalDevice selectedPhysDev = VK_NULL_HANDLE;
+  // std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
+  //     selectedQueueFamily;
+  // for (const auto &physDev : physicalDeviceList) {
+  //   /* Only selected a discrete GPU that has a queue family supporting
+  //   graphics, computing, and presentation commands */
+  //   /* When the application creates a swapchain, the selected physical device
+  //   must support VK_KHR_swapchain */
+  //   /* Also, the selected physical device must be compatible with the
+  //   swapchain
+  //    that will be created. */
+  //   if (checkDeviceProperties(physDev) &&
+  //       checkDeviceExtensionSupport(physDev) &&
+  //       checkDeviceSwapchainSupport(physDev)) {
+  //     if (auto returnedQueueFamily = selectQueueFamily(physDev);
+  //         returnedQueueFamily.has_value()) {
+  //       selectedQueueFamily = returnedQueueFamily;
+  //       selectedPhysDev = physDev;
+  //     }
+  //   }
+  // }
+  // if (selectedPhysDev == VK_NULL_HANDLE) {
+  //   throw std::runtime_error("Failed to select a physical device.");
+  // }
 
-  /* Set up the selected queue family's creation info */
-  uint32_t selectedIndex = selectedQueueFamily.value().first;
-  const float queuePriority = 1.0f;
+  // /* Set up the selected queue family's creation info */
+  // uint32_t selectedIndex = selectedQueueFamily.value().first;
+  // const float queuePriority = 1.0f;
 
-  VkDeviceQueueCreateInfo queueInfo{};
-  queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  queueInfo.pNext = nullptr;
-  queueInfo.queueFamilyIndex = selectedIndex;
-  queueInfo.queueCount = 1;
-  queueInfo.pQueuePriorities = &queuePriority;
+  // VkDeviceQueueCreateInfo queueInfo{};
+  // queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  // queueInfo.pNext = nullptr;
+  // queueInfo.queueFamilyIndex = selectedIndex;
+  // queueInfo.queueCount = 1;
+  // queueInfo.pQueuePriorities = &queuePriority;
 
-  /* Create the logical device */
-  VkPhysicalDeviceFeatures deviceFeatures{};
+  // /* Create the logical device */
+  // VkPhysicalDeviceFeatures deviceFeatures{};
 
-  VkDeviceCreateInfo deviceCreateInfo{};
-  deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  deviceCreateInfo.pNext = nullptr;
-  deviceCreateInfo.queueCreateInfoCount = 1;
-  deviceCreateInfo.pQueueCreateInfos = &queueInfo;
-  deviceCreateInfo.enabledExtensionCount =
-      static_cast<uint32_t>(deviceExtensions.size());
-  deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-  deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
-  deviceCreateInfo.enabledLayerCount =
-      static_cast<uint32_t>(instanceLayers.size());
-  deviceCreateInfo.ppEnabledLayerNames = instanceLayers.data();
+  // VkDeviceCreateInfo deviceCreateInfo{};
+  // deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  // deviceCreateInfo.pNext = nullptr;
+  // deviceCreateInfo.queueCreateInfoCount = 1;
+  // deviceCreateInfo.pQueueCreateInfos = &queueInfo;
+  // deviceCreateInfo.enabledExtensionCount =
+  //     static_cast<uint32_t>(deviceExtensions.size());
+  // deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+  // deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+  // deviceCreateInfo.enabledLayerCount =
+  //     static_cast<uint32_t>(instanceLayers.size());
+  // deviceCreateInfo.ppEnabledLayerNames = instanceLayers.data();
 
-  device = Device{selectedPhysDev, &deviceCreateInfo};
+  // device = vkw::Device{selectedPhysDev, &deviceCreateInfo};
 
-  /* Get a queue handle */
-  vkGetDeviceQueue(device.ref(), selectedIndex, 0, &queue);
+  // /* Get a queue handle */
+  // vkGetDeviceQueue(device.ref(), selectedIndex, 0, &queue);
 
-  /* Store the selected device for later uses */
-  physicalDevice = selectedPhysDev;
+  // /* Store the selected device for later uses */
+  // physicalDevice = selectedPhysDev;
 
-  /* Store the index of the selected queue family */
-  queueFamilyIndex = selectedIndex;
+  // /* Store the index of the selected queue family */
+  // queueFamilyIndex = selectedIndex;
 }
 
 bool VulkanApp::checkDeviceExtensionSupport(VkPhysicalDevice physDev) {
@@ -166,12 +167,12 @@ bool VulkanApp::checkDeviceSwapchainSupport(
 VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
   /* Vulkan 1.3.231 - A Specification, pg 2235 */
 
-  auto surfaceCapabilities =
-      vkh::getPhysicalDeviceSurfaceCapabilities(physicalDevice, surface.ref());
+  auto surfaceCapabilities = vkh::getPhysicalDeviceSurfaceCapabilities(
+      device.physical(), surface.ref());
   auto surfaceFormats =
-      vkh::getPhysicalDeviceSurfaceFormatList(physicalDevice, surface.ref());
+      vkh::getPhysicalDeviceSurfaceFormatList(device.physical(), surface.ref());
   auto surfacePresentModes = vkh::getPhysicalDeviceSurfacePresentModeList(
-      physicalDevice, surface.ref());
+      device.physical(), surface.ref());
 
   VkSwapchainCreateInfoKHR swapchainCreateInfo{};
   swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -536,7 +537,7 @@ void VulkanApp::createGraphicsPipeline() {
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
   pipelineInfo.basePipelineIndex = -1;
 
-  graphicsPipeline = Pipeline<vkh::Graphics>{
+  graphicsPipeline = vkw::Pipeline<vkh::Graphics>{
       device.ref(), graphicsPipelineDeps.cache, &pipelineInfo};
 
   vkh::destroyShaderModule(device.ref(), shaderModule.vertex);
@@ -555,7 +556,7 @@ void VulkanApp::createFramebuffers() {
     framebufferInfos[i].height = swapchain.extent.height;
     framebufferInfos[i].layers = 1;
   }
-  framebuffers = Framebuffers{device.ref(), framebufferInfos};
+  framebuffers = vkw::Framebuffers{device.ref(), framebufferInfos};
 }
 
 void VulkanApp::recreateSwapchain() {
@@ -615,7 +616,7 @@ void VulkanApp::createCommandPool() {
   cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
   /* All command buffers allocated from this command pool must be
   submitted on queues from the same queue family. */
-  cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
+  cmdPoolInfo.queueFamilyIndex = device.familyIndex();
 
   commandPool = vkh::createCommandPool(device.ref(), &cmdPoolInfo);
 }
@@ -697,7 +698,7 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
 uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
                                    VkMemoryPropertyFlags propFlags) {
   VkPhysicalDeviceMemoryProperties memoryProperties;
-  vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+  vkGetPhysicalDeviceMemoryProperties(device.physical(), &memoryProperties);
   for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
     if (typeFilter & (1 << i) &&
         (memoryProperties.memoryTypes[i].propertyFlags & propFlags) ==
@@ -768,8 +769,8 @@ void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
 
   /* Submit and wait on this transfer to complete before cleaning up
   the command buffer */
-  vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
-  vkQueueWaitIdle(queue);
+  vkQueueSubmit(device.queue(), 1, &submitInfo, VK_NULL_HANDLE);
+  vkQueueWaitIdle(device.queue());
   vkFreeCommandBuffers(device.ref(), commandPool, 1, &commandBuffer);
 }
 
@@ -1019,7 +1020,7 @@ void VulkanApp::render() {
       static_cast<uint32_t>(signalSemaphores.size());
   submitInfo.pSignalSemaphores = signalSemaphores.data();
 
-  if (vkQueueSubmit(queue, submitCount, &submitInfo,
+  if (vkQueueSubmit(device.queue(), submitCount, &submitInfo,
                     sync.inFlightFence[sync.currentFrame]) != VK_SUCCESS) {
     throw std::runtime_error("Failed to submit draw command buffer.");
   }
@@ -1035,7 +1036,7 @@ void VulkanApp::render() {
   presentInfo.pImageIndices = &imageIndex;
   presentInfo.pResults = nullptr;
 
-  result = vkQueuePresentKHR(queue, &presentInfo);
+  result = vkQueuePresentKHR(device.queue(), &presentInfo);
   if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR ||
       framebufferResized) {
     framebufferResized = false;
@@ -1048,12 +1049,15 @@ void VulkanApp::render() {
   sync.currentFrame = (sync.currentFrame + 1) % maxFramesInFlight;
 }
 
-VulkanApp::VulkanApp() {
+VulkanApp::VulkanApp()
+    : window{}, instance{}, debugMessenger{instance.ref()},
+      surface{instance.ref(), window.ref()}, device{instance.ref(),
+                                                    surface.ref()} {
   createWindow();
-  createInstance();
-  createDebugMessenger();
-  createSurface();
-  createDevice();
+  // createInstance();
+  // createDebugMessenger();
+  // createSurface();
+  // createDevice();
   createSwapchain();
   createImageViews();
   createDescriptorSetLayout();
@@ -1138,7 +1142,7 @@ void VulkanApp::writeInfo(std::string filePath) {
   fs << "3. Physical devices:\n";
   auto physicalDeviceList = vkh::getPhysicalDeviceList(instance.ref());
   auto selectedDeviceProperties =
-      vkh::getPhysicalDevicePropertyList(physicalDevice);
+      vkh::getPhysicalDevicePropertyList(device.physical());
   size_t index = 1;
   size_t selectedDeviceIndex = 0;
   for (const auto &physDev : physicalDeviceList) {
