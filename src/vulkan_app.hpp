@@ -36,7 +36,7 @@ public:
   ~Window() {
     if (_isOwner) {
       vkh::destroyWindow(_window);
-      std::cout << "Window destructor" << std::endl;
+      std::cout << "Window destructor" << '\n';
     }
   }
   const pGLFWwindow &ref() const noexcept { return _window; }
@@ -69,7 +69,7 @@ public:
   ~Instance() {
     if (_isOwner) {
       vkh::destroyInstance(_instance, _pAllocator);
-      std::cout << "Instance destructor" << std::endl;
+      std::cout << "Instance destructor" << '\n';
     }
   }
   const VkInstance &ref() const noexcept { return _instance; }
@@ -104,7 +104,7 @@ public:
   ~Surface() {
     if (_isOwner) {
       vkh::destroySurface(_instance, _surface, _pAllocator);
-      std::cout << "Surface destructor" << std::endl;
+      std::cout << "Surface destructor" << '\n';
     }
   }
   const VkSurfaceKHR &ref() const noexcept { return _surface; }
@@ -120,6 +120,139 @@ private:
     _surface = rhs._surface;
     _instance = rhs._instance;
     _window = rhs._window;
+    _pAllocator = rhs._pAllocator;
+    rhs._isOwner = false;
+  }
+};
+
+class Device {
+public:
+  Device() = default;
+  Device(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCreateInfo,
+         const VkAllocationCallbacks *pAllocator = nullptr)
+      : _physicalDevice{physicalDevice}, _pAllocator{pAllocator} {
+    _device = vkh::createDevice(physicalDevice, pCreateInfo, pAllocator);
+  };
+  Device(const Device &) = delete;
+  Device(Device &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Device &operator=(const Device &) = delete;
+  Device &operator=(Device &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Device() {
+    if (_isOwner) {
+      vkh::destroyDevice(_device, _pAllocator);
+      std::cout << "Device destructor" << '\n';
+    }
+  }
+  const VkDevice &ref() const noexcept { return _device; }
+
+private:
+  VkDevice _device;
+  VkPhysicalDevice _physicalDevice;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = true;
+
+  void _moveDataFrom(Device &&rhs) {
+    _device = rhs._device;
+    _physicalDevice = rhs._physicalDevice;
+    _pAllocator = rhs._pAllocator;
+    rhs._isOwner = false;
+  }
+};
+
+template <vkh::PipelineType pipelineType> class Pipeline {
+public:
+  Pipeline() = default;
+  Pipeline(VkDevice device, VkPipelineCache pipelineCache,
+           const vkh::pipelineInfoType<pipelineType> *pCreateInfo,
+           const VkAllocationCallbacks *pAllocator = nullptr)
+      : _device{device}, _pipelineCache{pipelineCache}, _pAllocator{
+                                                            pAllocator} {
+    _pipeline =
+        vkh::createPipeline(device, pipelineCache, pCreateInfo, pAllocator);
+  }
+  Pipeline(const Pipeline &) = delete;
+  Pipeline(Pipeline &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Pipeline &operator=(const Pipeline &) = delete;
+  Pipeline &operator=(Pipeline &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Pipeline() {
+    if (_isOwner) {
+      vkh::destroyPipeline(_device, _pipeline, _pAllocator);
+      std::cout << "Pipeline destructor" << '\n';
+    }
+  }
+  const VkPipeline &ref() const noexcept { return _pipeline; }
+
+private:
+  VkPipeline _pipeline;
+  VkDevice _device;
+  VkPipelineCache _pipelineCache;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = true;
+
+  void _moveDataFrom(Pipeline &&rhs) {
+    _pipeline = rhs._pipeline;
+    _device = rhs._device;
+    _pipelineCache = rhs._pipelineCache;
+    _pAllocator = rhs._pAllocator;
+    rhs._isOwner = false;
+  }
+};
+
+class Framebuffers {
+public:
+  Framebuffers() = default;
+  Framebuffers(VkDevice device,
+               const std::vector<VkFramebufferCreateInfo> &createInfos,
+               const VkAllocationCallbacks *pAllocator = nullptr)
+      : _device{device}, _pAllocator{pAllocator} {
+    size_t framebufferCount = createInfos.size();
+    _framebuffers.resize(createInfos.size());
+    for (size_t i = 0; i < framebufferCount; ++i) {
+      _framebuffers[i] =
+          vkh::createFramebuffer(device, &createInfos[i], pAllocator);
+    }
+  }
+  Framebuffers(const Framebuffers &) = delete;
+  Framebuffers(Framebuffers &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Framebuffers &operator=(const Framebuffers &) = delete;
+  Framebuffers &operator=(Framebuffers &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Framebuffers() {
+    if (_isOwner) {
+      for (auto &framebuffer : _framebuffers) {
+        vkh::destroyFramebuffer(_device, framebuffer, _pAllocator);
+      }
+      std::cout << "Framebuffers destructor" << '\n';
+    }
+  }
+
+  const VkFramebuffer *ref() const noexcept { return _framebuffers.data(); }
+
+  template <typename SizeType = size_t> auto size() const noexcept {
+    return static_cast<SizeType>(_framebuffers.size());
+  }
+
+  const VkFramebuffer &operator[](size_t index) const noexcept {
+    return _framebuffers[index];
+  }
+
+private:
+  std::vector<VkFramebuffer> _framebuffers;
+  VkDevice _device;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = true;
+
+  void _moveDataFrom(Framebuffers &&rhs) {
+    _framebuffers = rhs._framebuffers;
+    _device = rhs._device;
     _pAllocator = rhs._pAllocator;
     rhs._isOwner = false;
   }
@@ -168,7 +301,7 @@ private:
   void createSurface();
 
   /* Step 4: Create a logical device */
-  VkDevice device;
+  Device device;
   VkPhysicalDevice physicalDevice;
 
   /* For graphics, computing, and presentation */
@@ -216,14 +349,15 @@ private:
   void createImageViews();
 
   /* Step 7: Create a graphics pipeline */
-  vkh::GraphicsPipelineWrapper graphicsPipeline;
+  Pipeline<vkh::Graphics> graphicsPipeline;
+  vkh::GraphicsPipelineDepWrapper graphicsPipelineDeps;
 
   const uint32_t graphicsPipelineCount = 1;
 
   void createGraphicsPipeline();
 
   /* Step 8: Create framebuffers */
-  std::vector<VkFramebuffer> framebuffers;
+  Framebuffers framebuffers;
 
   void createFramebuffers();
 

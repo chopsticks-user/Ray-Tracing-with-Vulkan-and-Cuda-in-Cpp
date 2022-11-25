@@ -14,8 +14,7 @@ struct ShaderModuleWrapper {
   VkShaderModule fragment;
 };
 
-struct GraphicsPipelineWrapper {
-  VkPipeline self = nullptr;
+struct GraphicsPipelineDepWrapper {
   VkPipelineLayout layout = nullptr;
   VkPipelineCache cache = nullptr;
   VkRenderPass renderPass = nullptr;

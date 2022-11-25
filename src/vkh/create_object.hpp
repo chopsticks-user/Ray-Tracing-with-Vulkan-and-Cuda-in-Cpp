@@ -141,6 +141,47 @@ using pipelineInfoType = static_switch<
     pipelineType, VkComputePipelineCreateInfo, VkGraphicsPipelineCreateInfo,
     VkRayTracingPipelineCreateInfoKHR, VkRayTracingPipelineCreateInfoNV>;
 
+/**
+ * @brief Create a Pipeline object
+ *
+ * @tparam pipelineType
+ * @param device
+ * @param pipelineCache
+ * @param createInfos
+ * @param pAllocator
+ * @return VkPipeline
+ */
+template <PipelineType pipelineType = Graphics>
+VkPipeline createPipeline(VkDevice device, VkPipelineCache pipelineCache,
+                          const pipelineInfoType<pipelineType> *createInfo,
+                          const VkAllocationCallbacks *pAllocator = nullptr) {
+  VkPipeline pipeline;
+  VkResult result;
+  if constexpr (pipelineType == Compute) {
+    result = vkCreateComputePipelines(device, pipelineCache, 1, createInfo,
+                                      pAllocator, &pipeline);
+  } else if (pipelineType == Graphics) {
+    result = vkCreateGraphicsPipelines(device, pipelineCache, 1, createInfo,
+                                       pAllocator, &pipeline);
+  } else {
+    throw std::runtime_error("Unknown pipeline type.");
+  }
+  if (result != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create pipelines.");
+  }
+  return pipeline;
+}
+
+/**
+ * @brief Create a Pipelines object
+ *
+ * @tparam pipelineType
+ * @param device
+ * @param pipelineCache
+ * @param createInfos
+ * @param pAllocator
+ * @return std::vector<VkPipeline>
+ */
 template <PipelineType pipelineType = Graphics>
 std::vector<VkPipeline>
 createPipelines(VkDevice device, VkPipelineCache pipelineCache,
