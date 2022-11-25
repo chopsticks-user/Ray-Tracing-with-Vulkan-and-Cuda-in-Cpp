@@ -35,18 +35,13 @@ public:
 private:
   /* Step 0: Setup GLFW and window */
   vkw::GLFW glfw;
-
   vkw::Window window;
-  void createWindow();
 
   /* Step 1: Create an instance */
-  // VkInstance instance;
   vkw::Instance instance;
 
   std::vector<const char *> instanceExtensions = {
       VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
-
-  void createInstance();
 
   /* Step 2: Setup layers */
   const std::vector<const char *> instanceLayers = {
@@ -55,29 +50,15 @@ private:
   /* Debug messenger of validation layers */
   vkw::DebugMessenger debugMessenger;
 
-  void createDebugMessenger();
-
   /* Step 3: Create a window surface */
   // VkSurfaceKHR surface;
   vkw::Surface surface;
 
-  void createSurface();
-
   /* Step 4: Create a logical device */
-  vkw::Device device;
-
   /* For graphics, computing, and presentation */
-  // VkQueue queue;
-  // uint32_t queueFamilyIndex;
-
-  bool checkDeviceProperties(VkPhysicalDevice physDev);
-
-  std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
-  selectQueueFamily(VkPhysicalDevice physicalDevice);
-
   /* Create a logical device after succesfully selecting a physical device
   and one of its queue families by calling the selectQueueFamily function. */
-  void createDevice();
+  vkw::Device device;
 
   /* Step 5: Create a swapchain to render results to the surface */
   vkh::SwapChainWrapper swapchain;
@@ -92,8 +73,6 @@ private:
       VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
 
   /* Included when selecting a physical device */
-  bool checkDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
-  bool checkDeviceSwapchainSupport(VkPhysicalDevice physicalDevice);
 
   VkSwapchainCreateInfoKHR populateSwapchainCreateInfo();
 
