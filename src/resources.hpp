@@ -15,6 +15,8 @@ inline const std::vector<vkh::Vertex2D_RGB> triangle_index_data{
 
 } /* namespace shader */
 
-namespace texture {} /* namespace texture */
+namespace texture {
+namespace detail {} /* namespace detail */
+} /* namespace texture */
 
 #endif /* RESOURCES_HPP */

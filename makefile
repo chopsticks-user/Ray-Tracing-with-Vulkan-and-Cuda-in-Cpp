@@ -7,14 +7,17 @@ ENTRY_NAME = Application
 
 CFLAGS = $(VERSION) -g
 ASM_FLAGS = $(CFLAGS) -S -fverbose-asm
-BIN_FLAGS = $(CFLAGS) -Wall -Wextra -pedantic -Wextra -Wshadow -Wconversion
+BIN_FLAGS = $(CFLAGS) -Wall -Wextra -pedantic -Wextra -Wshadow
 OBJDUMP_FLAGS = -S --disassemble
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 MDFLAGS =
 
 SHADERS_DIR = resources/shaders
 SOURCE_PATHS = $(ENTRY_NAME).cpp src/vkh/*.cpp src/*.cpp
-INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src -I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh -I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include
+INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
+	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh \
+	-I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \
+	-I$(PROJECT_ABSOLUTE_DIR)/libs/stb
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build

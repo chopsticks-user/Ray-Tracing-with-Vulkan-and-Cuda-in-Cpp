@@ -18,6 +18,113 @@
 #include <string>
 #include <utility>
 
+class Window {
+  typedef GLFWwindow *pGLFWwindow;
+
+public:
+  Window() : _window{vkh::createWindow(800, 600)} {};
+  Window(int width, int height, const char *title = "Vulkan Application",
+         GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr)
+      : _window{vkh::createWindow(width, height, title, monitor, share)} {}
+  Window(const Window &) = delete;
+  Window(Window &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Window &operator=(const Window &) = delete;
+  Window &operator=(Window &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Window() {
+    if (_isOwner) {
+      vkh::destroyWindow(_window);
+      std::cout << "Window destructor" << std::endl;
+    }
+  }
+  const pGLFWwindow &ref() const noexcept { return _window; }
+
+private:
+  pGLFWwindow _window;
+  bool _isOwner = true;
+
+  void _moveDataFrom(Window &&rhs) {
+    _window = rhs._window;
+    rhs._isOwner = false;
+  }
+};
+
+class Instance {
+public:
+  Instance() = default;
+  Instance(VkInstanceCreateInfo *pCreateInfo,
+           const VkAllocationCallbacks *pAllocator = nullptr)
+      : _pAllocator{pAllocator} {
+    _instance = vkh::createInstance(pCreateInfo, pAllocator);
+  }
+  Instance(const Instance &) = delete;
+  Instance(Instance &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Instance &operator=(const Instance &) = delete;
+  Instance &operator=(Instance &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Instance() {
+    if (_isOwner) {
+      vkh::destroyInstance(_instance, _pAllocator);
+      std::cout << "Instance destructor" << std::endl;
+    }
+  }
+  const VkInstance &ref() const noexcept { return _instance; }
+
+private:
+  VkInstance _instance;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = true;
+
+  void _moveDataFrom(Instance &&rhs) {
+    _instance = rhs._instance;
+    _pAllocator = rhs._pAllocator;
+    rhs._isOwner = false;
+  }
+};
+
+class Surface {
+public:
+  Surface() = default;
+  Surface(VkInstance instance, GLFWwindow *window,
+          const VkAllocationCallbacks *pAllocator = nullptr)
+      : _instance{instance}, _window{window}, _pAllocator{pAllocator} {
+    _surface = vkh::createSurface(instance, window, pAllocator);
+  }
+  Surface(const Surface &) = delete;
+  Surface(Surface &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Surface &operator=(const Surface &) = delete;
+  Surface &operator=(Surface &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Surface() {
+    if (_isOwner) {
+      vkh::destroySurface(_instance, _surface, _pAllocator);
+      std::cout << "Surface destructor" << std::endl;
+    }
+  }
+  const VkSurfaceKHR &ref() const noexcept { return _surface; }
+
+private:
+  VkSurfaceKHR _surface;
+  VkInstance _instance;
+  GLFWwindow *_window;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = true;
+
+  void _moveDataFrom(Surface &&rhs) {
+    _surface = rhs._surface;
+    _instance = rhs._instance;
+    _window = rhs._window;
+    _pAllocator = rhs._pAllocator;
+    rhs._isOwner = false;
+  }
+};
+
 class VulkanApp {
 public:
   VulkanApp();
@@ -33,11 +140,12 @@ public:
 
 private:
   /* Step 0: Setup GLFW and window */
-  GLFWwindow *window;
+  Window window;
   void createWindow();
 
   /* Step 1: Create an instance */
-  VkInstance instance;
+  // VkInstance instance;
+  Instance instance;
 
   std::vector<const char *> instanceExtensions = {
       VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
@@ -54,7 +162,8 @@ private:
   void createDebugMessenger();
 
   /* Step 3: Create a window surface */
-  VkSurfaceKHR surface;
+  // VkSurfaceKHR surface;
+  Surface surface;
 
   void createSurface();
 
@@ -203,6 +312,10 @@ private:
   void createDescriptorPool();
 
   void createDescriptorSets();
+
+  /* Step 14: Textures */
+
+  void createTextureImage();
 
   /* Last step: Render */
   void render();

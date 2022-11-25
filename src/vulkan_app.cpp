@@ -2,9 +2,9 @@
 
 void VulkanApp::createWindow() {
   glfwInit();
-  window = vkh::createWindow(800, 600);
-  glfwSetWindowUserPointer(window, this);
-  glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+  window = Window{800, 600};
+  glfwSetWindowUserPointer(window.ref(), this);
+  glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
 }
 
 void VulkanApp::createInstance() {
@@ -34,18 +34,19 @@ void VulkanApp::createInstance() {
       static_cast<uint32_t>(instanceExtensions.size());
   instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
 
-  instance = vkh::createInstance(&instanceInfo);
+  // instance = vkh::createInstance(&instanceInfo);
+  instance = Instance{&instanceInfo};
 }
 
 void VulkanApp::createDebugMessenger() {
   if (vkh::checkValidationLayerSupport() == false) {
     throw std::runtime_error("Validation layers are not supported.");
   }
-  debugMessenger = vkh::createDebugMessenger(instance);
+  debugMessenger = vkh::createDebugMessenger(instance.ref());
 }
 
 void VulkanApp::createSurface() {
-  surface = vkh::createSurface(instance, window);
+  surface = Surface{instance.ref(), window.ref()};
 }
 
 bool VulkanApp::checkDeviceProperties(VkPhysicalDevice physDev) {
@@ -58,7 +59,7 @@ VulkanApp::selectQueueFamily(VkPhysicalDevice physDev) {
   auto graphicsFamilies = vkh::getGraphicsQueueFamilyPropertyList(physDev);
   auto computeFamilies = vkh::getComputeQueueFamilyPropertyList(physDev);
   auto presentFamilies =
-      vkh::getPresentQueueFamilyPropertyList(physDev, surface);
+      vkh::getPresentQueueFamilyPropertyList(physDev, surface.ref());
 
   /* Find a queue that is capable of handling graphics, computing, and
   supporting presentation to the surface */
@@ -75,7 +76,7 @@ VulkanApp::selectQueueFamily(VkPhysicalDevice physDev) {
 
 void VulkanApp::createDevice() {
   /* Select a suitable physical device and one of its queue families */
-  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance);
+  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance.ref());
   VkPhysicalDevice selectedPhysDev = VK_NULL_HANDLE;
   std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
       selectedQueueFamily;
@@ -164,11 +165,11 @@ VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
   /* Vulkan 1.3.231 - A Specification, pg 2235 */
 
   auto surfaceCapabilities =
-      vkh::getPhysicalDeviceSurfaceCapabilities(physicalDevice, surface);
+      vkh::getPhysicalDeviceSurfaceCapabilities(physicalDevice, surface.ref());
   auto surfaceFormats =
-      vkh::getPhysicalDeviceSurfaceFormatList(physicalDevice, surface);
-  auto surfacePresentModes =
-      vkh::getPhysicalDeviceSurfacePresentModeList(physicalDevice, surface);
+      vkh::getPhysicalDeviceSurfaceFormatList(physicalDevice, surface.ref());
+  auto surfacePresentModes = vkh::getPhysicalDeviceSurfacePresentModeList(
+      physicalDevice, surface.ref());
 
   VkSwapchainCreateInfoKHR swapchainCreateInfo{};
   swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -182,7 +183,7 @@ VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
   equal to imageFormat */
   // swapchainCreateInfo.flags = VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
 
-  swapchainCreateInfo.surface = surface;
+  swapchainCreateInfo.surface = surface.ref();
 
   /* plus 1 to prevent waiting on the driver to complete internal operations
   before another image is accquired */
@@ -560,9 +561,9 @@ void VulkanApp::createFramebuffers() {
 void VulkanApp::recreateSwapchain() {
   /* Handle minimization */
   int width = 0, heigth = 0;
-  glfwGetFramebufferSize(window, &width, &heigth);
+  glfwGetFramebufferSize(window.ref(), &width, &heigth);
   while (width == 0 || heigth == 0) {
-    glfwGetFramebufferSize(window, &width, &heigth);
+    glfwGetFramebufferSize(window.ref(), &width, &heigth);
     glfwWaitEvents();
   }
 
@@ -849,7 +850,7 @@ void VulkanApp::createUniformBuffers() {
 }
 
 void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
-  static auto startTime = std::chrono::high_resolution_clock::now();
+  static const auto startTime = std::chrono::high_resolution_clock::now();
 
   auto currentTime = std::chrono::high_resolution_clock::now();
   float time = std::chrono::duration<float, std::chrono::seconds::period>(
@@ -857,14 +858,14 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
                    .count();
 
   vkh::UniformBufferObject ubo{};
-  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
+  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(180.0f),
                           glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.view =
       glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                   glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.proj = glm::perspective(glm::radians(45.0f),
                               static_cast<float>(swapchain.extent.width) /
-                                  static_cast<float>(swapchain.extent.height),
+                                  swapchain.extent.height,
                               0.1f, 10.0f);
   ubo.proj[1][1] *= -1;
 
@@ -966,6 +967,10 @@ void VulkanApp::createDescriptorSets() {
   }
 }
 
+void VulkanApp::createTextureImage() {
+  //
+}
+
 void VulkanApp::render() {
   /* 1. Wait for the previous frame to finish */
   vkWaitForFences(device, 1, &sync.inFlightFence[sync.currentFrame], VK_TRUE,
@@ -1060,6 +1065,7 @@ VulkanApp::VulkanApp() {
   createDescriptorSets();
   createCommandBuffers();
   createSynchronizationObjects();
+  createTextureImage();
 }
 
 VulkanApp::~VulkanApp() {
@@ -1081,15 +1087,15 @@ VulkanApp::~VulkanApp() {
   }
   vkh::destroyCommandPool(device, commandPool);
   vkh::destroyDevice(device);
-  vkh::destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-  vkh::destroySurface(instance, surface);
-  vkh::destroyInstance(instance, nullptr);
-  vkh::destroyWindow(window);
+  vkh::destroyDebugUtilsMessengerEXT(instance.ref(), debugMessenger, nullptr);
+  // vkh::destroySurface(instance.ref(), surface);
+  // vkh::destroyInstance(instance, nullptr);
+  // vkh::destroyWindow(window.ref());
   glfwTerminate();
 }
 
 void VulkanApp::run() {
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window.ref())) {
     glfwPollEvents();
     render();
   }
@@ -1128,7 +1134,7 @@ void VulkanApp::writeInfo(std::string filePath) {
   fs << '\n';
 
   fs << "3. Physical devices:\n";
-  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance);
+  auto physicalDeviceList = vkh::getPhysicalDeviceList(instance.ref());
   auto selectedDeviceProperties =
       vkh::getPhysicalDevicePropertyList(physicalDevice);
   size_t index = 1;
