@@ -34,6 +34,8 @@ public:
 
 private:
   /* Step 0: Setup GLFW and window */
+  vkw::GLFW glfw;
+
   vkw::Window window;
   void createWindow();
 

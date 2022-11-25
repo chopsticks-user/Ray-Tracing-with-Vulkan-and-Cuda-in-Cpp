@@ -1,169 +1,5 @@
 #include "vulkan_app.hpp"
 
-void VulkanApp::createWindow() {
-  // glfwInit();
-  // window = Window{800, 600};
-  glfwSetWindowUserPointer(window.ref(), this);
-  glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
-}
-
-void VulkanApp::createInstance() {
-  // VkApplicationInfo appInfo{};
-  // appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  // appInfo.pApplicationName = "Vulkan Application";
-  // appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  // appInfo.pEngineName = "No Engine";
-  // appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-  // appInfo.apiVersion = VK_API_VERSION_1_3;
-
-  // auto requiredExtensions = vkh::getRequiredInstanceExtensionNameList();
-  // for (auto &&extension : requiredExtensions) {
-  //   instanceExtensions.emplace_back(extension);
-  // }
-
-  // auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
-  // vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
-
-  // VkInstanceCreateInfo instanceInfo;
-  // instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  // instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT
-  // *)&debugCreateInfo; instanceInfo.pApplicationInfo = &appInfo;
-  // instanceInfo.enabledLayerCount =
-  // static_cast<uint32_t>(instanceLayers.size());
-  // instanceInfo.ppEnabledLayerNames = instanceLayers.data();
-  // instanceInfo.enabledExtensionCount =
-  //     static_cast<uint32_t>(instanceExtensions.size());
-  // instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
-
-  // // instance = vkh::createInstance(&instanceInfo);
-  // instance = Instance{&instanceInfo};
-}
-
-void VulkanApp::createDebugMessenger() {
-  // if (vkh::checkValidationLayerSupport() == false) {
-  //   throw std::runtime_error("Validation layers are not supported.");
-  // }
-  // debugMessenger = vkh::createDebugMessenger(instance.ref());
-  debugMessenger = vkw::DebugMessenger{instance.ref()};
-}
-
-void VulkanApp::createSurface() {
-  surface = vkw::Surface{instance.ref(), window.ref()};
-}
-
-bool VulkanApp::checkDeviceProperties(VkPhysicalDevice physDev) {
-  auto physDevPropList = vkh::getPhysicalDevicePropertyList(physDev);
-  return physDevPropList.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-}
-
-std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
-VulkanApp::selectQueueFamily(VkPhysicalDevice physDev) {
-  auto graphicsFamilies = vkh::getGraphicsQueueFamilyPropertyList(physDev);
-  auto computeFamilies = vkh::getComputeQueueFamilyPropertyList(physDev);
-  auto presentFamilies =
-      vkh::getPresentQueueFamilyPropertyList(physDev, surface.ref());
-
-  /* Find a queue that is capable of handling graphics, computing, and
-  supporting presentation to the surface */
-  /* any queue family with {VK_QUEUE_GRAPHICS_BIT} or {VK_QUEUE_COMPUTE_BIT}
-  capabilities already implicitly support {VK_QUEUE_TRANSFER_BIT} operations */
-  for (size_t i = 0; i < graphicsFamilies.size(); ++i) {
-    if ((graphicsFamilies[i].has_value() && computeFamilies[i].has_value()) &&
-        presentFamilies[i].has_value()) {
-      return {{static_cast<uint32_t>(i), graphicsFamilies[i].value()}};
-    }
-  }
-  return {};
-}
-
-void VulkanApp::createDevice() {
-  // /* Select a suitable physical device and one of its queue families */
-  // auto physicalDeviceList = vkh::getPhysicalDeviceList(instance.ref());
-  // VkPhysicalDevice selectedPhysDev = VK_NULL_HANDLE;
-  // std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
-  //     selectedQueueFamily;
-  // for (const auto &physDev : physicalDeviceList) {
-  //   /* Only selected a discrete GPU that has a queue family supporting
-  //   graphics, computing, and presentation commands */
-  //   /* When the application creates a swapchain, the selected physical device
-  //   must support VK_KHR_swapchain */
-  //   /* Also, the selected physical device must be compatible with the
-  //   swapchain
-  //    that will be created. */
-  //   if (checkDeviceProperties(physDev) &&
-  //       checkDeviceExtensionSupport(physDev) &&
-  //       checkDeviceSwapchainSupport(physDev)) {
-  //     if (auto returnedQueueFamily = selectQueueFamily(physDev);
-  //         returnedQueueFamily.has_value()) {
-  //       selectedQueueFamily = returnedQueueFamily;
-  //       selectedPhysDev = physDev;
-  //     }
-  //   }
-  // }
-  // if (selectedPhysDev == VK_NULL_HANDLE) {
-  //   throw std::runtime_error("Failed to select a physical device.");
-  // }
-
-  // /* Set up the selected queue family's creation info */
-  // uint32_t selectedIndex = selectedQueueFamily.value().first;
-  // const float queuePriority = 1.0f;
-
-  // VkDeviceQueueCreateInfo queueInfo{};
-  // queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  // queueInfo.pNext = nullptr;
-  // queueInfo.queueFamilyIndex = selectedIndex;
-  // queueInfo.queueCount = 1;
-  // queueInfo.pQueuePriorities = &queuePriority;
-
-  // /* Create the logical device */
-  // VkPhysicalDeviceFeatures deviceFeatures{};
-
-  // VkDeviceCreateInfo deviceCreateInfo{};
-  // deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  // deviceCreateInfo.pNext = nullptr;
-  // deviceCreateInfo.queueCreateInfoCount = 1;
-  // deviceCreateInfo.pQueueCreateInfos = &queueInfo;
-  // deviceCreateInfo.enabledExtensionCount =
-  //     static_cast<uint32_t>(deviceExtensions.size());
-  // deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-  // deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
-  // deviceCreateInfo.enabledLayerCount =
-  //     static_cast<uint32_t>(instanceLayers.size());
-  // deviceCreateInfo.ppEnabledLayerNames = instanceLayers.data();
-
-  // device = vkw::Device{selectedPhysDev, &deviceCreateInfo};
-
-  // /* Get a queue handle */
-  // vkGetDeviceQueue(device.ref(), selectedIndex, 0, &queue);
-
-  // /* Store the selected device for later uses */
-  // physicalDevice = selectedPhysDev;
-
-  // /* Store the index of the selected queue family */
-  // queueFamilyIndex = selectedIndex;
-}
-
-bool VulkanApp::checkDeviceExtensionSupport(VkPhysicalDevice physDev) {
-  auto availableExtensionsList = vkh::getAvailableDeviceExtensionList(physDev);
-  std::map<std::string, uint32_t> helper;
-  for (const auto &availableExtension : availableExtensionsList) {
-    helper[availableExtension.extensionName]++;
-    // std::cout << availableExtension.extensionName << '\n';
-  }
-  for (const auto &deviceExtension : deviceExtensions) {
-    helper[deviceExtension]++;
-    if (helper[deviceExtension] < 2) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool VulkanApp::checkDeviceSwapchainSupport(
-    [[maybe_unused]] VkPhysicalDevice physDev) {
-  return true;
-}
-
 VkSwapchainCreateInfoKHR VulkanApp::populateSwapchainCreateInfo() {
   /* Vulkan 1.3.231 - A Specification, pg 2235 */
 
@@ -1050,14 +886,12 @@ void VulkanApp::render() {
 }
 
 VulkanApp::VulkanApp()
-    : window{}, instance{}, debugMessenger{instance.ref()},
+    : glfw{}, window{}, instance{}, debugMessenger{instance.ref()},
       surface{instance.ref(), window.ref()}, device{instance.ref(),
                                                     surface.ref()} {
-  createWindow();
-  // createInstance();
-  // createDebugMessenger();
-  // createSurface();
-  // createDevice();
+  glfwSetWindowUserPointer(window.ref(), this);
+  glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
+
   createSwapchain();
   createImageViews();
   createDescriptorSetLayout();
@@ -1092,12 +926,6 @@ VulkanApp::~VulkanApp() {
     vkh::destroyFence(device.ref(), sync.inFlightFence[i]);
   }
   vkh::destroyCommandPool(device.ref(), commandPool);
-  // vkh::destroyDevice(device.ref());
-  // vkh::destroyDebugUtilsMessengerEXT(instance.ref(), debugMessenger,
-  // nullptr); vkh::destroySurface(instance.ref(), surface);
-  // vkh::destroyInstance(instance, nullptr);
-  // vkh::destroyWindow(window.ref());
-  // glfwTerminate();
 }
 
 void VulkanApp::run() {

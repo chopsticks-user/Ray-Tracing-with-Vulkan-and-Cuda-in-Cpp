@@ -1,11 +1,9 @@
 #include <vulkan_app.hpp>
 
 int protected_main() {
-  glfwInit();
   VulkanApp app;
   app.run();
   app.writeInfo(vkh::absoluteDirectory + "/info.log");
-  glfwTerminate();
   return EXIT_SUCCESS;
 }
 

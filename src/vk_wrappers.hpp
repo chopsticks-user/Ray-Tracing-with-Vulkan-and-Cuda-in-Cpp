@@ -12,6 +12,22 @@
 
 namespace vkw {
 
+#ifdef NDEBUG
+inline constexpr bool enableValidationLayers = false;
+#else
+inline constexpr bool enableValidationLayers = true;
+#endif /* NDEBUG */
+
+class GLFW {
+public:
+  GLFW() { glfwInit(); }
+  ~GLFW() { glfwTerminate(); }
+  GLFW(const GLFW &) = delete;
+  GLFW(GLFW &&) = delete;
+  GLFW &operator=(const GLFW &) = delete;
+  GLFW &operator=(GLFW &&) = delete;
+};
+
 class Window {
   typedef GLFWwindow *pGLFWwindow;
 
@@ -88,7 +104,7 @@ private:
     rhs._isOwner = false;
   }
 
-  static CUSTOM VkInstance _customInitialize() {
+  CUSTOM static VkInstance _customInitialize() {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Vulkan Application";
@@ -99,24 +115,26 @@ private:
 
     std::vector<const char *> requiredExtensions{
         vkh::getRequiredInstanceExtensionNameList()};
-    requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
-    std::vector<const char *> layers = {"VK_LAYER_KHRONOS_validation",
-                                        "VK_LAYER_MANGOHUD_overlay"};
+    std::vector<const char *> layers = {"VK_LAYER_MANGOHUD_overlay"};
 
     auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
-    vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
-
     VkInstanceCreateInfo instanceInfo{};
+
+    if constexpr (vkw::enableValidationLayers) {
+      requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+      layers.push_back("VK_LAYER_KHRONOS_validation");
+      vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
+      instanceInfo.pNext =
+          (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+    }
+
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
     instanceInfo.pApplicationInfo = &appInfo;
     instanceInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
     instanceInfo.ppEnabledLayerNames = layers.data();
     instanceInfo.enabledExtensionCount =
         static_cast<uint32_t>(requiredExtensions.size());
     instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
-
     return vkh::createInstance(&instanceInfo);
   }
 };
@@ -127,11 +145,13 @@ public:
   DebugMessenger(VkInstance instance,
                  const VkAllocationCallbacks *pAllocator = nullptr)
       : _instance{instance}, _pAllocator{pAllocator} {
-    if (vkh::checkValidationLayerSupport() == false) {
-      throw std::runtime_error("Validation layers are not supported.");
+    if constexpr (vkw::enableValidationLayers) {
+      if (vkh::checkValidationLayerSupport() == false) {
+        throw std::runtime_error("Validation layers are not supported.");
+      }
+      _debugMessenger = vkh::createDebugMessenger(_instance);
+      _isOwner = true;
     }
-    _debugMessenger = vkh::createDebugMessenger(_instance);
-    _isOwner = true;
   }
   DebugMessenger(const DebugMessenger &) = delete;
   DebugMessenger(DebugMessenger &&rhs) { _moveDataFrom(std::move(rhs)); }
@@ -159,10 +179,12 @@ private:
   bool _isOwner = false;
 
   void _moveDataFrom(DebugMessenger &&rhs) {
-    _debugMessenger = rhs._debugMessenger;
-    _instance = rhs._instance;
-    _pAllocator = rhs._pAllocator;
-    _isOwner = true;
+    if constexpr (vkw::enableValidationLayers) {
+      _debugMessenger = rhs._debugMessenger;
+      _instance = rhs._instance;
+      _pAllocator = rhs._pAllocator;
+      _isOwner = true;
+    }
     rhs._isOwner = false;
   }
 };
@@ -348,12 +370,12 @@ private:
     return {device, selectedPhysDev, {queueHandle, selectedIndex}};
   }
 
-  static CUSTOM bool checkDeviceProperties(VkPhysicalDevice physDev) {
+  CUSTOM static bool checkDeviceProperties(VkPhysicalDevice physDev) {
     auto physDevPropList = vkh::getPhysicalDevicePropertyList(physDev);
     return physDevPropList.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
   }
 
-  static CUSTOM bool checkDeviceExtensionSupport(
+  CUSTOM static bool checkDeviceExtensionSupport(
       VkPhysicalDevice physDev,
       const std::vector<const char *> &deviceExtensions) {
     auto availableExtensionsList =
@@ -372,12 +394,12 @@ private:
     return true;
   }
 
-  static CUSTOM bool
+  CUSTOM static bool
   checkDeviceSwapchainSupport([[maybe_unused]] VkPhysicalDevice physDev) {
     return true;
   }
 
-  static CUSTOM std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
+  CUSTOM static std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
   selectQueueFamily(VkSurfaceKHR surface, VkPhysicalDevice physDev) {
     auto graphicsFamilies = vkh::getGraphicsQueueFamilyPropertyList(physDev);
     auto computeFamilies = vkh::getComputeQueueFamilyPropertyList(physDev);
