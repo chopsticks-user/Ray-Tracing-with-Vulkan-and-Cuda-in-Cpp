@@ -39,10 +39,11 @@ void VulkanApp::createInstance() {
 }
 
 void VulkanApp::createDebugMessenger() {
-  if (vkh::checkValidationLayerSupport() == false) {
-    throw std::runtime_error("Validation layers are not supported.");
-  }
-  debugMessenger = vkh::createDebugMessenger(instance.ref());
+  // if (vkh::checkValidationLayerSupport() == false) {
+  //   throw std::runtime_error("Validation layers are not supported.");
+  // }
+  // debugMessenger = vkh::createDebugMessenger(instance.ref());
+  debugMessenger = DebugMessenger{instance.ref()};
 }
 
 void VulkanApp::createSurface() {
@@ -1087,8 +1088,8 @@ VulkanApp::~VulkanApp() {
   }
   vkh::destroyCommandPool(device.ref(), commandPool);
   // vkh::destroyDevice(device.ref());
-  vkh::destroyDebugUtilsMessengerEXT(instance.ref(), debugMessenger, nullptr);
-  // vkh::destroySurface(instance.ref(), surface);
+  // vkh::destroyDebugUtilsMessengerEXT(instance.ref(), debugMessenger,
+  // nullptr); vkh::destroySurface(instance.ref(), surface);
   // vkh::destroyInstance(instance, nullptr);
   // vkh::destroyWindow(window.ref());
   glfwTerminate();

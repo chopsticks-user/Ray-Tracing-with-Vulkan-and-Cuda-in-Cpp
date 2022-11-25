@@ -258,6 +258,50 @@ private:
   }
 };
 
+class DebugMessenger {
+public:
+  DebugMessenger() = default;
+  DebugMessenger(VkInstance instance,
+                 const VkAllocationCallbacks *pAllocator = nullptr)
+      : _instance{instance}, _pAllocator{pAllocator} {
+    if (vkh::checkValidationLayerSupport() == false) {
+      throw std::runtime_error("Validation layers are not supported.");
+    }
+    _debugMessenger = vkh::createDebugMessenger(_instance);
+  }
+  DebugMessenger(const DebugMessenger &) = delete;
+  DebugMessenger(DebugMessenger &&rhs) { _moveDataFrom(std::move(rhs)); }
+  DebugMessenger &operator=(const DebugMessenger &) = delete;
+  DebugMessenger &operator=(DebugMessenger &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~DebugMessenger() {
+    if (_isOwner) {
+      vkh::destroyDebugUtilsMessengerEXT(_instance, _debugMessenger,
+                                         _pAllocator);
+      std::cout << "DebugMessenger destructor" << '\n';
+    }
+  }
+
+  const VkDebugUtilsMessengerEXT &ref() const noexcept {
+    return _debugMessenger;
+  }
+
+private:
+  VkDebugUtilsMessengerEXT _debugMessenger;
+  VkInstance _instance;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = true;
+
+  void _moveDataFrom(DebugMessenger &&rhs) {
+    _debugMessenger = rhs._debugMessenger;
+    _instance = rhs._instance;
+    _pAllocator = rhs._pAllocator;
+    rhs._isOwner = false;
+  }
+};
+
 class VulkanApp {
 public:
   VulkanApp();
@@ -290,7 +334,7 @@ private:
       "VK_LAYER_KHRONOS_validation", "VK_LAYER_MANGOHUD_overlay"};
 
   /* Debug messenger of validation layers */
-  VkDebugUtilsMessengerEXT debugMessenger;
+  DebugMessenger debugMessenger;
 
   void createDebugMessenger();
 
