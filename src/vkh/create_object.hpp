@@ -21,13 +21,14 @@ namespace vkh {
  * @param width
  * @param height
  * @param title
+ * @param resizable
  * @param monitor
  * @param share
  * @return GLFWwindow*
  */
 GLFWwindow *createWindow(int width, int height,
                          const char *title = "Vulkan Application",
-                         GLFWmonitor *monitor = nullptr,
+                         bool resizable = true, GLFWmonitor *monitor = nullptr,
                          GLFWwindow *share = nullptr);
 
 /**

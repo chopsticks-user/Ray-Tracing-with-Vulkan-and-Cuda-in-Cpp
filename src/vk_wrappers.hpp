@@ -34,8 +34,10 @@ class Window {
 public:
   Window() : _window{vkh::createWindow(800, 600)} { _isOwner = true; };
   Window(int width, int height, const char *title = "Vulkan Application",
-         GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr)
-      : _window{vkh::createWindow(width, height, title, monitor, share)} {
+         bool resizable = true, GLFWmonitor *monitor = nullptr,
+         GLFWwindow *share = nullptr)
+      : _window{vkh::createWindow(width, height, title, resizable, monitor,
+                                  share)} {
     _isOwner = true;
   }
   Window(const Window &) = delete;
@@ -45,12 +47,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Window() {
-    if (_isOwner) {
-      vkh::destroyWindow(_window);
-      std::cout << "Window destructor" << '\n';
-    }
-  }
+  ~Window() { _destroyVkData(); }
   const pGLFWwindow &ref() const noexcept { return _window; }
 
 private:
@@ -62,18 +59,31 @@ private:
     _isOwner = true;
     rhs._isOwner = false;
   }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroyWindow(_window);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Window destructor" << '\n';
+      }
+    }
+  }
 };
 
 class Instance {
 public:
   Instance() {
-    _instance = _customInitialize();
+    _instance = _customInitialize(_debugInfo);
     _isOwner = true;
   }
   Instance(VkInstanceCreateInfo *pCreateInfo,
            const VkAllocationCallbacks *pAllocator = nullptr)
       : _pAllocator{pAllocator} {
     _instance = vkh::createInstance(pCreateInfo, pAllocator);
+    if constexpr (enableValidationLayers) {
+      _debugInfo = *(VkDebugUtilsMessengerCreateInfoEXT *)(pCreateInfo->pNext);
+    }
     _isOwner = true;
   }
   Instance(const Instance &) = delete;
@@ -83,12 +93,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Instance() {
-    if (_isOwner) {
-      vkh::destroyInstance(_instance, _pAllocator);
-      std::cout << "Instance destructor" << '\n';
-    }
-  }
+  ~Instance() { _destroyVkData(); }
 
   const VkInstance &ref() const noexcept { return _instance; }
 
@@ -105,12 +110,23 @@ private:
   void _moveDataFrom(Instance &&rhs) {
     _instance = rhs._instance;
     _pAllocator = rhs._pAllocator;
-    _debugInfo = rhs._debugInfo;
+    _debugInfo = std::move(rhs._debugInfo);
     _isOwner = true;
     rhs._isOwner = false;
   }
 
-  CUSTOM static VkInstance _customInitialize() {
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroyInstance(_instance, _pAllocator);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Instance destructor" << '\n';
+      }
+    }
+  }
+
+  CUSTOM static VkInstance
+  _customInitialize(VkDebugUtilsMessengerCreateInfoEXT &debInfo) {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Vulkan Application";
@@ -131,6 +147,7 @@ private:
       VkDebugUtilsMessengerCreateInfoEXT debugInfo;
       populateDebugMessengerCreateInfo(debugInfo);
       instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugInfo;
+      debInfo = debugInfo;
     }
 
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -164,15 +181,15 @@ class DebugMessenger {
 public:
   DebugMessenger() = default;
   DebugMessenger(VkInstance instance,
-                 const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo = {},
+                 const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
                  const VkAllocationCallbacks *pAllocator = nullptr)
       : _instance{instance}, _pAllocator{pAllocator} {
     if constexpr (vkw::enableValidationLayers) {
       if (vkh::checkValidationLayerSupport() == false) {
         throw std::runtime_error("Validation layers are not supported.");
-        _debugMessenger =
-            vkh::createDebugMessenger(_instance, pCreateInfo, pAllocator);
       }
+      _debugMessenger =
+          vkh::createDebugMessenger(_instance, pCreateInfo, pAllocator);
       _isOwner = true;
     }
   }
@@ -183,12 +200,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~DebugMessenger() {
-    if (_isOwner) {
-      vkh::destroyDebugMessenger(_instance, _debugMessenger, _pAllocator);
-      std::cout << "DebugMessenger destructor" << '\n';
-    }
-  }
+  ~DebugMessenger() { _destroyVkData(); }
 
   const VkDebugUtilsMessengerEXT &ref() const noexcept {
     return _debugMessenger;
@@ -209,6 +221,16 @@ private:
     }
     rhs._isOwner = false;
   }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroyDebugMessenger(_instance, _debugMessenger, _pAllocator);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "DebugMessenger destructor" << '\n';
+      }
+    }
+  }
 };
 
 class Surface {
@@ -227,12 +249,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Surface() {
-    if (_isOwner) {
-      vkh::destroySurface(_instance, _surface, _pAllocator);
-      std::cout << "Surface destructor" << '\n';
-    }
-  }
+  ~Surface() { _destroyVkData(); }
   const VkSurfaceKHR &ref() const noexcept { return _surface; }
 
 private:
@@ -243,12 +260,23 @@ private:
   bool _isOwner = false;
 
   void _moveDataFrom(Surface &&rhs) {
+    _destroyVkData();
     _surface = rhs._surface;
     _instance = rhs._instance;
     _window = rhs._window;
     _pAllocator = rhs._pAllocator;
     _isOwner = true;
     rhs._isOwner = false;
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroySurface(_instance, _surface, _pAllocator);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Surface destructor" << '\n';
+      }
+    }
   }
 };
 
@@ -291,12 +319,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Device() {
-    if (_isOwner) {
-      vkh::destroyDevice(_device, _pAllocator);
-      std::cout << "Device destructor" << '\n';
-    }
-  }
+  ~Device() { _destroyVkData(); }
 
   const VkDevice &ref() const noexcept { return _device; }
 
@@ -316,12 +339,23 @@ private:
   bool _isOwner = false;
 
   void _moveDataFrom(Device &&rhs) {
+    _destroyVkData();
     _device = rhs._device;
     _physicalDevice = rhs._physicalDevice;
-    _queue = rhs._queue;
+    _queue = std::move(rhs._queue);
     _pAllocator = rhs._pAllocator;
     _isOwner = true;
     rhs._isOwner = false;
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroyDevice(_device, _pAllocator);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Device destructor" << '\n';
+      }
+    }
   }
 
   static CUSTOM DeviceReturnWrapper _customInitialize(VkInstance instance,
@@ -405,7 +439,7 @@ private:
     std::map<std::string, uint32_t> helper;
     for (const auto &availableExtension : availableExtensionsList) {
       helper[availableExtension.extensionName]++;
-      // std::cout << availableExtension.extensionName << '\n';
+      //  std::cout << availableExtension.extensionName << '\n';
     }
     for (const auto &deviceExtension : deviceExtensions) {
       helper[deviceExtension]++;
@@ -443,48 +477,68 @@ private:
   }
 };
 
-template <vkh::PipelineType pipelineType> class Pipeline {
+class GraphicsPipeline {
 public:
-  Pipeline() = default;
-  Pipeline(VkDevice device, VkPipelineCache pipelineCache,
-           const vkh::pipelineInfoType<pipelineType> *pCreateInfo,
-           const VkAllocationCallbacks *pAllocator = nullptr)
-      : _device{device}, _pipelineCache{pipelineCache}, _pAllocator{
-                                                            pAllocator} {
-    _pipeline =
+  GraphicsPipeline() = default;
+  GraphicsPipeline(VkDevice device,
+                   const VkGraphicsPipelineCreateInfo *pCreateInfo,
+                   VkPipelineCache pipelineCache = nullptr,
+                   const VkAllocationCallbacks *pAllocator = nullptr)
+      : _device{device}, _pipelineCache{pipelineCache},
+        _pipelineLayout{pCreateInfo->layout},
+        _renderPass{pCreateInfo->renderPass}, _pAllocator{pAllocator} {
+    _graphicsPipeline =
         vkh::createPipeline(device, pipelineCache, pCreateInfo, pAllocator);
     _isOwner = true;
   }
-  Pipeline(const Pipeline &) = delete;
-  Pipeline(Pipeline &&rhs) { _moveDataFrom(std::move(rhs)); }
-  Pipeline &operator=(const Pipeline &) = delete;
-  Pipeline &operator=(Pipeline &&rhs) {
+  GraphicsPipeline(const GraphicsPipeline &) = delete;
+  GraphicsPipeline(GraphicsPipeline &&rhs) { _moveDataFrom(std::move(rhs)); }
+  GraphicsPipeline &operator=(const GraphicsPipeline &) = delete;
+  GraphicsPipeline &operator=(GraphicsPipeline &&rhs) {
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Pipeline() {
-    if (_isOwner) {
-      vkh::destroyPipeline(_device, _pipeline, _pAllocator);
-      std::cout << "Pipeline destructor" << '\n';
-    }
-  }
+  ~GraphicsPipeline() { _destroyVkData(); }
 
-  const VkPipeline &ref() const noexcept { return _pipeline; }
+  const VkPipeline &ref() const noexcept { return _graphicsPipeline; }
+
+  const VkPipelineCache &cache() const noexcept { return _pipelineCache; }
+
+  const VkPipelineLayout &layout() const noexcept { return _pipelineLayout; }
+
+  const VkRenderPass &renderPass() const noexcept { return _renderPass; }
 
 private:
-  VkPipeline _pipeline;
+  VkPipeline _graphicsPipeline;
   VkDevice _device;
   VkPipelineCache _pipelineCache;
+  VkPipelineLayout _pipelineLayout;
+  VkRenderPass _renderPass;
   const VkAllocationCallbacks *_pAllocator;
   bool _isOwner = false;
 
-  void _moveDataFrom(Pipeline &&rhs) {
-    _pipeline = rhs._pipeline;
+  void _moveDataFrom(GraphicsPipeline &&rhs) {
+    _destroyVkData();
+    _graphicsPipeline = rhs._graphicsPipeline;
     _device = rhs._device;
     _pipelineCache = rhs._pipelineCache;
+    _pipelineLayout = rhs._pipelineLayout;
+    _renderPass = rhs._renderPass;
     _pAllocator = rhs._pAllocator;
     _isOwner = true;
     rhs._isOwner = false;
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroyPipeline(_device, _graphicsPipeline, _pAllocator);
+      vkh::destroyPipelineLayout(_device, _pipelineLayout, _pAllocator);
+      vkh::destroyRenderPass(_device, _renderPass, _pAllocator);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "GraphicsPipeline destructor" << '\n';
+      }
+    }
   }
 };
 
@@ -510,14 +564,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Framebuffers() {
-    if (_isOwner) {
-      for (auto &framebuffer : _framebuffers) {
-        vkh::destroyFramebuffer(_device, framebuffer, _pAllocator);
-      }
-      std::cout << "Framebuffers destructor" << '\n';
-    }
-  }
+  ~Framebuffers() { _destroyVkData(); }
 
   const VkFramebuffer *ref() const noexcept { return _framebuffers.data(); }
 
@@ -536,11 +583,316 @@ private:
   bool _isOwner = false;
 
   void _moveDataFrom(Framebuffers &&rhs) {
-    _framebuffers = rhs._framebuffers;
+    _destroyVkData();
+    _framebuffers = std::move(rhs._framebuffers);
     _device = rhs._device;
     _pAllocator = rhs._pAllocator;
     _isOwner = true;
     rhs._isOwner = false;
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      for (auto &framebuffer : _framebuffers) {
+        vkh::destroyFramebuffer(_device, framebuffer, _pAllocator);
+      }
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Framebuffers destructor" << '\n';
+      }
+    }
+  }
+};
+
+class Swapchain {
+public:
+  Swapchain() = default;
+  Swapchain(
+      VkSurfaceKHR surface, VkDevice device, VkPhysicalDevice physicalDevice,
+      VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR)
+      : _device{device}, _pAllocator{nullptr} {
+    _customInitialize(surface, device, physicalDevice, preferredPresentMode);
+  }
+  Swapchain(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
+            const VkAllocationCallbacks *pAllocator = nullptr)
+      : _device{device}, _pAllocator{pAllocator} {
+    _swapchain = vkh::createSwapchain(device, pCreateInfo, pAllocator);
+    _format = pCreateInfo->imageFormat;
+    _extent = pCreateInfo->imageExtent;
+    _isOwner = true;
+  }
+  Swapchain(const Swapchain &) = delete;
+  Swapchain(Swapchain &&rhs) { _moveDataFrom(std::move(rhs)); }
+  Swapchain &operator=(const Swapchain &) = delete;
+  Swapchain &operator=(Swapchain &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~Swapchain() { _destroyVkData(); }
+
+  const VkSwapchainKHR &ref() const noexcept { return _swapchain; }
+
+  const VkFormat &format() const noexcept { return _format; }
+
+  const VkExtent2D &extent() const noexcept { return _extent; }
+
+private:
+  VkSwapchainKHR _swapchain;
+  VkFormat _format;
+  VkExtent2D _extent;
+  VkDevice _device;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = false;
+
+  void _moveDataFrom(Swapchain &&rhs) {
+    _destroyVkData();
+    _swapchain = rhs._swapchain;
+    _format = std::move(rhs._format);
+    _extent = std::move(rhs._extent);
+    _isOwner = true;
+    rhs._isOwner = false;
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkh::destroySwapchain(_device, _swapchain, _pAllocator);
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Swapchain destructor" << '\n';
+      }
+    }
+  }
+
+  CUSTOM void _customInitialize(
+      VkSurfaceKHR surface, VkDevice device, VkPhysicalDevice physicalDevice,
+      VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR) {
+    /* Vulkan 1.3.231 - A Specification, pg 2235 */
+
+    auto surfaceCapabilities =
+        vkh::getPhysicalDeviceSurfaceCapabilities(physicalDevice, surface);
+    auto surfaceFormats =
+        vkh::getPhysicalDeviceSurfaceFormatList(physicalDevice, surface);
+    auto surfacePresentModes =
+        vkh::getPhysicalDeviceSurfacePresentModeList(physicalDevice, surface);
+
+    VkSwapchainCreateInfoKHR swapchainInfo{};
+    swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    swapchainInfo.pNext = nullptr;
+
+    /* Images of the swapchain can be used to create a VkImageView with a
+    different format than what the swapchain was create with. */
+    /* If flags contains VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR then the
+    pNext chain must include a VkImageFormatListCreateInfo structure with a
+    viewFormatCount greater than zero and pViewFormats must have an element
+    equal to imageFormat */
+    // swapchainInfo.flags = VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
+
+    swapchainInfo.surface = surface;
+
+    /* plus 1 to prevent waiting on the driver to complete internal operations
+    before another image is accquired */
+    uint32_t minImageCount = surfaceCapabilities.minImageCount + 1;
+
+    /* minImageCount <= surfaceCapabilities.maxImageCount, and
+    surfaceCapabilities.maxImageCount might be less than
+    surfaceCapabilities.minImageCount */
+    if (surfaceCapabilities.maxImageCount > 0 &&
+        minImageCount > surfaceCapabilities.maxImageCount) {
+      minImageCount = surfaceCapabilities.maxImageCount;
+    }
+    swapchainInfo.minImageCount = minImageCount;
+
+    /* imageFormat and imageColorSpace must match the surfaceFormats.format and
+    surfaceFormats.colorSpace members, respectively */
+    if (surfaceFormats.empty()) {
+      throw std::runtime_error("No surface format available.");
+    }
+    swapchainInfo.imageFormat = surfaceFormats[0].format;
+    swapchainInfo.imageColorSpace = surfaceFormats[0].colorSpace;
+    for (const auto &format : surfaceFormats) {
+      if (format.format == VK_FORMAT_R8G8B8A8_SRGB &&
+          format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+        swapchainInfo.imageFormat = format.format;
+        swapchainInfo.imageColorSpace = format.colorSpace;
+        break;
+      }
+    }
+
+    /* imageExtent is the size (in pixels) of the swapchain
+    image(s). The behavior is platform-dependent if the image
+    extent does not match the surface’s currentExtent as returned
+    by vkGetPhysicalDeviceSurfaceCapabilitiesKHR. */
+    uint32_t imageExtentWidth = surfaceCapabilities.currentExtent.width;
+    uint32_t imageExtentHeight = surfaceCapabilities.currentExtent.height;
+
+    /* {0, 0} <= minImageExtent <= imageExtent <= maxImageExtent */
+    if (imageExtentWidth > surfaceCapabilities.maxImageExtent.width) {
+      imageExtentWidth = surfaceCapabilities.maxImageExtent.width;
+    }
+    if (imageExtentHeight > surfaceCapabilities.maxImageExtent.height) {
+      imageExtentHeight = surfaceCapabilities.maxImageExtent.height;
+    }
+    swapchainInfo.imageExtent = {imageExtentWidth, imageExtentHeight};
+
+    /* imageArrayLayers is the number of views in a multiview/stereo surface.
+    For non-stereoscopic-3D applications, this value is 1. */
+    /* 0 < imageArrayLayers <= maxImageArrayLayers */
+    swapchainInfo.imageArrayLayers = 1;
+
+    /* {presentMode} determines how incoming present requests will be processed
+    and queued internally. */
+    /* enum {VkPresentModeKHR}, pg 2219 */
+    /* {VK_PRESENT_MODE_FIFO_KHR} is guaranteed to be available */
+    swapchainInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+    // auto  = VK_PRESENT_MODE_IMMEDIATE_KHR;
+    for (const auto &presentMode : surfacePresentModes) {
+      if (presentMode == preferredPresentMode) {
+        swapchainInfo.presentMode = preferredPresentMode;
+        break;
+      }
+    }
+
+    /* {VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT} specifies that the image can be
+    used to create a {VkImageView} suitable for use as a color or resolve
+    attachment in a {VkFramebuffer}, pg 898 */
+    swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    /* {VK_SHARING_MODE_EXCLUSIVE} requires some works to be done with ownership
+     */
+    swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    swapchainInfo.queueFamilyIndexCount = 0;
+    swapchainInfo.pQueueFamilyIndices = nullptr;
+
+    /* image content is presented without being transformed */
+    if (surfaceCapabilities.supportedTransforms &
+        VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
+      swapchainInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    } else {
+      throw std::runtime_error(
+          "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR not supported.");
+    }
+
+    if (surfaceCapabilities.supportedCompositeAlpha &
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) {
+      swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    } else {
+      throw std::runtime_error(
+          "VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR not supported.");
+    }
+
+    swapchainInfo.clipped = VK_TRUE;
+    swapchainInfo.pNext = nullptr;
+    swapchainInfo.oldSwapchain = VK_NULL_HANDLE;
+
+    _format = swapchainInfo.imageFormat;
+    _extent = swapchainInfo.imageExtent;
+    _swapchain = vkh::createSwapchain(device, &swapchainInfo);
+    _isOwner = true;
+  }
+};
+
+class ImageViews {
+public:
+  ImageViews() = default;
+  ImageViews(VkDevice device, VkSwapchainKHR swapchain, VkFormat format)
+      : _device{device}, _pAllocator{nullptr} {
+    _customInitialize(device, swapchain, format);
+  }
+  ImageViews(VkDevice device,
+             const std::vector<VkImageViewCreateInfo> &createInfos,
+             const VkAllocationCallbacks *pAllocator = nullptr)
+      : _imageViews{createInfos.size()}, _device{device}, _pAllocator{
+                                                              pAllocator} {
+    size_t imageCount = createInfos.size();
+    for (size_t i = 0; i < imageCount; ++i) {
+      _imageViews[i] = vkh::createImageView(device, &createInfos[i]);
+    }
+    _isOwner = true;
+  }
+  ImageViews(const ImageViews &) = delete;
+  ImageViews(ImageViews &&rhs) { _moveDataFrom(std::move(rhs)); }
+  ImageViews &operator=(const ImageViews &) = delete;
+  ImageViews &operator=(ImageViews &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+
+  ~ImageViews() { _destroyVkData(); }
+
+  const VkImageView *ref() { return _imageViews.data(); }
+
+  template <typename SizeType = size_t> auto size() const noexcept {
+    return static_cast<SizeType>(_imageViews.size());
+  }
+
+  const VkImageView &operator[](size_t index) const noexcept {
+    return _imageViews[index];
+  }
+
+private:
+  std::vector<VkImageView> _imageViews;
+  VkDevice _device;
+  const VkAllocationCallbacks *_pAllocator;
+  bool _isOwner = false;
+
+  void _moveDataFrom(ImageViews &&rhs) {
+    _destroyVkData();
+    _imageViews = std::move(rhs._imageViews);
+    _device = rhs._device;
+    _pAllocator = rhs._pAllocator;
+    _isOwner = true;
+    rhs._isOwner = false;
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      for (auto &imageView : _imageViews) {
+        vkh::destroyImageView(_device, imageView, _pAllocator);
+      }
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "Framebuffers destructor" << '\n';
+      }
+    }
+  }
+
+  CUSTOM void _customInitialize(VkDevice device, VkSwapchainKHR swapchain,
+                                VkFormat format) {
+    auto images = vkh::getSwapchainImages(device, swapchain);
+    size_t imageCount = images.size();
+    _imageViews.resize(imageCount);
+    for (size_t i = 0; i < imageCount; ++i) {
+      VkImageViewCreateInfo imageViewInfo{};
+      imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+      imageViewInfo.pNext = nullptr;
+      // imageViewInfo.flags =
+      imageViewInfo.image = images[i];
+
+      /* treat images as 2D textures */
+      imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+
+      imageViewInfo.format = format;
+
+      /* default mapping */
+      imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+      imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+      imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+      imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+      /* color aspect */
+      imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+      /* In stereographic 3D applications, create a swapchain with multiple
+      layers before creating multiple image views for each images representing
+      the views for the left and right eyes by accessing different layers */
+      imageViewInfo.subresourceRange.baseMipLevel = 0;
+      imageViewInfo.subresourceRange.levelCount = 1;
+      imageViewInfo.subresourceRange.baseArrayLayer = 0;
+      imageViewInfo.subresourceRange.layerCount = 1;
+
+      _imageViews[i] = vkh::createImageView(device, &imageViewInfo);
+    }
+    _isOwner = true;
   }
 };
 

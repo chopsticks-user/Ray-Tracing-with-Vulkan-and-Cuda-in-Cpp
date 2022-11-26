@@ -310,7 +310,7 @@ void VulkanApp::createGraphicsPipeline() {
   pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
   pipelineLayoutInfo.pushConstantRangeCount = 0;
   pipelineLayoutInfo.pPushConstantRanges = nullptr;
-  graphicsPipelineDeps.layout =
+  auto graphicsPipelineLayout =
       vkh::createPipelineLayout(device.ref(), &pipelineLayoutInfo);
 
   /* Render pass */
@@ -350,7 +350,7 @@ void VulkanApp::createGraphicsPipeline() {
   renderPassInfo.pSubpasses = &subpass;
   renderPassInfo.dependencyCount = 1;
   renderPassInfo.pDependencies = &subPassDep;
-  graphicsPipelineDeps.renderPass =
+  auto graphicsPipelineRenderPass =
       vkh::createRenderPass(device.ref(), &renderPassInfo);
 
   /* Create a graphics pipeline */
@@ -367,14 +367,13 @@ void VulkanApp::createGraphicsPipeline() {
   pipelineInfo.pDepthStencilState = nullptr;
   pipelineInfo.pColorBlendState = &colorBlendState;
   pipelineInfo.pDynamicState = nullptr;
-  pipelineInfo.layout = graphicsPipelineDeps.layout;
-  pipelineInfo.renderPass = graphicsPipelineDeps.renderPass;
+  pipelineInfo.layout = graphicsPipelineLayout;
+  pipelineInfo.renderPass = graphicsPipelineRenderPass;
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
   pipelineInfo.basePipelineIndex = -1;
 
-  graphicsPipeline = vkw::Pipeline<vkh::Graphics>{
-      device.ref(), graphicsPipelineDeps.cache, &pipelineInfo};
+  graphicsPipeline = vkw::GraphicsPipeline{device.ref(), &pipelineInfo};
 
   vkh::destroyShaderModule(device.ref(), shaderModule.vertex);
   vkh::destroyShaderModule(device.ref(), shaderModule.fragment);
@@ -385,7 +384,7 @@ void VulkanApp::createFramebuffers() {
   std::vector<VkImageView> attachments{imageViews};
   for (size_t i = 0; i < imageViews.size(); ++i) {
     framebufferInfos[i].sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferInfos[i].renderPass = graphicsPipelineDeps.renderPass;
+    framebufferInfos[i].renderPass = graphicsPipeline.renderPass();
     framebufferInfos[i].attachmentCount = 1;
     framebufferInfos[i].pAttachments = &attachments[i];
     framebufferInfos[i].width = swapchain.extent.width;
@@ -411,20 +410,11 @@ void VulkanApp::recreateSwapchain() {
   createImageViews();
   createGraphicsPipeline();
   createFramebuffers();
+  // swapchain = vkw::Swapchain{surface.ref(), device.ref(), device.physical()};
   // createUniformBuffers();
 }
 
 void VulkanApp::cleanupSwapchain() {
-  // for (size_t i = 0; i < maxFramesInFlight; ++i) {
-  //   vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-  //   vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
-  // }
-  // for (auto &framebuffer : framebuffers) {
-  //   vkh::destroyFramebuffer(device.ref(), framebuffer);
-  // }
-  // vkh::destroyPipeline(device.ref(), graphicsPipeline.ref());
-  vkh::destroyPipelineLayout(device.ref(), graphicsPipelineDeps.layout);
-  vkh::destroyRenderPass(device.ref(), graphicsPipelineDeps.renderPass);
   for (auto &imageView : imageViews) {
     vkh::destroyImageView(device.ref(), imageView);
   }
@@ -482,7 +472,7 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
 
   VkRenderPassBeginInfo renderPassBeginInfo{};
   renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-  renderPassBeginInfo.renderPass = graphicsPipelineDeps.renderPass;
+  renderPassBeginInfo.renderPass = graphicsPipeline.renderPass();
   renderPassBeginInfo.framebuffer = framebuffers[imageIndex];
   renderPassBeginInfo.renderArea.offset = {0, 0};
   renderPassBeginInfo.renderArea.extent = swapchain.extent;
@@ -503,7 +493,7 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
 
   /* Bind the descriptor sets */
   vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          graphicsPipelineDeps.layout, 0, 1,
+                          graphicsPipeline.layout(), 0, 1,
                           descriptorSets.data(), 0, nullptr);
 
   /* Bind if using index buffers */
@@ -885,11 +875,7 @@ void VulkanApp::render() {
   sync.currentFrame = (sync.currentFrame + 1) % maxFramesInFlight;
 }
 
-VulkanApp::VulkanApp()
-    : glfw{}, window{}, instance{}, debugMessenger{instance.ref(),
-                                                   &instance.debugInfo()},
-      surface{instance.ref(), window.ref()}, device{instance.ref(),
-                                                    surface.ref()} {
+VulkanApp::VulkanApp() {
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
 

@@ -28,44 +28,42 @@ public:
   void writeInfo(std::string filePath);
 
 private:
-  /* Step 0: Setup GLFW and window */
-  vkw::GLFW glfw;
-  vkw::Window window;
-
-  /* Step 1: Create an instance */
-  vkw::Instance instance;
-
-  std::vector<const char *> instanceExtensions = {
+  const std::vector<const char *> instanceExtensions = {
       VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
-
-  /* Step 2: Setup layers */
   const std::vector<const char *> instanceLayers = {
       "VK_LAYER_KHRONOS_validation", "VK_LAYER_MANGOHUD_overlay"};
+  const std::vector<const char *> deviceExtensions = {
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+      VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
 
+  /* Step 0: Setup GLFW and window */
+  vkw::GLFW glfw = {};
+  vkw::Window window = {};
+
+  /* Step 1: Create an instance */
+  vkw::Instance instance = {};
+
+  /* Step 2: Setup layers */
   /* Debug messenger of validation layers */
-  vkw::DebugMessenger debugMessenger;
+  vkw::DebugMessenger debugMessenger = {instance.ref(), &instance.debugInfo()};
 
   /* Step 3: Create a window surface */
-  // VkSurfaceKHR surface;
-  vkw::Surface surface;
+  vkw::Surface surface = {instance.ref(), window.ref()};
 
   /* Step 4: Create a logical device */
   /* For graphics, computing, and presentation */
   /* Create a logical device after succesfully selecting a physical device
   and one of its queue families by calling the selectQueueFamily function. */
-  vkw::Device device;
+  vkw::Device device = {instance.ref(), surface.ref()};
 
   /* Step 5: Create a swapchain to render results to the surface */
   vkh::SwapChainWrapper swapchain;
+  // swapchain = {surface.ref(), device.ref(), device.physical()};
 
   const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
   // const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 
   const uint32_t swapchainCount = 1;
-
-  std::vector<const char *> deviceExtensions = {
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-      VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
 
   /* Included when selecting a physical device */
 
@@ -85,8 +83,8 @@ private:
   void createImageViews();
 
   /* Step 7: Create a graphics pipeline */
-  vkw::Pipeline<vkh::Graphics> graphicsPipeline;
-  vkh::GraphicsPipelineDepWrapper graphicsPipelineDeps;
+  vkw::GraphicsPipeline graphicsPipeline;
+  // vkh::GraphicsPipelineDepWrapper graphicsPipelineDeps;
 
   const uint32_t graphicsPipelineCount = 1;
 
