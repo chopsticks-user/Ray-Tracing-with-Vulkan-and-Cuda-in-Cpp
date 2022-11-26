@@ -2,8 +2,8 @@
 #define VULKAN_APP_HPP
 
 #include "resources.hpp"
-#include "vk_wrappers.hpp"
-#include "vkh/vkh.hpp"
+
+#include <vkw.hpp>
 
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
