@@ -92,14 +92,20 @@ public:
 
   const VkInstance &ref() const noexcept { return _instance; }
 
+  const VkDebugUtilsMessengerCreateInfoEXT &debugInfo() const noexcept {
+    return _debugInfo;
+  }
+
 private:
   VkInstance _instance;
   const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
+  VkDebugUtilsMessengerCreateInfoEXT _debugInfo;
 
   void _moveDataFrom(Instance &&rhs) {
     _instance = rhs._instance;
     _pAllocator = rhs._pAllocator;
+    _debugInfo = rhs._debugInfo;
     _isOwner = true;
     rhs._isOwner = false;
   }
@@ -116,16 +122,15 @@ private:
     std::vector<const char *> requiredExtensions{
         vkh::getRequiredInstanceExtensionNameList()};
     std::vector<const char *> layers = {"VK_LAYER_MANGOHUD_overlay"};
-
-    auto debugCreateInfo = VkDebugUtilsMessengerCreateInfoEXT{};
+    ;
     VkInstanceCreateInfo instanceInfo{};
 
     if constexpr (vkw::enableValidationLayers) {
       requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
       layers.push_back("VK_LAYER_KHRONOS_validation");
-      vkh::populateDebugMessengerCreateInfo(debugCreateInfo);
-      instanceInfo.pNext =
-          (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+      VkDebugUtilsMessengerCreateInfoEXT debugInfo;
+      populateDebugMessengerCreateInfo(debugInfo);
+      instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugInfo;
     }
 
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -137,19 +142,37 @@ private:
     instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
     return vkh::createInstance(&instanceInfo);
   }
+
+  CUSTOM static void populateDebugMessengerCreateInfo(
+      VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
+    createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    createInfo.messageSeverity =
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+        // VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    createInfo.pfnUserCallback = vkh::debugCallback;
+    createInfo.pUserData = nullptr;
+  }
 };
 
 class DebugMessenger {
 public:
   DebugMessenger() = default;
   DebugMessenger(VkInstance instance,
+                 const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo = {},
                  const VkAllocationCallbacks *pAllocator = nullptr)
       : _instance{instance}, _pAllocator{pAllocator} {
     if constexpr (vkw::enableValidationLayers) {
       if (vkh::checkValidationLayerSupport() == false) {
         throw std::runtime_error("Validation layers are not supported.");
+        _debugMessenger =
+            vkh::createDebugMessenger(_instance, pCreateInfo, pAllocator);
       }
-      _debugMessenger = vkh::createDebugMessenger(_instance);
       _isOwner = true;
     }
   }
@@ -162,8 +185,7 @@ public:
   }
   ~DebugMessenger() {
     if (_isOwner) {
-      vkh::destroyDebugUtilsMessengerEXT(_instance, _debugMessenger,
-                                         _pAllocator);
+      vkh::destroyDebugMessenger(_instance, _debugMessenger, _pAllocator);
       std::cout << "DebugMessenger destructor" << '\n';
     }
   }
@@ -173,9 +195,9 @@ public:
   }
 
 private:
-  VkDebugUtilsMessengerEXT _debugMessenger;
-  VkInstance _instance;
-  const VkAllocationCallbacks *_pAllocator;
+  VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
+  VkInstance _instance = VK_NULL_HANDLE;
+  const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
 
   void _moveDataFrom(DebugMessenger &&rhs) {

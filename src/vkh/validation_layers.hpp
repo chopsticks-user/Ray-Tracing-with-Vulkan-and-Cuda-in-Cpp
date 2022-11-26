@@ -33,14 +33,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData);
 
 /**
- * @brief
- *
- * @param createInfo
- */
-void populateDebugMessengerCreateInfo(
-    VkDebugUtilsMessengerCreateInfoEXT &createInfo);
-
-/**
  * @brief Create a Debug Utils Messenger E X T object
  *
  * @param instance
@@ -58,9 +50,14 @@ VkResult createDebugUtilsMessengerEXT(
  * @brief Create a Debug Messenger object
  *
  * @param instance
+ * @param pCreateInfo
+ * @param pAllocator
  * @return VkDebugUtilsMessengerEXT
  */
-VkDebugUtilsMessengerEXT createDebugMessenger(VkInstance instance);
+VkDebugUtilsMessengerEXT
+createDebugMessenger(VkInstance instance,
+                     const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+                     const VkAllocationCallbacks *pAllocator = nullptr);
 
 /**
  * @brief
@@ -69,9 +66,9 @@ VkDebugUtilsMessengerEXT createDebugMessenger(VkInstance instance);
  * @param debugMessenger
  * @param pAllocator
  */
-void destroyDebugUtilsMessengerEXT(VkInstance instance,
-                                   VkDebugUtilsMessengerEXT debugMessenger,
-                                   const VkAllocationCallbacks *pAllocator);
+void destroyDebugMessenger(VkInstance instance,
+                           VkDebugUtilsMessengerEXT debugMessenger,
+                           const VkAllocationCallbacks *pAllocator);
 
 } /* namespace vkh */
 

@@ -711,7 +711,7 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
   void *data;
   vkMapMemory(device.ref(), uniformBuffersMemory[currentImage], 0, sizeof(ubo),
               0, &data);
-  memcpy(data, &ubo, sizeof(ubo));
+  std::memcpy(data, &ubo, sizeof(ubo));
   vkUnmapMemory(device.ref(), uniformBuffersMemory[currentImage]);
 }
 
@@ -886,7 +886,8 @@ void VulkanApp::render() {
 }
 
 VulkanApp::VulkanApp()
-    : glfw{}, window{}, instance{}, debugMessenger{instance.ref()},
+    : glfw{}, window{}, instance{}, debugMessenger{instance.ref(),
+                                                   &instance.debugInfo()},
       surface{instance.ref(), window.ref()}, device{instance.ref(),
                                                     surface.ref()} {
   glfwSetWindowUserPointer(window.ref(), this);

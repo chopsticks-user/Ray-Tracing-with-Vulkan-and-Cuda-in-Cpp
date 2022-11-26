@@ -13,11 +13,6 @@
 
 #include <chrono>
 #include <cstring>
-#include <fstream>
-#include <map>
-#include <optional>
-#include <string>
-#include <utility>
 
 class VulkanApp {
 public:
