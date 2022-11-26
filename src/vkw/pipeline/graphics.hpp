@@ -1,7 +1,8 @@
 #ifndef VKW_PIPELINE_GRAPHICS_HPP
 #define VKW_PIPELINE_GRAPHICS_HPP
 
-#include "../config.hpp"
+#include "config.hpp"
+#include "wrappers.hpp"
 
 #include <vkh.hpp>
 
@@ -86,7 +87,7 @@ private:
                                 const VkDescriptorSetLayout *desSetLayout,
                                 const std::string &vertexFilePath,
                                 const std::string &fragFilePath) {
-    vkh::ShaderModuleWrapper shaderModule{};
+    vkw::ShaderModuleWrapper shaderModule{};
     shaderModule.vertex = vkh::createShaderModule(
         device, vkh::absoluteDirectory + vertexFilePath);
     shaderModule.fragment =
@@ -271,7 +272,7 @@ private:
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.pNext = nullptr;
-    pipelineInfo.stageCount = vkh::ShaderModuleWrapper::stageCount;
+    pipelineInfo.stageCount = vkw::ShaderModuleWrapper::stageCount;
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertInputInfo;
     pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;

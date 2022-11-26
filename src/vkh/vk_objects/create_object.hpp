@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #endif /* GLFW_INCLUDE_VULKAN */
 
-#include "utility.hpp"
+#include "utils/utility.hpp"
 
 #include <fstream>
 #include <stdexcept>

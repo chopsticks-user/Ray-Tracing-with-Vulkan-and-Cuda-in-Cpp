@@ -2,16 +2,18 @@
 
 void VulkanApp::recreateSwapchain() {
   /* Handle minimization */
-  int width = 0, heigth = 0;
-  glfwGetFramebufferSize(window.ref(), &width, &heigth);
-  while (width == 0 || heigth == 0) {
-    glfwGetFramebufferSize(window.ref(), &width, &heigth);
-    glfwWaitEvents();
-  }
+  window.whileMinimized();
 
-  /* Recreate the swapchain */
-  vkDeviceWaitIdle(device.ref());
-  cleanupSwapchain();
+  /* Wait until all resources are not in used */
+  device.waitIdle();
+
+  /* Free current swapchain and its dependencies */
+  framebuffers = {};
+  graphicsPipeline = {};
+  imageViews = {};
+  swapchain = {};
+
+  /* Recreate swapchain and its dependencies */
   swapchain = {surface.ref(), device.ref(), device.physical(),
                preferredPresentMode};
   imageViews = {device.ref(), swapchain.ref(), swapchain.format()};
@@ -25,18 +27,10 @@ void VulkanApp::recreateSwapchain() {
                   swapchain.extent()};
 }
 
-void VulkanApp::cleanupSwapchain() {
-  framebuffers = {};
-  graphicsPipeline = {};
-  imageViews = {};
-  swapchain = {};
-}
-
-void VulkanApp::framebufferResizeCallback(GLFWwindow *windowInstance,
+void VulkanApp::framebufferResizeCallback(GLFWwindow *pWindow,
                                           [[maybe_unused]] int width,
                                           [[maybe_unused]] int height) {
-  auto app =
-      reinterpret_cast<VulkanApp *>(glfwGetWindowUserPointer(windowInstance));
+  auto app = reinterpret_cast<VulkanApp *>(glfwGetWindowUserPointer(pWindow));
   app->framebufferResized = true;
 }
 
@@ -493,11 +487,6 @@ VulkanApp::VulkanApp() {
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
 
-  // createSwapchain();
-  // createImageViews();
-  // createDescriptorSetLayout();
-  // createGraphicsPipeline();
-  // createFramebuffers();
   createCommandPool();
   createVertexBuffer();
   createIndexBuffer();
@@ -510,7 +499,6 @@ VulkanApp::VulkanApp() {
 }
 
 VulkanApp::~VulkanApp() {
-  // cleanupSwapchain();
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     vkDestroyBuffer(device.ref(), uniformBuffers[i], nullptr);
     vkFreeMemory(device.ref(), uniformBuffersMemory[i], nullptr);
@@ -534,7 +522,7 @@ void VulkanApp::run() {
     glfwPollEvents();
     render();
   }
-  vkDeviceWaitIdle(device.ref());
+  device.waitIdle();
 }
 
 void VulkanApp::writeInfo(std::string filePath) {

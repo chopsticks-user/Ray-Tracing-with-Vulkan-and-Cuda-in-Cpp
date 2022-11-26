@@ -1,7 +1,8 @@
 #ifndef VKH_VERTEX_HPP
 #define VKH_VERTEX_HPP
 
-#include "utility.hpp"
+#include "config.hpp"
+#include "utils/utility.hpp"
 
 #ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN

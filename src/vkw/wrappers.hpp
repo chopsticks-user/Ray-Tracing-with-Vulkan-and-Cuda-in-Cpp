@@ -1,12 +1,13 @@
-#ifndef VKH_WRAPPER_HPP
-#define VKH_WRAPPER_HPP
+#ifndef VKW_WRAPPERS_HPP
+#define VKW_WRAPPERS_HPP
 
 #ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #endif /* GLFW_INCLUDE_VULKAN */
 
-namespace vkh {
+namespace vkw {
+
 struct ShaderModuleWrapper {
   static constexpr uint32_t stageCount = 2;
 
@@ -26,6 +27,17 @@ struct SwapChainWrapper {
   VkExtent2D extent;
 };
 
-} /* namespace vkh */
+struct MultiPurposeQueue {
+  VkQueue ref;
+  uint32_t familyIndex;
+};
 
-#endif /* VKH_WRAPPER_HPP */
+struct DeviceReturnWrapper {
+  VkDevice device;
+  VkPhysicalDevice physicalDevice;
+  MultiPurposeQueue queue;
+};
+
+} /* namespace vkw */
+
+#endif /* VKW_WRAPPERS_HPP */

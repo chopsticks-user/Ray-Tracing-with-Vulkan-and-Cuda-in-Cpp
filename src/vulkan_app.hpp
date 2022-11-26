@@ -35,7 +35,7 @@ private:
   const std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
       VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
-  const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+  const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 
   /* Step 0: Setup GLFW and window */
   vkw::GLFW glfw = {};
@@ -92,7 +92,6 @@ private:
 
   /* Step 9: Recreate swapchain */
   void recreateSwapchain();
-  void cleanupSwapchain();
   static void framebufferResizeCallback(GLFWwindow *windowInstance, int width,
                                         int height);
   bool framebufferResized = false;

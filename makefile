@@ -13,7 +13,12 @@ LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 MDFLAGS =
 
 SHADERS_DIR = resources/shaders
-SOURCE_PATHS = $(ENTRY_NAME).cpp src/vkh/*.cpp src/*.cpp
+SOURCE_PATHS = $(ENTRY_NAME).cpp src/*.cpp \
+	src/vkh/commands/*.cpp \
+	src/vkh/layers/*.cpp \
+	src/vkh/lists/*.cpp \
+	src/vkh/utils/*.cpp \
+	src/vkh/vk_objects/*.cpp
 INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkw \

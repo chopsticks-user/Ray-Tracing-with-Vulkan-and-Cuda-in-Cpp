@@ -39,6 +39,15 @@ public:
   ~Window() { _destroyVkData(); }
   const pGLFWwindow &ref() const noexcept { return _window; }
 
+  void whileMinimized() {
+    int width = 0, heigth = 0;
+    glfwGetFramebufferSize(_window, &width, &heigth);
+    while (width == 0 || heigth == 0) {
+      glfwGetFramebufferSize(_window, &width, &heigth);
+      glfwWaitEvents();
+    }
+  }
+
 private:
   pGLFWwindow _window;
   bool _isOwner = false;

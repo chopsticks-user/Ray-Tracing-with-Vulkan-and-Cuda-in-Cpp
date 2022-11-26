@@ -2,23 +2,13 @@
 #define VKW_DEVICE_HPP
 
 #include "config.hpp"
+#include "wrappers.hpp"
 
 #include <map>
 #include <optional>
 #include <vkh.hpp>
 
 namespace vkw {
-
-struct MultiPurposeQueue {
-  VkQueue ref;
-  uint32_t familyIndex;
-};
-
-struct DeviceReturnWrapper {
-  VkDevice device;
-  VkPhysicalDevice physicalDevice;
-  MultiPurposeQueue queue;
-};
 
 class Device {
 public:
@@ -59,6 +49,8 @@ public:
   template <typename ReturnType = uint32_t> auto familyIndex() const noexcept {
     return static_cast<ReturnType>(_queue.familyIndex);
   }
+
+  void waitIdle() { vkDeviceWaitIdle(_device); }
 
 private:
   VkDevice _device;
