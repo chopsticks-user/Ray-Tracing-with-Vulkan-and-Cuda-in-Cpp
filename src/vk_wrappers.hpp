@@ -56,8 +56,10 @@ private:
 
   void _moveDataFrom(Window &&rhs) {
     _window = rhs._window;
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {
@@ -111,8 +113,10 @@ private:
     _instance = rhs._instance;
     _pAllocator = rhs._pAllocator;
     _debugInfo = std::move(rhs._debugInfo);
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {
@@ -344,8 +348,10 @@ private:
     _physicalDevice = rhs._physicalDevice;
     _queue = std::move(rhs._queue);
     _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {
@@ -533,8 +539,10 @@ private:
     _pipelineLayout = rhs._pipelineLayout;
     _renderPass = rhs._renderPass;
     _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {
@@ -549,8 +557,8 @@ private:
     }
   }
 
-  CUSTOM void _customInitialize(VkDevice device, VkExtent2D extent,
-                                VkFormat format,
+  CUSTOM void _customInitialize(VkDevice device, const VkExtent2D &extent,
+                                const VkFormat &format,
                                 const VkDescriptorSetLayout *desSetLayout,
                                 const std::string &vertexFilePath,
                                 const std::string &fragFilePath) {
@@ -766,6 +774,11 @@ private:
 class Framebuffers {
 public:
   Framebuffers() = default;
+  Framebuffers(VkDevice device, const std::vector<VkImageView> &imageViews,
+               VkRenderPass renderPass, VkExtent2D extent)
+      : _device{device}, _pAllocator{nullptr} {
+    _customInitialize(device, imageViews, renderPass, extent);
+  }
   Framebuffers(VkDevice device,
                const std::vector<VkFramebufferCreateInfo> &createInfos,
                const VkAllocationCallbacks *pAllocator = nullptr)
@@ -787,7 +800,9 @@ public:
   }
   ~Framebuffers() { _destroyVkData(); }
 
-  const VkFramebuffer *ref() const noexcept { return _framebuffers.data(); }
+  const std::vector<VkFramebuffer> &ref() const noexcept {
+    return _framebuffers;
+  }
 
   template <typename SizeType = size_t> auto size() const noexcept {
     return static_cast<SizeType>(_framebuffers.size());
@@ -808,8 +823,10 @@ private:
     _framebuffers = std::move(rhs._framebuffers);
     _device = rhs._device;
     _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {
@@ -823,14 +840,34 @@ private:
       }
     }
   }
+
+  CUSTOM void _customInitialize(VkDevice device,
+                                const std::vector<VkImageView> &imageViews,
+                                VkRenderPass renderPass, VkExtent2D extent) {
+    size_t imageCount = imageViews.size();
+    _framebuffers.resize(imageCount);
+    std::vector<VkImageView> attachments{imageViews};
+    for (size_t i = 0; i < imageViews.size(); ++i) {
+      VkFramebufferCreateInfo framebufferInfo{};
+      framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+      framebufferInfo.renderPass = renderPass;
+      framebufferInfo.attachmentCount = 1;
+      framebufferInfo.pAttachments = &attachments[i];
+      framebufferInfo.width = extent.width;
+      framebufferInfo.height = extent.height;
+      framebufferInfo.layers = 1;
+      _framebuffers[i] = vkh::createFramebuffer(device, &framebufferInfo);
+    }
+    _isOwner = true;
+  }
 };
 
 class Swapchain {
 public:
   Swapchain() = default;
-  Swapchain(
-      VkSurfaceKHR surface, VkDevice device, VkPhysicalDevice physicalDevice,
-      VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR)
+  Swapchain(VkSurfaceKHR surface, VkDevice device,
+            VkPhysicalDevice physicalDevice,
+            VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR)
       : _device{device}, _pAllocator{nullptr} {
     _customInitialize(surface, device, physicalDevice, preferredPresentMode);
   }
@@ -870,8 +907,10 @@ private:
     _swapchain = rhs._swapchain;
     _format = std::move(rhs._format);
     _extent = std::move(rhs._extent);
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {
@@ -886,7 +925,7 @@ private:
 
   CUSTOM void _customInitialize(
       VkSurfaceKHR surface, VkDevice device, VkPhysicalDevice physicalDevice,
-      VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR) {
+      VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR) {
     /* Vulkan 1.3.231 - A Specification, pg 2235 */
 
     auto surfaceCapabilities =
@@ -1040,7 +1079,7 @@ public:
 
   ~ImageViews() { _destroyVkData(); }
 
-  const VkImageView *ref() { return _imageViews.data(); }
+  const std::vector<VkImageView> &ref() { return _imageViews; }
 
   template <typename SizeType = size_t> auto size() const noexcept {
     return static_cast<SizeType>(_imageViews.size());
@@ -1061,8 +1100,10 @@ private:
     _imageViews = std::move(rhs._imageViews);
     _device = rhs._device;
     _pAllocator = rhs._pAllocator;
-    _isOwner = true;
-    rhs._isOwner = false;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
   }
 
   void _destroyVkData() {

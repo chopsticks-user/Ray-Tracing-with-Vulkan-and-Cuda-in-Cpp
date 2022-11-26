@@ -35,6 +35,7 @@ private:
   const std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
       VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
+  const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 
   /* Step 0: Setup GLFW and window */
   vkw::GLFW glfw = {};
@@ -57,22 +58,16 @@ private:
   vkw::Device device = {instance.ref(), surface.ref()};
 
   /* Step 5: Create a swapchain to render results to the surface */
-  vkh::SwapChainWrapper swapchain;
-  // swapchain = {surface.ref(), device.ref(), device.physical()};
-
-  const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-  // const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+  vkw::Swapchain swapchain = {surface.ref(), device.ref(), device.physical(),
+                              preferredPresentMode};
 
   const uint32_t swapchainCount = 1;
 
   /* Included when selecting a physical device */
 
-  VkSwapchainCreateInfoKHR populateSwapchainCreateInfo();
-
-  void createSwapchain();
-
   /* Step 6: Create image views */
-  std::vector<VkImageView> imageViews;
+  vkw::ImageViews imageViews = {device.ref(), swapchain.ref(),
+                                swapchain.format()};
 
   /* Presentable images. Only one image is displayed at a time,
   the others are queued for presentation. A presentable image  must be
@@ -80,30 +75,27 @@ private:
   it is released by vkQueuePresentKHR. */
   std::vector<VkImage> images;
 
-  void createImageViews();
+  VkDescriptorSetLayout descriptorSetLayout = createDescriptorSetLayout();
 
   /* Step 7: Create a graphics pipeline */
-  vkw::GraphicsPipeline graphicsPipeline;
-  // vkh::GraphicsPipelineDepWrapper graphicsPipelineDeps;
-
-  const uint32_t graphicsPipelineCount = 1;
-
-  void createGraphicsPipeline();
+  vkw::GraphicsPipeline graphicsPipeline = {device.ref(),
+                                            swapchain.extent(),
+                                            swapchain.format(),
+                                            &descriptorSetLayout,
+                                            "/build/shaders/triangle_vert.spv",
+                                            "/build/shaders/triangle_frag.spv"};
 
   /* Step 8: Create framebuffers */
-  vkw::Framebuffers framebuffers;
-
-  void createFramebuffers();
+  vkw::Framebuffers framebuffers = {device.ref(), imageViews.ref(),
+                                    graphicsPipeline.renderPass(),
+                                    swapchain.extent()};
 
   /* Step 9: Recreate swapchain */
   void recreateSwapchain();
-
   void cleanupSwapchain();
-
-  bool framebufferResized = false;
-
   static void framebufferResizeCallback(GLFWwindow *windowInstance, int width,
                                         int height);
+  bool framebufferResized = false;
 
   /* Step 10: Command buffers */
 
@@ -111,8 +103,6 @@ private:
   const size_t maxFramesInFlight = 2;
 
   std::vector<VkCommandBuffer> commandBuffers;
-
-  // std::vector<VkCommandBuffer> commandBuffers;
 
   /**
    * @brief Command pools are externally synchronized, meaning that a command
@@ -171,11 +161,10 @@ private:
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
 
-  VkDescriptorSetLayout descriptorSetLayout;
   VkDescriptorPool descriptorPool;
   std::vector<VkDescriptorSet> descriptorSets;
 
-  void createDescriptorSetLayout();
+  VkDescriptorSetLayout createDescriptorSetLayout();
 
   void createDescriptorPool();
 
