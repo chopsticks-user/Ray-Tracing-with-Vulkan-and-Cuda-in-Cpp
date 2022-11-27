@@ -114,7 +114,6 @@ uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
 void VulkanApp::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                              VkMemoryPropertyFlags propertyFlags,
                              VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
-  [[maybe_unused]] static constexpr uint32_t vertexBufferCount = 1;
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
@@ -123,7 +122,7 @@ void VulkanApp::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 
   if (vkCreateBuffer(device.ref(), &bufferInfo, nullptr, &buffer) !=
       VK_SUCCESS) {
-    throw std::runtime_error("Failed creating vertex buffer.");
+    throw std::runtime_error("Failed creating buffer.");
   }
 
   VkMemoryRequirements memoryRequirements;
@@ -136,7 +135,7 @@ void VulkanApp::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
       findMemoryType(memoryRequirements.memoryTypeBits, propertyFlags);
   if (vkAllocateMemory(device.ref(), &allocInfo, nullptr, &bufferMemory) !=
       VK_SUCCESS) {
-    throw std::runtime_error("Failed to allocate vertex buffer memory.");
+    throw std::runtime_error("Failed to allocate buffer memory.");
   }
   vkBindBufferMemory(device.ref(), buffer, bufferMemory, 0);
 }
@@ -263,7 +262,7 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
                    .count();
 
   vkh::UniformBufferObject ubo{};
-  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(180.0f),
+  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(360.0f),
                           glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.view =
       glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -305,7 +304,6 @@ void VulkanApp::createDescriptorSets() {
   std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
                                              descriptorSetLayout.ref()};
   descriptorSets = descriptorPool.allocateSets(layouts);
-
   std::vector<VkWriteDescriptorSet> descriptorWrites{};
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     VkDescriptorBufferInfo bufferInfo{};
@@ -323,8 +321,7 @@ void VulkanApp::createDescriptorSets() {
     writeSet.pBufferInfo = &bufferInfo;
     writeSet.pImageInfo = nullptr;
     writeSet.pTexelBufferView = nullptr;
-
-    descriptorWrites.push_back(writeSet);
+    descriptorWrites.emplace_back(writeSet);
   }
   descriptorPool.updateSets(descriptorWrites);
 }

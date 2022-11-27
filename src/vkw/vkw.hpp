@@ -1,6 +1,7 @@
 #ifndef VKW_HPP
 #define VKW_HPP
 
+#include "buffer.hpp"
 #include "command.hpp"
 #include "debug.hpp"
 #include "descriptor.hpp"
