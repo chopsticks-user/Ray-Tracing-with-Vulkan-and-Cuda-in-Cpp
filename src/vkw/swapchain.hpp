@@ -52,6 +52,8 @@ private:
     _swapchain = rhs._swapchain;
     _format = std::move(rhs._format);
     _extent = std::move(rhs._extent);
+    _device = rhs._device;
+    _pAllocator = rhs._pAllocator;
     if (rhs._isOwner) {
       _isOwner = true;
       rhs._isOwner = false;

@@ -51,7 +51,9 @@ private:
   bool _isOwner = false;
 
   void _moveDataFrom(CommandPool &&rhs) {
-
+    _commandPool = rhs._commandPool;
+    _device = rhs._device;
+    _pAllocator = rhs._pAllocator;
     if (rhs._isOwner) {
       _isOwner = true;
       rhs._isOwner = false;

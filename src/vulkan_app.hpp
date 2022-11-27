@@ -75,13 +75,13 @@ private:
   it is released by vkQueuePresentKHR. */
   std::vector<VkImage> images;
 
-  VkDescriptorSetLayout descriptorSetLayout = createDescriptorSetLayout();
+  vkw::DescriptorSetLayout descriptorSetLayout = {device.ref()};
 
   /* Step 7: Create a graphics pipeline */
   vkw::GraphicsPipeline graphicsPipeline = {device.ref(),
                                             swapchain.extent(),
                                             swapchain.format(),
-                                            &descriptorSetLayout,
+                                            &descriptorSetLayout.ref(),
                                             "/build/shaders/triangle_vert.spv",
                                             "/build/shaders/triangle_frag.spv"};
 
@@ -157,12 +157,9 @@ private:
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
 
-  VkDescriptorPool descriptorPool;
+  vkw::DescriptorPool descriptorPool = {
+      device.ref(), static_cast<uint32_t>(maxFramesInFlight)};
   std::vector<VkDescriptorSet> descriptorSets;
-
-  VkDescriptorSetLayout createDescriptorSetLayout();
-
-  void createDescriptorPool();
 
   void createDescriptorSets();
 

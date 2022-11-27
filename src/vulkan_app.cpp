@@ -20,7 +20,7 @@ void VulkanApp::recreateSwapchain() {
   graphicsPipeline = {device.ref(),
                       swapchain.extent(),
                       swapchain.format(),
-                      &descriptorSetLayout,
+                      &descriptorSetLayout.ref(),
                       "/build/shaders/triangle_vert.spv",
                       "/build/shaders/triangle_frag.spv"};
   framebuffers = {device.ref(), imageViews.ref(), graphicsPipeline.renderPass(),
@@ -301,50 +301,12 @@ void VulkanApp::createSynchronizationObjects() {
   }
 }
 
-VkDescriptorSetLayout VulkanApp::createDescriptorSetLayout() {
-  VkDescriptorSetLayoutBinding uboLayoutBinding{};
-  uboLayoutBinding.binding = 0;
-  uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  uboLayoutBinding.descriptorCount = 1;
-  uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-  uboLayoutBinding.pImmutableSamplers = nullptr;
-
-  VkDescriptorSetLayoutCreateInfo layoutInfo{};
-  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = 1;
-  layoutInfo.pBindings = &uboLayoutBinding;
-
-  VkDescriptorSetLayout desSetLayout;
-  if (vkCreateDescriptorSetLayout(device.ref(), &layoutInfo, nullptr,
-                                  &desSetLayout) != VK_SUCCESS) {
-    throw std::runtime_error("Failed to create descriptor set layout.");
-  }
-  return desSetLayout;
-}
-
-void VulkanApp::createDescriptorPool() {
-  VkDescriptorPoolSize descriptorPoolSize{};
-  descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  descriptorPoolSize.descriptorCount = static_cast<uint32_t>(maxFramesInFlight);
-
-  VkDescriptorPoolCreateInfo descriptorPoolInfo{};
-  descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  descriptorPoolInfo.poolSizeCount = 1;
-  descriptorPoolInfo.pPoolSizes = &descriptorPoolSize;
-  descriptorPoolInfo.maxSets = static_cast<uint32_t>(maxFramesInFlight);
-
-  if (vkCreateDescriptorPool(device.ref(), &descriptorPoolInfo, nullptr,
-                             &descriptorPool) != VK_SUCCESS) {
-    throw std::runtime_error("Failed to create descriptor pool.");
-  }
-}
-
 void VulkanApp::createDescriptorSets() {
   std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
-                                             descriptorSetLayout};
+                                             descriptorSetLayout.ref()};
   VkDescriptorSetAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorPool = descriptorPool.ref();
   allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFramesInFlight);
   allocInfo.pSetLayouts = layouts.data();
 
@@ -461,7 +423,6 @@ VulkanApp::VulkanApp() {
   createVertexBuffer();
   createIndexBuffer();
   createUniformBuffers();
-  createDescriptorPool();
   createDescriptorSets();
   createSynchronizationObjects();
   createTextureImage();
@@ -472,8 +433,6 @@ VulkanApp::~VulkanApp() {
     vkDestroyBuffer(device.ref(), uniformBuffers[i], nullptr);
     vkFreeMemory(device.ref(), uniformBuffersMemory[i], nullptr);
   }
-  vkDestroyDescriptorPool(device.ref(), descriptorPool, nullptr);
-  vkDestroyDescriptorSetLayout(device.ref(), descriptorSetLayout, nullptr);
   vkDestroyBuffer(device.ref(), indexBuffer, nullptr);
   vkFreeMemory(device.ref(), indexBufferMemory, nullptr);
   vkDestroyBuffer(device.ref(), vertexBuffer, nullptr);
@@ -483,7 +442,6 @@ VulkanApp::~VulkanApp() {
     vkh::destroySemaphore(device.ref(), sync.renderFinisedSemaphore[i]);
     vkh::destroyFence(device.ref(), sync.inFlightFence[i]);
   }
-  // vkh::destroyCommandPool(device.ref(), commandPool);
 }
 
 void VulkanApp::run() {

@@ -3,6 +3,7 @@
 
 #include "command.hpp"
 #include "debug.hpp"
+#include "descriptor.hpp"
 #include "device.hpp"
 #include "framebuffer.hpp"
 #include "imageview.hpp"
