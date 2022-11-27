@@ -12,7 +12,27 @@ class Buffer {
 public:
   Buffer() = default;
   Buffer(VkDevice device, const VkBufferCreateInfo *pCreateInfo,
-         const VkMemoryAllocateInfo *pAllocInfo, VkDeviceSize memoryOffset = 0,
+         const VkMemoryAllocateInfo *pAllocInfo,
+         const VkAllocationCallbacks *pBufferAllocator = nullptr,
+         const VkAllocationCallbacks *pMemoryAllocator = nullptr)
+      : _device{device}, _memoryOffset{0}, _pBufferAllocator{pBufferAllocator},
+        _pMemoryAllocator{pMemoryAllocator} {
+    if (vkCreateBuffer(device, pCreateInfo, pBufferAllocator, &_buffer) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed creating buffer.");
+    }
+    VkMemoryRequirements memoryRequirements;
+    vkGetBufferMemoryRequirements(device, _buffer, &memoryRequirements);
+    if (vkAllocateMemory(device, pAllocInfo, nullptr, &_deviceMemory) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed to allocate buffer memory.");
+    }
+    vkBindBufferMemory(device, _buffer, _deviceMemory, 0);
+    _isOwner = true;
+  }
+  Buffer(VkDevice device, VkDeviceSize memoryOffset,
+         const VkBufferCreateInfo *pCreateInfo,
+         const VkMemoryAllocateInfo *pAllocInfo,
          const VkAllocationCallbacks *pBufferAllocator = nullptr,
          const VkAllocationCallbacks *pMemoryAllocator = nullptr)
       : _device{device}, _memoryOffset{memoryOffset},
@@ -43,6 +63,8 @@ public:
   const VkBuffer &ref() const noexcept { return _buffer; }
 
   const VkDeviceSize &offset() const noexcept { return _memoryOffset; }
+
+  const VkDeviceMemory &memory() const noexcept { return _deviceMemory; }
 
   template <typename DataType>
   void getHostData(DataType *pHostData, VkDeviceSize size,

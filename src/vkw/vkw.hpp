@@ -13,6 +13,9 @@
 #include "pipeline/graphics.hpp"
 #include "surface.hpp"
 #include "swapchain.hpp"
+// #include "sync/event.hpp"
+#include "sync/fence.hpp"
+#include "sync/semaphore.hpp"
 #include "window.hpp"
 
 #endif /* VKW_HPP */

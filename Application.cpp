@@ -1,9 +1,10 @@
 #include <vulkan_app.hpp>
 
 int protected_main() {
-  VulkanApp app;
-  app.run();
-  app.writeInfo(vkh::absoluteDirectory + "/info.log");
+  auto app = new VulkanApp{};
+  app->run();
+  app->writeInfo(vkh::absoluteDirectory + "/info.log");
+  delete app;
   return EXIT_SUCCESS;
 }
 

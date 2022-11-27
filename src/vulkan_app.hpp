@@ -14,6 +14,13 @@
 #include <chrono>
 #include <cstring>
 
+// struct SyncWrapper {
+//   std::vector<VkSemaphore> imageAvailableSemaphore;
+//   std::vector<VkSemaphore> renderFinisedSemaphore;
+//   std::vector<VkFence> inFlightFence;
+//   size_t currentFrame = 0;
+// };
+
 class VulkanApp {
 public:
   VulkanApp();
@@ -117,11 +124,21 @@ private:
 
   /* Step 11: Synchronization and cache control */
   struct SyncWrapper {
-    std::vector<VkSemaphore> imageAvailableSemaphore;
-    std::vector<VkSemaphore> renderFinisedSemaphore;
-    std::vector<VkFence> inFlightFence;
+    std::vector<vkw::Semaphore> imageAvailableSemaphore;
+    std::vector<vkw::Semaphore> renderFinishedSemaphore;
+    std::vector<vkw::Fence> inFlightFence;
     size_t currentFrame = 0;
-  } sync;
+
+    SyncWrapper(VkDevice device, size_t frameCount)
+        : imageAvailableSemaphore{frameCount},
+          renderFinishedSemaphore{frameCount}, inFlightFence{frameCount} {
+      for (size_t i = 0; i < frameCount; ++i) {
+        imageAvailableSemaphore[i] = {device};
+        renderFinishedSemaphore[i] = {device};
+        inFlightFence[i] = {device, VK_FENCE_CREATE_SIGNALED_BIT};
+      }
+    }
+  } sync = {device.ref(), maxFramesInFlight};
 
   void createSynchronizationObjects();
 
@@ -136,19 +153,13 @@ private:
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
-
   void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                     VkMemoryPropertyFlags property, VkBuffer &buffer,
                     VkDeviceMemory &bufferMemory);
-
   void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
-
   void createVertexBuffer();
-
   void createIndexBuffer();
-
   void createUniformBuffers();
-
   void updateUniformBuffer(uint32_t imageIndex);
 
   /* Step 13: Resource descriptors */
@@ -156,7 +167,6 @@ private:
   • Specify a descriptor layout during pipeline creation
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
-
   vkw::DescriptorPool descriptorPool = {
       device.ref(), static_cast<uint32_t>(maxFramesInFlight)};
   std::vector<VkDescriptorSet> descriptorSets;
@@ -164,7 +174,6 @@ private:
   void createDescriptorSets();
 
   /* Step 14: Textures */
-
   void createTextureImage();
 
   /* Last step: Render */
