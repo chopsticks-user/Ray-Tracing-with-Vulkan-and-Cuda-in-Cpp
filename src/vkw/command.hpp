@@ -44,6 +44,37 @@ public:
     return vkh::allocateCommandBuffers(_device, &bufferInfo);
   }
 
+  VkCommandBuffer
+  allocateBuffer(VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                 const void *pNext = nullptr) {
+    VkCommandBufferAllocateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    bufferInfo.pNext = pNext;
+    bufferInfo.commandPool = _commandPool;
+    bufferInfo.level = level;
+    bufferInfo.commandBufferCount = 1;
+    VkCommandBuffer commandBuffer;
+    if (vkAllocateCommandBuffers(_device, &bufferInfo, &commandBuffer) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed to allocate command buffers.");
+    }
+    return commandBuffer;
+  }
+
+  void freeBuffers(VkCommandBuffer &commandBuffer,
+                   uint32_t commandBufferCount = 1) {
+    vkFreeCommandBuffers(_device, _commandPool, commandBufferCount,
+                         &commandBuffer);
+  }
+
+  void freeBuffers(std::vector<VkCommandBuffer> &commandBuffers) {
+    vkFreeCommandBuffers(_device, _commandPool,
+                         static_cast<uint32_t>(commandBuffers.size()),
+                         commandBuffers.data());
+  }
+
+  void allocateScopeBuffer() {}
+
 private:
   VkCommandPool _commandPool;
   VkDevice _device;
