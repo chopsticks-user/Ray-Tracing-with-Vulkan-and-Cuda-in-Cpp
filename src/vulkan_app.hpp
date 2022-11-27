@@ -14,13 +14,6 @@
 #include <chrono>
 #include <cstring>
 
-// struct SyncWrapper {
-//   std::vector<VkSemaphore> imageAvailableSemaphore;
-//   std::vector<VkSemaphore> renderFinisedSemaphore;
-//   std::vector<VkFence> inFlightFence;
-//   size_t currentFrame = 0;
-// };
-
 class VulkanApp {
 public:
   VulkanApp();
@@ -43,6 +36,13 @@ private:
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
       VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
   const VkPresentModeKHR preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+
+  /* Affects the number of command buffers, semaphores, and fences */
+  const size_t maxFramesInFlight = 2;
+  const uint32_t swapchainCount = 1;
+
+  /* Image path used in {createTextureImage()} */
+  const std::string imagePath = "";
 
   /* Step 0: Setup GLFW and window */
   vkw::GLFW glfw = {};
@@ -68,19 +68,15 @@ private:
   vkw::Swapchain swapchain = {surface.ref(), device.ref(), device.physical(),
                               preferredPresentMode};
 
-  const uint32_t swapchainCount = 1;
-
   /* Included when selecting a physical device */
 
   /* Step 6: Create image views */
+  /* Only one image is displayed at a time, the others are queued for
+  presentation. A presentable image  must be used after the image is
+  returned by {vkAccquireNextImageKHR} and before it is released by
+  {vkQueuePresentKHR} */
   vkw::ImageViews imageViews = {device.ref(), swapchain.ref(),
                                 swapchain.format()};
-
-  /* Presentable images. Only one image is displayed at a time,
-  the others are queued for presentation. A presentable image  must be
-  used after the image is returned by vkAccquireNextImageKHR and before
-  it is released by vkQueuePresentKHR. */
-  std::vector<VkImage> images;
 
   vkw::DescriptorSetLayout descriptorSetLayout = {device.ref()};
 
@@ -104,10 +100,6 @@ private:
   bool framebufferResized = false;
 
   /* Step 10: Command buffers */
-
-  /* Affects the number of command buffers, semaphores, and fences */
-  const size_t maxFramesInFlight = 2;
-
   /**
    * @brief Command pools are externally synchronized, meaning that a command
    * pool must not be used concurrently in multiple threads. That includes use
@@ -140,8 +132,6 @@ private:
     }
   } sync = {device.ref(), maxFramesInFlight};
 
-  void createSynchronizationObjects();
-
   /* Step 12: Buffers */
   /* Before {createCommandBuffers()} and after {createCommandPool()} */
   VkBuffer vertexBuffer;
@@ -173,7 +163,10 @@ private:
 
   void createDescriptorSets();
 
-  /* Step 14: Textures */
+  /* Step 14: Textures images */
+  VkImage textureImage;
+  VkDeviceMemory textureImageMemory;
+
   void createTextureImage();
 
   /* Last step: Render */

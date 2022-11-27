@@ -280,26 +280,6 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
   vkUnmapMemory(device.ref(), uniformBuffersMemory[currentImage]);
 }
 
-// void VulkanApp::createSynchronizationObjects() {
-//   VkSemaphoreCreateInfo semaphoreInfo{};
-//   semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-//   VkFenceCreateInfo fenceInfo{};
-//   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-//   fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-//   sync.imageAvailableSemaphore.resize(maxFramesInFlight);
-//   sync.renderFinisedSemaphore.resize(maxFramesInFlight);
-//   sync.inFlightFence.resize(maxFramesInFlight);
-//   for (size_t i = 0; i < maxFramesInFlight; ++i) {
-//     sync.imageAvailableSemaphore[i] =
-//         vkh::createSemaphore(device.ref(), &semaphoreInfo);
-//     sync.renderFinisedSemaphore[i] =
-//         vkh::createSemaphore(device.ref(), &semaphoreInfo);
-//     sync.inFlightFence[i] = vkh::createFence(device.ref(), &fenceInfo);
-//   }
-// }
-
 void VulkanApp::createDescriptorSets() {
   std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
                                              descriptorSetLayout.ref()};
@@ -327,7 +307,49 @@ void VulkanApp::createDescriptorSets() {
 }
 
 void VulkanApp::createTextureImage() {
-  //
+  // int imageWidth, imageHeight, imageChannels;
+  // stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
+  //                             &imageChannels, STBI_rgb_alpha);
+  // VkDeviceSize imageSize = imageWidth * imageHeight * 4;
+  // if (!pixels) {
+  //   throw std::runtime_error("Failed to load image.");
+  // }
+
+  // VkBuffer stagingBuffer;
+  // VkDeviceMemory stagingBufferMemory;
+
+  // createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+  //              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+  //                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+  //              stagingBuffer, stagingBufferMemory);
+
+  // void *data;
+  // vkMapMemory(device.ref(), stagingBufferMemory, 0, imageSize, 0, &data);
+  // std::memcpy(data, pixels, static_cast<size_t>(imageSize));
+  // vkUnmapMemory(device.ref(), stagingBufferMemory);
+
+  // VkImageCreateInfo imageInfo{};
+  // imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  // imageInfo.imageType = VK_IMAGE_TYPE_2D;
+  // imageInfo.extent.width = static_cast<uint32_t>(imageWidth);
+  // imageInfo.extent.height = static_cast<uint32_t>(imageHeight);
+  // imageInfo.extent.depth = 1;
+  // imageInfo.mipLevels = 1;
+  // imageInfo.arrayLayers = 1;
+  // imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+  // imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+  // imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  // imageInfo.usage =
+  //     VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+  // imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  // imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+  // imageInfo.flags = 0;
+  // if (vkCreateImage(device.ref(), &imageInfo, nullptr, &textureImage) !=
+  //     VK_SUCCESS) {
+  //   throw std::runtime_error("Failed to create texture image");
+  // }
+
+  // stbi_image_free(pixels);
 }
 
 void VulkanApp::render() {
@@ -414,7 +436,6 @@ VulkanApp::VulkanApp() {
   createIndexBuffer();
   createUniformBuffers();
   createDescriptorSets();
-  // createSynchronizationObjects();
   createTextureImage();
 }
 
@@ -427,11 +448,6 @@ VulkanApp::~VulkanApp() {
   vkFreeMemory(device.ref(), indexBufferMemory, nullptr);
   vkDestroyBuffer(device.ref(), vertexBuffer, nullptr);
   vkFreeMemory(device.ref(), vertexBufferMemory, nullptr);
-  // for (size_t i = 0; i < maxFramesInFlight; ++i) {
-  //   vkh::destroySemaphore(device.ref(), sync.imageAvailableSemaphore[i]);
-  //   vkh::destroySemaphore(device.ref(), sync.renderFinisedSemaphore[i]);
-  //   vkh::destroyFence(device.ref(), sync.inFlightFence[i]);
-  // }
 }
 
 void VulkanApp::run() {

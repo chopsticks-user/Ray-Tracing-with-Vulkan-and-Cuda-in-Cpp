@@ -1,21 +1,24 @@
 #ifndef VKW_HPP
 #define VKW_HPP
 
-#include "buffer.hpp"
-#include "command.hpp"
-#include "debug.hpp"
-#include "descriptor.hpp"
-#include "device.hpp"
-#include "framebuffer.hpp"
-#include "imageview.hpp"
-#include "instance.hpp"
+#include "config.hpp"
+
+#include "basic/command.hpp"
+#include "basic/debug.hpp"
+#include "basic/descriptor.hpp"
+#include "basic/device.hpp"
+#include "basic/framebuffer.hpp"
+#include "basic/instance.hpp"
+#include "basic/surface.hpp"
+#include "basic/swapchain.hpp"
 #include "pipeline/compute.hpp"
 #include "pipeline/graphics.hpp"
-#include "surface.hpp"
-#include "swapchain.hpp"
+#include "resource/buffer.hpp"
+#include "resource/image.hpp"
+#include "resource/image_view.hpp"
 // #include "sync/event.hpp"
+#include "basic/window.hpp"
 #include "sync/fence.hpp"
 #include "sync/semaphore.hpp"
-#include "window.hpp"
 
 #endif /* VKW_HPP */
