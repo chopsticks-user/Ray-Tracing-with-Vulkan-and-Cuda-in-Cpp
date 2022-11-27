@@ -105,14 +105,19 @@ public:
   const VkDescriptorPool &ref() const noexcept { return _pool; }
 
   std::vector<VkDescriptorSet>
-  allocateSets(const VkDescriptorSetLayout *pSetLayout, uint32_t setCount,
+  allocateSets(const std::vector<VkDescriptorSetLayout> &setLayouts,
                const void *pNext = nullptr) {
+    uint32_t setCount = static_cast<uint32_t>(setLayouts.size());
+    const VkDescriptorSetLayout *pSetLayouts = nullptr;
+    if (setCount > 0) {
+      pSetLayouts = setLayouts.data();
+    }
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.pNext = pNext;
     allocInfo.descriptorPool = _pool;
     allocInfo.descriptorSetCount = setCount;
-    allocInfo.pSetLayouts = pSetLayout;
+    allocInfo.pSetLayouts = pSetLayouts;
 
     std::vector<VkDescriptorSet> descriptorSets{setCount};
     descriptorSets.resize(setCount);
@@ -124,8 +129,8 @@ public:
   }
 
   void
-  updateSets(const std::vector<VkWriteDescriptorSet> descriptorWrites,
-             const std::vector<VkCopyDescriptorSet> descriptorCopies = {}) {
+  updateSets(const std::vector<VkWriteDescriptorSet> &descriptorWrites,
+             const std::vector<VkCopyDescriptorSet> &descriptorCopies = {}) {
     /* If size() is ​0​, data() may or may not return a null
     pointer. */
     uint32_t copyCount = static_cast<uint32_t>(descriptorCopies.size());

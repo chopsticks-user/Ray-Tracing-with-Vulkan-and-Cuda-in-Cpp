@@ -304,37 +304,29 @@ void VulkanApp::createSynchronizationObjects() {
 void VulkanApp::createDescriptorSets() {
   std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
                                              descriptorSetLayout.ref()};
-  VkDescriptorSetAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = descriptorPool.ref();
-  allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFramesInFlight);
-  allocInfo.pSetLayouts = layouts.data();
+  descriptorSets = descriptorPool.allocateSets(layouts);
 
-  descriptorSets.resize(maxFramesInFlight);
-  if (vkAllocateDescriptorSets(device.ref(), &allocInfo,
-                               descriptorSets.data()) != VK_SUCCESS) {
-    throw std::runtime_error("Failed to allocate descriptor sets.");
-  }
-
+  std::vector<VkWriteDescriptorSet> descriptorWrites{};
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = uniformBuffers[i];
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(vkh::UniformBufferObject);
 
-    VkWriteDescriptorSet descriptorWrite{};
-    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = descriptorSets[i];
-    descriptorWrite.dstBinding = 0;
-    descriptorWrite.dstArrayElement = 0;
-    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorWrite.descriptorCount = 1;
-    descriptorWrite.pBufferInfo = &bufferInfo;
-    descriptorWrite.pImageInfo = nullptr;
-    descriptorWrite.pTexelBufferView = nullptr;
+    VkWriteDescriptorSet writeSet{};
+    writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeSet.dstSet = descriptorSets[i];
+    writeSet.dstBinding = 0;
+    writeSet.dstArrayElement = 0;
+    writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    writeSet.descriptorCount = 1;
+    writeSet.pBufferInfo = &bufferInfo;
+    writeSet.pImageInfo = nullptr;
+    writeSet.pTexelBufferView = nullptr;
 
-    vkUpdateDescriptorSets(device.ref(), 1, &descriptorWrite, 0, nullptr);
+    descriptorWrites.push_back(writeSet);
   }
+  descriptorPool.updateSets(descriptorWrites);
 }
 
 void VulkanApp::createTextureImage() {
