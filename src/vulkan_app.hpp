@@ -101,8 +101,6 @@ private:
   /* Affects the number of command buffers, semaphores, and fences */
   const size_t maxFramesInFlight = 2;
 
-  std::vector<VkCommandBuffer> commandBuffers;
-
   /**
    * @brief Command pools are externally synchronized, meaning that a command
    * pool must not be used concurrently in multiple threads. That includes use
@@ -110,11 +108,10 @@ private:
    * well as operations that allocate, free, and reset command buffers or the
    * pool itself.
    */
-  VkCommandPool commandPool;
+  vkw::CommandPool commandPool = {device.ref(), device.familyIndex()};
 
-  void createCommandPool();
-
-  void createCommandBuffers();
+  std::vector<VkCommandBuffer> commandBuffers = {
+      commandPool.allocateBuffers(maxFramesInFlight)};
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 

@@ -34,35 +34,6 @@ void VulkanApp::framebufferResizeCallback(GLFWwindow *pWindow,
   app->framebufferResized = true;
 }
 
-void VulkanApp::createCommandPool() {
-  VkCommandPoolCreateInfo cmdPoolInfo{};
-  cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  cmdPoolInfo.pNext = nullptr;
-  /* allows any command buffer allocated from a
-  pool to be individually reset to the initial state; either by calling
-  vkResetCommandBuffer, or via the implicit reset when calling
-  vkBeginCommandBuffer. If this flag is not set on a pool, then
-  vkResetCommandBuffer must not be called for any command buffer allocated
-  from that pool. */
-  cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-  /* All command buffers allocated from this command pool must be
-  submitted on queues from the same queue family. */
-  cmdPoolInfo.queueFamilyIndex = device.familyIndex();
-
-  commandPool = vkh::createCommandPool(device.ref(), &cmdPoolInfo);
-}
-
-void VulkanApp::createCommandBuffers() {
-  VkCommandBufferAllocateInfo cmdBufferAllocInfo{};
-  cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  cmdBufferAllocInfo.commandPool = commandPool;
-  cmdBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  cmdBufferAllocInfo.commandBufferCount =
-      static_cast<uint32_t>(maxFramesInFlight);
-  commandBuffers =
-      vkh::allocateCommandBuffers(device.ref(), &cmdBufferAllocInfo);
-}
-
 void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
                                     uint32_t imageIndex) {
   /* 1. Begin recording a command buffer */
@@ -174,7 +145,7 @@ void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandPool = commandPool;
+  allocInfo.commandPool = commandPool.ref();
   allocInfo.commandBufferCount = 1;
 
   VkCommandBuffer commandBuffer =
@@ -202,7 +173,7 @@ void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
   the command buffer */
   vkQueueSubmit(device.queue(), 1, &submitInfo, VK_NULL_HANDLE);
   vkQueueWaitIdle(device.queue());
-  vkFreeCommandBuffers(device.ref(), commandPool, 1, &commandBuffer);
+  vkFreeCommandBuffers(device.ref(), commandPool.ref(), 1, &commandBuffer);
 }
 
 void VulkanApp::createVertexBuffer() {
@@ -487,13 +458,11 @@ VulkanApp::VulkanApp() {
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
 
-  createCommandPool();
   createVertexBuffer();
   createIndexBuffer();
   createUniformBuffers();
   createDescriptorPool();
   createDescriptorSets();
-  createCommandBuffers();
   createSynchronizationObjects();
   createTextureImage();
 }
@@ -514,7 +483,7 @@ VulkanApp::~VulkanApp() {
     vkh::destroySemaphore(device.ref(), sync.renderFinisedSemaphore[i]);
     vkh::destroyFence(device.ref(), sync.inFlightFence[i]);
   }
-  vkh::destroyCommandPool(device.ref(), commandPool);
+  // vkh::destroyCommandPool(device.ref(), commandPool);
 }
 
 void VulkanApp::run() {

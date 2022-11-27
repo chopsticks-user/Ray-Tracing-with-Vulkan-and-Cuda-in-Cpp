@@ -1,6 +1,7 @@
 #ifndef VKW_HPP
 #define VKW_HPP
 
+#include "command.hpp"
 #include "debug.hpp"
 #include "device.hpp"
 #include "framebuffer.hpp"
