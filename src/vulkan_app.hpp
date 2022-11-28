@@ -42,7 +42,8 @@ private:
   const uint32_t swapchainCount = 1;
 
   /* Image path used in {createTextureImage()} */
-  const std::string imagePath = "";
+  const std::string imagePath =
+      vkh::absoluteDirectory + "/resources/textures/texture.jpeg";
 
   /* Step 0: Setup GLFW and window */
   vkw::GLFW glfw = {};
@@ -157,14 +158,9 @@ private:
   vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
   /* Step 14: Textures images */
-  VkImage textureImage;
-  VkDeviceMemory textureImageMemory;
+  vkw::Image textureImage = makeTextureImage();
 
-  void createImage(uint32_t width, uint32_t height, VkFormat format,
-                   VkImageTiling tiling, VkImageUsageFlags usage,
-                   VkMemoryPropertyFlags propFlags, VkImage &image,
-                   VkDeviceMemory &imageMemory);
-  void createTextureImage();
+  vkw::Image makeTextureImage();
 
   /* Last step: Render */
   void render();

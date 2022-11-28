@@ -1,5 +1,5 @@
-#ifndef VKW_BUFFER_HPP
-#define VKW_BUFFER_HPP
+#ifndef VKW_RESOURCE_BUFFER_HPP
+#define VKW_RESOURCE_BUFFER_HPP
 
 #include "config.hpp"
 
@@ -16,14 +16,14 @@ public:
   Buffer() = default;
   Buffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size,
          VkBufferUsageFlags usage, VkMemoryPropertyFlags propertyFlags)
-      : _device{device}, _memoryOffset{0} {
+      : _device{device} {
     _customInitialize(device, physicalDevice, size, usage, propertyFlags);
   }
   Buffer(VkDevice device, const VkBufferCreateInfo *pCreateInfo,
          const VkMemoryAllocateInfo *pAllocInfo,
          const VkAllocationCallbacks *pBufferAllocator = nullptr,
          const VkAllocationCallbacks *pMemoryAllocator = nullptr)
-      : _device{device}, _memoryOffset{0}, _pBufferAllocator{pBufferAllocator},
+      : _device{device}, _pBufferAllocator{pBufferAllocator},
         _pMemoryAllocator{pMemoryAllocator} {
     _createAllocatedBuffer(pCreateInfo, pAllocInfo);
     vkBindBufferMemory(device, _buffer, _deviceMemory, 0);
@@ -48,13 +48,13 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Buffer() { _destroyVkData(); }
+  virtual ~Buffer() { _destroyVkData(); }
 
   const VkBuffer &ref() const noexcept { return _buffer; }
 
-  const VkDeviceSize &offset() const noexcept { return _memoryOffset; }
-
   const VkDeviceMemory &memory() const noexcept { return _deviceMemory; }
+
+  const VkDeviceSize &offset() const noexcept { return _memoryOffset; }
 
   template <typename DataType>
   void copyHostData(DataType *pHostData, VkDeviceSize size,
@@ -91,8 +91,8 @@ public:
 
 protected:
   VkBuffer _buffer;
-  VkDeviceMemory _deviceMemory;
   VkDevice _device;
+  VkDeviceMemory _deviceMemory;
   VkDeviceSize _memoryOffset = 0;
   const VkAllocationCallbacks *_pBufferAllocator = nullptr;
   const VkAllocationCallbacks *_pMemoryAllocator = nullptr;
@@ -182,4 +182,4 @@ protected:
 };
 
 } /* namespace vkw */
-#endif /* VKW_BUFFER_HPP */
+#endif /* VKW_RESOURCE_BUFFER_HPP */

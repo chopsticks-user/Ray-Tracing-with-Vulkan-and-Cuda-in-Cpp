@@ -225,44 +225,7 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
   return sets;
 }
 
-void VulkanApp::createImage(uint32_t width, uint32_t height, VkFormat format,
-                            VkImageTiling tiling, VkImageUsageFlags usage,
-                            VkMemoryPropertyFlags propFlags, VkImage &image,
-                            VkDeviceMemory &imageMemory) {
-  VkImageCreateInfo imageInfo{};
-  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  imageInfo.imageType = VK_IMAGE_TYPE_2D;
-  imageInfo.extent.width = width;
-  imageInfo.extent.height = height;
-  imageInfo.extent.depth = 1;
-  imageInfo.mipLevels = 1;
-  imageInfo.arrayLayers = 1;
-  imageInfo.format = format;
-  imageInfo.tiling = tiling;
-  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  imageInfo.usage = usage;
-  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-  imageInfo.flags = 0;
-  if (vkCreateImage(device.ref(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
-    throw std::runtime_error("Failed to create texture image");
-  }
-
-  VkMemoryRequirements memoryRequirements;
-  vkGetImageMemoryRequirements(device.ref(), image, &memoryRequirements);
-
-  VkMemoryAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  allocInfo.allocationSize = memoryRequirements.size;
-  allocInfo.memoryTypeIndex =
-      findMemoryType(memoryRequirements.memoryTypeBits, propFlags);
-  if (vkAllocateMemory(device.ref(), &allocInfo, nullptr, &imageMemory)) {
-    throw std::runtime_error("Failed to allocate image memory.");
-  }
-  vkBindImageMemory(device.ref(), image, imageMemory, 0);
-}
-
-void VulkanApp::createTextureImage() {
+vkw::Image VulkanApp::makeTextureImage() {
   int imageWidth, imageHeight, imageChannels;
   stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
                               &imageChannels, STBI_rgb_alpha);
@@ -276,10 +239,14 @@ void VulkanApp::createTextureImage() {
                                    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
   stagingBuffer.copyHostData(pixels, imageSize);
   stbi_image_free(pixels);
-  createImage(
-      imageWidth, imageHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+  return {device.ref(),
+          device.physical(),
+          static_cast<uint32_t>(imageWidth),
+          static_cast<uint32_t>(imageHeight),
+          VK_FORMAT_R8G8B8A8_SRGB,
+          VK_IMAGE_TILING_OPTIMAL,
+          VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 }
 
 void VulkanApp::render() {
