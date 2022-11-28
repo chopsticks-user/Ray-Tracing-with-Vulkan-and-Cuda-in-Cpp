@@ -70,7 +70,7 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
   /* Bind the descriptor sets */
   vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           graphicsPipeline.layout(), 0, 1,
-                          descriptorSets.data(), 0, nullptr);
+                          descriptorSets.ref().data(), 0, nullptr);
 
   /* Bind if using index buffers */
   vkCmdBindIndexBuffer(cmdBuffer, indexBuffer.ref(), 0, VK_INDEX_TYPE_UINT16);
@@ -146,7 +146,7 @@ void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
   vkFreeCommandBuffers(device.ref(), commandPool.ref(), 1, &commandBuffer);
 }
 
-void VulkanApp::createVertexBuffer() {
+vkw::Buffer VulkanApp::makeVertexBuffer() {
   VkDeviceSize bufferSize = sizeof(shader::triangle_index_data[0]) *
                             shader::triangle_index_data.size();
 
@@ -160,16 +160,17 @@ void VulkanApp::createVertexBuffer() {
   stagingBuffer.copyHostData(shader::triangle_index_data.data(), bufferSize);
 
   /* Create a device local buffer as actual vertex buffer */
-  vertexBuffer = {device.ref(), device.physical(), bufferSize,
-                  VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                      VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
+  vkw::Buffer buffer = {device.ref(), device.physical(), bufferSize,
+                        VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
   /* Copy the data from the staging buffer to the device buffer */
-  copyBuffer(stagingBuffer.ref(), vertexBuffer.ref(), bufferSize);
+  copyBuffer(stagingBuffer.ref(), buffer.ref(), bufferSize);
+  return buffer;
 }
 
-void VulkanApp::createIndexBuffer() {
+vkw::Buffer VulkanApp::makeIndexBuffer() {
   VkDeviceSize bufferSize =
       sizeof(shader::triangle_indices[0]) * shader::triangle_indices.size();
 
@@ -183,23 +184,26 @@ void VulkanApp::createIndexBuffer() {
   stagingBuffer.copyHostData(shader::triangle_indices.data(), bufferSize);
 
   /* Create a device local buffer as actual vertex buffer */
-  indexBuffer = {device.ref(), device.physical(), bufferSize,
-                 VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                     VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
+  vkw::Buffer buffer = {device.ref(), device.physical(), bufferSize,
+                        VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                            VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
   /* Copy the data from the staging buffer to the device buffer */
-  copyBuffer(stagingBuffer.ref(), indexBuffer.ref(), bufferSize);
+  copyBuffer(stagingBuffer.ref(), buffer.ref(), bufferSize);
+  return buffer;
 }
 
-void VulkanApp::createUniformBuffers() {
+std::vector<vkw::Buffer> VulkanApp::makeUniformBuffers() {
   VkDeviceSize bufferSize = sizeof(vkh::UniformBufferObject);
-  for (auto &uniformBuffer : uniformBuffers) {
-    uniformBuffer = {device.ref(), device.physical(), bufferSize,
-                     VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                         VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
+  std::vector<vkw::Buffer> buffers{maxFramesInFlight};
+  for (auto &buffer : buffers) {
+    buffer = {device.ref(), device.physical(), bufferSize,
+              VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
   }
+  return buffers;
 }
 
 void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
@@ -229,10 +233,10 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
   vkUnmapMemory(device.ref(), uniformBuffers[currentImage].memory());
 }
 
-void VulkanApp::createDescriptorSets() {
+vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
   std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
                                              descriptorSetLayout.ref()};
-  descriptorSets = descriptorPool.allocateSets(layouts);
+  auto sets = descriptorPool.allocateSets(layouts);
   std::vector<VkWriteDescriptorSet> descriptorWrites{};
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     VkDescriptorBufferInfo bufferInfo{};
@@ -242,7 +246,7 @@ void VulkanApp::createDescriptorSets() {
 
     VkWriteDescriptorSet writeSet{};
     writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    writeSet.dstSet = descriptorSets[i];
+    writeSet.dstSet = sets[i];
     writeSet.dstBinding = 0;
     writeSet.dstArrayElement = 0;
     writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -253,6 +257,7 @@ void VulkanApp::createDescriptorSets() {
     descriptorWrites.emplace_back(writeSet);
   }
   descriptorPool.updateSets(descriptorWrites);
+  return sets;
 }
 
 void VulkanApp::createTextureImage() {
@@ -381,10 +386,6 @@ VulkanApp::VulkanApp() {
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
 
-  createVertexBuffer();
-  createIndexBuffer();
-  createUniformBuffers();
-  createDescriptorSets();
   // createTextureImage();
 }
 

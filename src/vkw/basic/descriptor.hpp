@@ -80,8 +80,64 @@ private:
   }
 };
 
+class DescriptorSets {
+public:
+  DescriptorSets() = default;
+  DescriptorSets(VkDevice device, VkDescriptorPool pool,
+                 const VkDescriptorSetAllocateInfo *pAllocateInfo)
+      : _sets{pAllocateInfo->descriptorSetCount}, _device{device}, _pool{pool} {
+    if (vkAllocateDescriptorSets(device, pAllocateInfo, _sets.data()) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed to allocate descriptor sets.");
+    }
+    _isOwner = true;
+  }
+  DescriptorSets(const DescriptorSets &) = delete;
+  DescriptorSets(DescriptorSets &&rhs) { _moveDataFrom(std::move(rhs)); }
+  DescriptorSets &operator=(const DescriptorSets &) = delete;
+  DescriptorSets &operator=(DescriptorSets &&rhs) {
+    _moveDataFrom(std::move(rhs));
+    return *this;
+  }
+  ~DescriptorSets() { _destroyVkData(); }
+
+  const std::vector<VkDescriptorSet> &ref() const noexcept { return _sets; }
+
+  const VkDescriptorSet &operator[](size_t index) const { return _sets[index]; }
+
+private:
+  std::vector<VkDescriptorSet> _sets;
+  VkDevice _device;
+  VkDescriptorPool _pool;
+  bool _isOwner = false;
+
+  void _moveDataFrom(DescriptorSets &&rhs) {
+    _sets = std::move(rhs._sets);
+    _device = rhs._device;
+    _pool = rhs._pool;
+    if (rhs._isOwner) {
+      _isOwner = true;
+      rhs._isOwner = false;
+    }
+  }
+
+  void _destroyVkData() {
+    if (_isOwner) {
+      vkFreeDescriptorSets(_device, _pool, static_cast<uint32_t>(_sets.size()),
+                           _sets.data());
+      _isOwner = false;
+      if constexpr (enableValidationLayers) {
+        std::cout << "DescriptorSets destructor" << '\n';
+      }
+    }
+  }
+};
+
 class DescriptorPool {
 public:
+  static constexpr VkDescriptorPoolCreateFlags requiredFlag =
+      VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+
   DescriptorPool() = default;
   DescriptorPool(VkDevice device, uint32_t descriptorCount)
       : _device{device}, _pAllocator{nullptr} {
@@ -90,7 +146,16 @@ public:
   DescriptorPool(VkDevice device, const VkDescriptorPoolCreateInfo *pCreateInfo,
                  const VkAllocationCallbacks *pAllocator = nullptr)
       : _device{device}, _pAllocator{pAllocator} {
-    vkCreateDescriptorPool(device, pCreateInfo, pAllocator, &_pool);
+    if (pCreateInfo->flags == 0 ||
+        (pCreateInfo->flags & requiredFlag) != pCreateInfo->flags) {
+      throw std::runtime_error(
+          "The flag VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT is "
+          "required.");
+    }
+    if (vkCreateDescriptorPool(device, pCreateInfo, pAllocator, &_pool) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed to create descriptor pool.");
+    }
     _isOwner = true;
   }
   DescriptorPool(const DescriptorPool &) = delete;
@@ -104,7 +169,7 @@ public:
 
   const VkDescriptorPool &ref() const noexcept { return _pool; }
 
-  std::vector<VkDescriptorSet>
+  vkw::DescriptorSets
   allocateSets(const std::vector<VkDescriptorSetLayout> &setLayouts,
                const void *pNext = nullptr) {
     uint32_t setCount = static_cast<uint32_t>(setLayouts.size());
@@ -118,14 +183,7 @@ public:
     allocInfo.descriptorPool = _pool;
     allocInfo.descriptorSetCount = setCount;
     allocInfo.pSetLayouts = pSetLayouts;
-
-    std::vector<VkDescriptorSet> descriptorSets{setCount};
-    descriptorSets.resize(setCount);
-    if (vkAllocateDescriptorSets(_device, &allocInfo, descriptorSets.data()) !=
-        VK_SUCCESS) {
-      throw std::runtime_error("Failed to allocate descriptor sets.");
-    }
-    return descriptorSets;
+    return {_device, _pool, &allocInfo};
   }
 
   void
@@ -179,7 +237,7 @@ private:
     descriptorPoolInfo.poolSizeCount = 1;
     descriptorPoolInfo.pPoolSizes = &descriptorPoolSize;
     descriptorPoolInfo.maxSets = static_cast<uint32_t>(descriptorCount);
-
+    descriptorPoolInfo.flags = requiredFlag;
     if (vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &_pool) !=
         VK_SUCCESS) {
       throw std::runtime_error("Failed to create descriptor pool.");

@@ -133,22 +133,18 @@ private:
   } sync = {device.ref(), maxFramesInFlight};
 
   /* Step 12: Buffers */
-  /* Before {createCommandBuffers()} and after {createCommandPool()} */
-  vkw::Buffer vertexBuffer;
-  vkw::Buffer indexBuffer;
-  std::vector<vkw::Buffer> uniformBuffers{maxFramesInFlight};
-  // std::vector<VkDeviceMemory> uniformBuffersMemory;
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
-  void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                    VkMemoryPropertyFlags property, VkBuffer &buffer,
-                    VkDeviceMemory &bufferMemory);
   void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
-  void createVertexBuffer();
-  void createIndexBuffer();
-  void createUniformBuffers();
+  vkw::Buffer makeVertexBuffer();
+  vkw::Buffer makeIndexBuffer();
+  std::vector<vkw::Buffer> makeUniformBuffers();
   void updateUniformBuffer(uint32_t imageIndex);
+
+  vkw::Buffer vertexBuffer = makeVertexBuffer();
+  vkw::Buffer indexBuffer = makeIndexBuffer();
+  std::vector<vkw::Buffer> uniformBuffers = makeUniformBuffers();
 
   /* Step 13: Resource descriptors */
   /* Usage of descriptors consists of three parts:
@@ -157,9 +153,9 @@ private:
   • Bind the descriptor set during rendering */
   vkw::DescriptorPool descriptorPool = {
       device.ref(), static_cast<uint32_t>(maxFramesInFlight)};
-  std::vector<VkDescriptorSet> descriptorSets;
+  vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
-  void createDescriptorSets();
+  vkw::DescriptorSets makeDescriptorSets();
 
   /* Step 14: Textures images */
   VkImage textureImage;
