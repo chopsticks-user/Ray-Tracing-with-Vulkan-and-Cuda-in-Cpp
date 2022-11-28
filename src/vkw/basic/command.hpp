@@ -31,6 +31,8 @@ public:
 
   const VkCommandPool &ref() const noexcept { return _commandPool; }
 
+  const VkDevice &device() const noexcept { return _device; }
+
   std::vector<VkCommandBuffer>
   allocateBuffers(uint32_t count,
                   VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,

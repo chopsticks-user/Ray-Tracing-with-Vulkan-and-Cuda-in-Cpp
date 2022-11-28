@@ -14,7 +14,10 @@ public:
   Image(VkDevice device, const VkImageCreateInfo *pCreateInfo,
         const VkAllocationCallbacks *pAllocator = nullptr)
       : _device{device}, _pAllocator{pAllocator} {
-    vkCreateImage(device, pCreateInfo, _pAllocator, &_image);
+    if (vkCreateImage(device, pCreateInfo, _pAllocator, &_image) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed to create image.");
+    }
     _isOwner = true;
   }
   Image(const Image &) = delete;

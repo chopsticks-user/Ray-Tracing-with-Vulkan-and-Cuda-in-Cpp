@@ -63,7 +63,7 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
                     graphicsPipeline.ref());
 
   /* Bind the buffers */
-  VkBuffer vertexBuffers[] = {vertexBuffer};
+  VkBuffer vertexBuffers[] = {vertexBuffer.ref()};
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
 
@@ -73,7 +73,7 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
                           descriptorSets.data(), 0, nullptr);
 
   /* Bind if using index buffers */
-  vkCmdBindIndexBuffer(cmdBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+  vkCmdBindIndexBuffer(cmdBuffer, indexBuffer.ref(), 0, VK_INDEX_TYPE_UINT16);
 
   /* Draw the vertex buffers */
   // static const uint32_t instanceCount = 1;
@@ -109,35 +109,6 @@ uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
     }
   }
   throw std::runtime_error("Failed to find suitable memory type.");
-}
-
-void VulkanApp::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                             VkMemoryPropertyFlags propertyFlags,
-                             VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
-  VkBufferCreateInfo bufferInfo{};
-  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  bufferInfo.size = size;
-  bufferInfo.usage = usage;
-  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-  if (vkCreateBuffer(device.ref(), &bufferInfo, nullptr, &buffer) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("Failed creating buffer.");
-  }
-
-  VkMemoryRequirements memoryRequirements;
-  vkGetBufferMemoryRequirements(device.ref(), buffer, &memoryRequirements);
-
-  VkMemoryAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  allocInfo.allocationSize = memoryRequirements.size;
-  allocInfo.memoryTypeIndex =
-      findMemoryType(memoryRequirements.memoryTypeBits, propertyFlags);
-  if (vkAllocateMemory(device.ref(), &allocInfo, nullptr, &bufferMemory) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("Failed to allocate buffer memory.");
-  }
-  vkBindBufferMemory(device.ref(), buffer, bufferMemory, 0);
 }
 
 void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
@@ -180,32 +151,22 @@ void VulkanApp::createVertexBuffer() {
                             shader::triangle_index_data.size();
 
   /* Create a host visible buffer as temporary buffer */
-  VkBuffer stagingBuffer;
-  VkDeviceMemory stagingBufferMemory;
-  createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-               stagingBuffer, stagingBufferMemory);
+  vkw::Buffer stagingBuffer{device.ref(), device.physical(), bufferSize,
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 
   /* Copy the vertices data to the staging buffer */
-  void *data;
-  vkMapMemory(device.ref(), stagingBufferMemory, 0, bufferSize, 0, &data);
-  std::memcpy(data, shader::triangle_index_data.data(),
-              static_cast<size_t>(bufferSize));
-  vkUnmapMemory(device.ref(), stagingBufferMemory);
+  stagingBuffer.copyHostData(shader::triangle_index_data.data(), bufferSize);
 
   /* Create a device local buffer as actual vertex buffer */
-  createBuffer(
-      bufferSize,
-      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+  vertexBuffer = {device.ref(), device.physical(), bufferSize,
+                  VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                      VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
   /* Copy the data from the staging buffer to the device buffer */
-  copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-  /* Clean the staging buffer */
-  vkDestroyBuffer(device.ref(), stagingBuffer, nullptr);
-  vkFreeMemory(device.ref(), stagingBufferMemory, nullptr);
+  copyBuffer(stagingBuffer.ref(), vertexBuffer.ref(), bufferSize);
 }
 
 void VulkanApp::createIndexBuffer() {
@@ -213,43 +174,31 @@ void VulkanApp::createIndexBuffer() {
       sizeof(shader::triangle_indices[0]) * shader::triangle_indices.size();
 
   /* Create a host visible buffer as temporary buffer */
-  VkBuffer stagingBuffer;
-  VkDeviceMemory stagingBufferMemory;
-  createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-               stagingBuffer, stagingBufferMemory);
+  vkw::Buffer stagingBuffer = {device.ref(), device.physical(), bufferSize,
+                               VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 
   /* Copy the vertices data to the staging buffer */
-  void *data;
-  vkMapMemory(device.ref(), stagingBufferMemory, 0, bufferSize, 0, &data);
-  std::memcpy(data, shader::triangle_indices.data(),
-              static_cast<size_t>(bufferSize));
-  vkUnmapMemory(device.ref(), stagingBufferMemory);
+  stagingBuffer.copyHostData(shader::triangle_indices.data(), bufferSize);
 
   /* Create a device local buffer as actual vertex buffer */
-  createBuffer(
-      bufferSize,
-      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+  indexBuffer = {device.ref(), device.physical(), bufferSize,
+                 VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                     VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
   /* Copy the data from the staging buffer to the device buffer */
-  copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-  /* Clean the staging buffer */
-  vkDestroyBuffer(device.ref(), stagingBuffer, nullptr);
-  vkFreeMemory(device.ref(), stagingBufferMemory, nullptr);
+  copyBuffer(stagingBuffer.ref(), indexBuffer.ref(), bufferSize);
 }
 
 void VulkanApp::createUniformBuffers() {
   VkDeviceSize bufferSize = sizeof(vkh::UniformBufferObject);
-  uniformBuffers.resize(maxFramesInFlight);
-  uniformBuffersMemory.resize(maxFramesInFlight);
-  for (size_t i = 0; i < maxFramesInFlight; ++i) {
-    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                 uniformBuffers[i], uniformBuffersMemory[i]);
+  for (auto &uniformBuffer : uniformBuffers) {
+    uniformBuffer = {device.ref(), device.physical(), bufferSize,
+                     VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                         VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
   }
 }
 
@@ -274,10 +223,10 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
   ubo.proj[1][1] *= -1;
 
   void *data;
-  vkMapMemory(device.ref(), uniformBuffersMemory[currentImage], 0, sizeof(ubo),
-              0, &data);
+  vkMapMemory(device.ref(), uniformBuffers[currentImage].memory(), 0,
+              sizeof(ubo), 0, &data);
   std::memcpy(data, &ubo, sizeof(ubo));
-  vkUnmapMemory(device.ref(), uniformBuffersMemory[currentImage]);
+  vkUnmapMemory(device.ref(), uniformBuffers[currentImage].memory());
 }
 
 void VulkanApp::createDescriptorSets() {
@@ -287,7 +236,7 @@ void VulkanApp::createDescriptorSets() {
   std::vector<VkWriteDescriptorSet> descriptorWrites{};
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     VkDescriptorBufferInfo bufferInfo{};
-    bufferInfo.buffer = uniformBuffers[i];
+    bufferInfo.buffer = uniformBuffers[i].ref();
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(vkh::UniformBufferObject);
 
@@ -307,49 +256,49 @@ void VulkanApp::createDescriptorSets() {
 }
 
 void VulkanApp::createTextureImage() {
-  // int imageWidth, imageHeight, imageChannels;
-  // stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
-  //                             &imageChannels, STBI_rgb_alpha);
-  // VkDeviceSize imageSize = imageWidth * imageHeight * 4;
-  // if (!pixels) {
-  //   throw std::runtime_error("Failed to load image.");
-  // }
+  int imageWidth, imageHeight, imageChannels;
+  stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
+                              &imageChannels, STBI_rgb_alpha);
+  VkDeviceSize imageSize = imageWidth * imageHeight * 4;
+  if (!pixels) {
+    throw std::runtime_error("Failed to load image.");
+  }
 
-  // VkBuffer stagingBuffer;
-  // VkDeviceMemory stagingBufferMemory;
+  vkw::Buffer stagingBuffer = {device.ref(), device.physical(), imageSize,
+                               VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 
-  // createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-  //              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-  //                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-  //              stagingBuffer, stagingBufferMemory);
+  void *data;
+  vkMapMemory(device.ref(), stagingBuffer.memory(), 0, imageSize, 0, &data);
+  std::memcpy(data, pixels, static_cast<size_t>(imageSize));
+  vkUnmapMemory(device.ref(), stagingBuffer.memory());
 
-  // void *data;
-  // vkMapMemory(device.ref(), stagingBufferMemory, 0, imageSize, 0, &data);
-  // std::memcpy(data, pixels, static_cast<size_t>(imageSize));
-  // vkUnmapMemory(device.ref(), stagingBufferMemory);
+  VkImageCreateInfo imageInfo{};
+  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  imageInfo.imageType = VK_IMAGE_TYPE_2D;
+  imageInfo.extent.width = static_cast<uint32_t>(imageWidth);
+  imageInfo.extent.height = static_cast<uint32_t>(imageHeight);
+  imageInfo.extent.depth = 1;
+  imageInfo.mipLevels = 1;
+  imageInfo.arrayLayers = 1;
+  imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+  imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  imageInfo.usage =
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+  imageInfo.flags = 0;
+  if (vkCreateImage(device.ref(), &imageInfo, nullptr, &textureImage) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to create texture image");
+  }
 
-  // VkImageCreateInfo imageInfo{};
-  // imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  // imageInfo.imageType = VK_IMAGE_TYPE_2D;
-  // imageInfo.extent.width = static_cast<uint32_t>(imageWidth);
-  // imageInfo.extent.height = static_cast<uint32_t>(imageHeight);
-  // imageInfo.extent.depth = 1;
-  // imageInfo.mipLevels = 1;
-  // imageInfo.arrayLayers = 1;
-  // imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-  // imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-  // imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  // imageInfo.usage =
-  //     VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-  // imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-  // imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-  // imageInfo.flags = 0;
-  // if (vkCreateImage(device.ref(), &imageInfo, nullptr, &textureImage) !=
-  //     VK_SUCCESS) {
-  //   throw std::runtime_error("Failed to create texture image");
-  // }
+  // VkMemoryRequirements memoryRequirements;
+  // vkGetImageMemoryRequirements(device.ref(), )
 
-  // stbi_image_free(pixels);
+  stbi_image_free(pixels);
 }
 
 void VulkanApp::render() {
@@ -436,18 +385,7 @@ VulkanApp::VulkanApp() {
   createIndexBuffer();
   createUniformBuffers();
   createDescriptorSets();
-  createTextureImage();
-}
-
-VulkanApp::~VulkanApp() {
-  for (size_t i = 0; i < maxFramesInFlight; ++i) {
-    vkDestroyBuffer(device.ref(), uniformBuffers[i], nullptr);
-    vkFreeMemory(device.ref(), uniformBuffersMemory[i], nullptr);
-  }
-  vkDestroyBuffer(device.ref(), indexBuffer, nullptr);
-  vkFreeMemory(device.ref(), indexBufferMemory, nullptr);
-  vkDestroyBuffer(device.ref(), vertexBuffer, nullptr);
-  vkFreeMemory(device.ref(), vertexBufferMemory, nullptr);
+  // createTextureImage();
 }
 
 void VulkanApp::run() {

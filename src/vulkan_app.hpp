@@ -17,7 +17,7 @@
 class VulkanApp {
 public:
   VulkanApp();
-  ~VulkanApp();
+  ~VulkanApp() = default;
   VulkanApp(const VulkanApp &) = delete;
   VulkanApp(VulkanApp &&) = delete;
   VulkanApp &operator=(const VulkanApp &) = delete;
@@ -134,12 +134,10 @@ private:
 
   /* Step 12: Buffers */
   /* Before {createCommandBuffers()} and after {createCommandPool()} */
-  VkBuffer vertexBuffer;
-  VkDeviceMemory vertexBufferMemory;
-  VkBuffer indexBuffer;
-  VkDeviceMemory indexBufferMemory;
-  std::vector<VkBuffer> uniformBuffers;
-  std::vector<VkDeviceMemory> uniformBuffersMemory;
+  vkw::Buffer vertexBuffer;
+  vkw::Buffer indexBuffer;
+  std::vector<vkw::Buffer> uniformBuffers{maxFramesInFlight};
+  // std::vector<VkDeviceMemory> uniformBuffersMemory;
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
