@@ -111,51 +111,6 @@ uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
   throw std::runtime_error("Failed to find suitable memory type.");
 }
 
-void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
-  // VkCommandBufferAllocateInfo allocInfo{};
-  // allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  // allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  // allocInfo.commandPool = commandPool.ref();
-  // allocInfo.commandBufferCount = 1;
-
-  // VkCommandBuffer commandBuffer =
-  //     vkh::allocateCommandBuffer(device.ref(), &allocInfo);
-
-  auto commandBuffer =
-      commandPool.allocateBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-
-  // VkCommandBufferBeginInfo beginInfo{};
-  // beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  // beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-  // vkh::beginCommandBuffer(commandBuffer, &beginInfo);
-
-  commandPool.beginBuffer(commandBuffer);
-
-  VkBufferCopy copyRegion{};
-  copyRegion.srcOffset = 0;
-  copyRegion.dstOffset = 0;
-  copyRegion.size = size;
-  vkCmdCopyBuffer(commandBuffer, src, dst, 1, &copyRegion);
-
-  // vkh::endCommandBuffer(commandBuffer);
-
-  commandPool.endBuffer(commandBuffer);
-
-  VkSubmitInfo submitInfo{};
-  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &commandBuffer;
-
-  /* Submit and wait on this transfer to complete before cleaning up
-  the command buffer */
-  // vkQueueSubmit(device.queue(), 1, &submitInfo, VK_NULL_HANDLE);
-  // vkQueueWaitIdle(device.queue());
-  commandPool.submitBuffer(device.queue(), &submitInfo);
-
-  // vkFreeCommandBuffers(device.ref(), commandPool.ref(), 1, &commandBuffer);
-  commandPool.freeBuffer(commandBuffer);
-}
-
 vkw::Buffer VulkanApp::makeVertexBuffer() {
   VkDeviceSize bufferSize = sizeof(shader::triangle_index_data[0]) *
                             shader::triangle_index_data.size();
@@ -176,7 +131,7 @@ vkw::Buffer VulkanApp::makeVertexBuffer() {
                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
   /* Copy the data from the staging buffer to the device buffer */
-  copyBuffer(stagingBuffer.ref(), buffer.ref(), bufferSize);
+  buffer.copyDeviceData(commandPool, device.queue(), stagingBuffer, bufferSize);
   return buffer;
 }
 
@@ -200,7 +155,7 @@ vkw::Buffer VulkanApp::makeIndexBuffer() {
                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
   /* Copy the data from the staging buffer to the device buffer */
-  copyBuffer(stagingBuffer.ref(), buffer.ref(), bufferSize);
+  buffer.copyDeviceData(commandPool, device.queue(), stagingBuffer, bufferSize);
   return buffer;
 }
 

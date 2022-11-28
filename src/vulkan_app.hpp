@@ -136,7 +136,6 @@ private:
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
-  void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
   vkw::Buffer makeVertexBuffer();
   vkw::Buffer makeIndexBuffer();
   std::vector<vkw::Buffer> makeUniformBuffers();

@@ -3,6 +3,8 @@
 
 #include "config.hpp"
 
+#include "command/command_pool.hpp"
+
 #include <cstring>
 #include <type_traits>
 #include <vkh.hpp>
@@ -63,7 +65,31 @@ public:
     vkUnmapMemory(_device, _deviceMemory);
   }
 
-private:
+  void copyDeviceData(vkw::CommandPool &commandPool, VkQueue queue,
+                      const vkw::Buffer &src, VkDeviceSize size) {
+    auto commandBuffer =
+        commandPool.allocateBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    commandPool.beginBuffer(commandBuffer);
+
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = src._memoryOffset;
+    copyRegion.dstOffset = _memoryOffset;
+    copyRegion.size = size;
+    vkCmdCopyBuffer(commandBuffer, src.ref(), _buffer, 1, &copyRegion);
+
+    commandPool.endBuffer(commandBuffer);
+
+    /* Submit and wait on this transfer to complete before cleaning up
+    the command buffer */
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+    commandPool.submitBuffer(queue, &submitInfo);
+    commandPool.freeBuffer(commandBuffer);
+  }
+
+protected:
   VkBuffer _buffer;
   VkDeviceMemory _deviceMemory;
   VkDevice _device;
@@ -108,10 +134,11 @@ private:
     }
   }
 
-  CUSTOM void _customInitialize(VkDevice device,
-                                VkPhysicalDevice physicalDevice,
-                                VkDeviceSize size, VkBufferUsageFlags usage,
-                                VkMemoryPropertyFlags propertyFlags) {
+  CUSTOM virtual void _customInitialize(VkDevice device,
+                                        VkPhysicalDevice physicalDevice,
+                                        VkDeviceSize size,
+                                        VkBufferUsageFlags usage,
+                                        VkMemoryPropertyFlags propertyFlags) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
@@ -138,9 +165,9 @@ private:
     _isOwner = true;
   }
 
-  CUSTOM uint32_t _findMemoryType(VkPhysicalDevice physicalDevice,
-                                  uint32_t typeFilter,
-                                  VkMemoryPropertyFlags propFlags) {
+  CUSTOM virtual uint32_t _findMemoryType(VkPhysicalDevice physicalDevice,
+                                          uint32_t typeFilter,
+                                          VkMemoryPropertyFlags propFlags) {
     VkPhysicalDeviceMemoryProperties memoryProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
     for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {

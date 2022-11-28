@@ -86,9 +86,11 @@ public:
   }
 
   void submitBuffer(VkQueue queue, const VkSubmitInfo *pSubmit,
-                    VkFence fence = VK_NULL_HANDLE) {
+                    VkFence fence = VK_NULL_HANDLE, bool wait = true) {
     vkQueueSubmit(queue, 1, pSubmit, fence);
-    vkQueueWaitIdle(queue);
+    if (wait) {
+      vkQueueWaitIdle(queue);
+    }
   }
 
   void freeBuffer(VkCommandBuffer &commandBuffer) {
