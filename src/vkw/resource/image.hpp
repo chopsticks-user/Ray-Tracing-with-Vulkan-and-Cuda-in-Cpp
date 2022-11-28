@@ -3,7 +3,7 @@
 
 #include "config.hpp"
 
-#include "api/stb_image.hpp"
+#include "interface/stb_image.hpp"
 #include <vkh.hpp>
 
 namespace vkw {

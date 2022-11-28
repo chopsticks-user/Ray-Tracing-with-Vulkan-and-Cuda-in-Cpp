@@ -2,7 +2,6 @@
 #define VKW_PIPELINE_GRAPHICS_HPP
 
 #include "config.hpp"
-#include "wrappers.hpp"
 
 #include <vkh.hpp>
 

@@ -153,14 +153,18 @@ private:
   • Bind the descriptor set during rendering */
   vkw::DescriptorPool descriptorPool = {
       device.ref(), static_cast<uint32_t>(maxFramesInFlight)};
-  vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
   vkw::DescriptorSets makeDescriptorSets();
+  vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
   /* Step 14: Textures images */
   VkImage textureImage;
   VkDeviceMemory textureImageMemory;
 
+  void createImage(uint32_t width, uint32_t height, VkFormat format,
+                   VkImageTiling tiling, VkImageUsageFlags usage,
+                   VkMemoryPropertyFlags propFlags, VkImage &image,
+                   VkDeviceMemory &imageMemory);
   void createTextureImage();
 
   /* Last step: Render */

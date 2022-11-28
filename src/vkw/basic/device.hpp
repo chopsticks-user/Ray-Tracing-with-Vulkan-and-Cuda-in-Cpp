@@ -2,7 +2,6 @@
 #define VKW_DEVICE_HPP
 
 #include "config.hpp"
-#include "wrappers.hpp"
 
 #include <map>
 #include <optional>

@@ -1,7 +1,6 @@
 #ifndef VKW_BUFFER_HPP
 #define VKW_BUFFER_HPP
 
-#include "basic/command.hpp"
 #include "config.hpp"
 
 #include <cstring>

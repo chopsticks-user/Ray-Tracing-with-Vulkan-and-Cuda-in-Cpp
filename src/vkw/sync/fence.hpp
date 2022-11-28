@@ -1,5 +1,5 @@
-#ifndef VKW_FENCE_HPP
-#define VKW_FENCE_HPP
+#ifndef VKW_SYNC_FENCE_HPP
+#define VKW_SYNC_FENCE_HPP
 
 #include "config.hpp"
 
@@ -60,4 +60,4 @@ private:
 };
 
 } /* namespace vkw */
-#endif /* VKW_FENCE_HPP */
+#endif /* VKW_SYNC_FENCE_HPP */

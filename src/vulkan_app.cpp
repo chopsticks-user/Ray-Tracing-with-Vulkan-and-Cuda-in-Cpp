@@ -112,19 +112,24 @@ uint32_t VulkanApp::findMemoryType(uint32_t typeFilter,
 }
 
 void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
-  VkCommandBufferAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandPool = commandPool.ref();
-  allocInfo.commandBufferCount = 1;
+  // VkCommandBufferAllocateInfo allocInfo{};
+  // allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  // allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  // allocInfo.commandPool = commandPool.ref();
+  // allocInfo.commandBufferCount = 1;
 
-  VkCommandBuffer commandBuffer =
-      vkh::allocateCommandBuffer(device.ref(), &allocInfo);
+  // VkCommandBuffer commandBuffer =
+  //     vkh::allocateCommandBuffer(device.ref(), &allocInfo);
 
-  VkCommandBufferBeginInfo beginInfo{};
-  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-  vkh::beginCommandBuffer(commandBuffer, &beginInfo);
+  auto commandBuffer =
+      commandPool.allocateBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+  // VkCommandBufferBeginInfo beginInfo{};
+  // beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  // beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+  // vkh::beginCommandBuffer(commandBuffer, &beginInfo);
+
+  commandPool.beginBuffer(commandBuffer);
 
   VkBufferCopy copyRegion{};
   copyRegion.srcOffset = 0;
@@ -132,7 +137,9 @@ void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
   copyRegion.size = size;
   vkCmdCopyBuffer(commandBuffer, src, dst, 1, &copyRegion);
 
-  vkh::endCommandBuffer(commandBuffer);
+  // vkh::endCommandBuffer(commandBuffer);
+
+  commandPool.endBuffer(commandBuffer);
 
   VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -141,9 +148,12 @@ void VulkanApp::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
 
   /* Submit and wait on this transfer to complete before cleaning up
   the command buffer */
-  vkQueueSubmit(device.queue(), 1, &submitInfo, VK_NULL_HANDLE);
-  vkQueueWaitIdle(device.queue());
-  vkFreeCommandBuffers(device.ref(), commandPool.ref(), 1, &commandBuffer);
+  // vkQueueSubmit(device.queue(), 1, &submitInfo, VK_NULL_HANDLE);
+  // vkQueueWaitIdle(device.queue());
+  commandPool.submitBuffer(device.queue(), &submitInfo);
+
+  // vkFreeCommandBuffers(device.ref(), commandPool.ref(), 1, &commandBuffer);
+  commandPool.freeBuffer(commandBuffer);
 }
 
 vkw::Buffer VulkanApp::makeVertexBuffer() {
@@ -260,6 +270,43 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
   return sets;
 }
 
+void VulkanApp::createImage(uint32_t width, uint32_t height, VkFormat format,
+                            VkImageTiling tiling, VkImageUsageFlags usage,
+                            VkMemoryPropertyFlags propFlags, VkImage &image,
+                            VkDeviceMemory &imageMemory) {
+  VkImageCreateInfo imageInfo{};
+  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  imageInfo.imageType = VK_IMAGE_TYPE_2D;
+  imageInfo.extent.width = width;
+  imageInfo.extent.height = height;
+  imageInfo.extent.depth = 1;
+  imageInfo.mipLevels = 1;
+  imageInfo.arrayLayers = 1;
+  imageInfo.format = format;
+  imageInfo.tiling = tiling;
+  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  imageInfo.usage = usage;
+  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+  imageInfo.flags = 0;
+  if (vkCreateImage(device.ref(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create texture image");
+  }
+
+  VkMemoryRequirements memoryRequirements;
+  vkGetImageMemoryRequirements(device.ref(), image, &memoryRequirements);
+
+  VkMemoryAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memoryRequirements.size;
+  allocInfo.memoryTypeIndex =
+      findMemoryType(memoryRequirements.memoryTypeBits, propFlags);
+  if (vkAllocateMemory(device.ref(), &allocInfo, nullptr, &imageMemory)) {
+    throw std::runtime_error("Failed to allocate image memory.");
+  }
+  vkBindImageMemory(device.ref(), image, imageMemory, 0);
+}
+
 void VulkanApp::createTextureImage() {
   int imageWidth, imageHeight, imageChannels;
   stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
@@ -268,42 +315,16 @@ void VulkanApp::createTextureImage() {
   if (!pixels) {
     throw std::runtime_error("Failed to load image.");
   }
-
   vkw::Buffer stagingBuffer = {device.ref(), device.physical(), imageSize,
                                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
-
-  void *data;
-  vkMapMemory(device.ref(), stagingBuffer.memory(), 0, imageSize, 0, &data);
-  std::memcpy(data, pixels, static_cast<size_t>(imageSize));
-  vkUnmapMemory(device.ref(), stagingBuffer.memory());
-
-  VkImageCreateInfo imageInfo{};
-  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  imageInfo.imageType = VK_IMAGE_TYPE_2D;
-  imageInfo.extent.width = static_cast<uint32_t>(imageWidth);
-  imageInfo.extent.height = static_cast<uint32_t>(imageHeight);
-  imageInfo.extent.depth = 1;
-  imageInfo.mipLevels = 1;
-  imageInfo.arrayLayers = 1;
-  imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-  imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  imageInfo.usage =
-      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-  imageInfo.flags = 0;
-  if (vkCreateImage(device.ref(), &imageInfo, nullptr, &textureImage) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("Failed to create texture image");
-  }
-
-  // VkMemoryRequirements memoryRequirements;
-  // vkGetImageMemoryRequirements(device.ref(), )
-
+  stagingBuffer.copyHostData(pixels, imageSize);
   stbi_image_free(pixels);
+  createImage(
+      imageWidth, imageHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 }
 
 void VulkanApp::render() {
@@ -385,8 +406,6 @@ void VulkanApp::render() {
 VulkanApp::VulkanApp() {
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
-
-  // createTextureImage();
 }
 
 void VulkanApp::run() {

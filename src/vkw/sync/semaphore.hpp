@@ -1,5 +1,5 @@
-#ifndef VKW_SEMAPHORE_HPP
-#define VKW_SEMAPHORE_HPP
+#ifndef VKW_SYNC_SEMAPHORE_HPP
+#define VKW_SYNC_SEMAPHORE_HPP
 
 #include "config.hpp"
 
@@ -60,4 +60,4 @@ private:
 };
 
 } /* namespace vkw */
-#endif /* VKW_SEMAPHORE_HPP */
+#endif /* VKW_SYNC_SEMAPHORE_HPP */
