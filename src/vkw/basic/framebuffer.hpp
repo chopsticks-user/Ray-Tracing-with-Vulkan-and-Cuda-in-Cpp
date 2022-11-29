@@ -11,7 +11,7 @@ class Framebuffers {
 public:
   Framebuffers() = default;
   Framebuffers(VkDevice device, const std::vector<VkImageView> &imageViews,
-               VkRenderPass renderPass, VkExtent2D extent)
+               VkRenderPass renderPass, const VkExtent2D &extent)
       : _device{device}, _pAllocator{nullptr} {
     _customInitialize(device, imageViews, renderPass, extent);
   }
@@ -34,7 +34,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Framebuffers() { _destroyVkData(); }
+  virtual ~Framebuffers() { _destroyVkData(); }
 
   const std::vector<VkFramebuffer> &ref() const noexcept {
     return _framebuffers;
@@ -48,7 +48,7 @@ public:
     return _framebuffers[index];
   }
 
-private:
+protected:
   std::vector<VkFramebuffer> _framebuffers;
   VkDevice _device;
   const VkAllocationCallbacks *_pAllocator;
@@ -77,9 +77,10 @@ private:
     }
   }
 
-  CUSTOM void _customInitialize(VkDevice device,
-                                const std::vector<VkImageView> &imageViews,
-                                VkRenderPass renderPass, VkExtent2D extent) {
+private:
+  void _customInitialize(VkDevice device,
+                         const std::vector<VkImageView> &imageViews,
+                         VkRenderPass renderPass, VkExtent2D extent) {
     size_t imageCount = imageViews.size();
     _framebuffers.resize(imageCount);
     std::vector<VkImageView> attachments{imageViews};

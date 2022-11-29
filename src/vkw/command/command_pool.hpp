@@ -93,6 +93,19 @@ public:
     }
   }
 
+  void submitBuffer(VkQueue queue, VkCommandBuffer commandBuffer,
+                    VkFence fence = VK_NULL_HANDLE, bool wait = true) {
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(queue, 1, &submitInfo, fence);
+    if (wait) {
+      vkQueueWaitIdle(queue);
+    }
+  }
+
   void freeBuffer(VkCommandBuffer &commandBuffer) {
     vkFreeCommandBuffers(_device, _commandPool, 1, &commandBuffer);
   }

@@ -165,9 +165,10 @@ protected:
     _isOwner = true;
   }
 
-  CUSTOM virtual uint32_t _findMemoryType(VkPhysicalDevice physicalDevice,
-                                          uint32_t typeFilter,
-                                          VkMemoryPropertyFlags propFlags) {
+private:
+  CUSTOM uint32_t _findMemoryType(VkPhysicalDevice physicalDevice,
+                                  uint32_t typeFilter,
+                                  VkMemoryPropertyFlags propFlags) {
     VkPhysicalDeviceMemoryProperties memoryProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
     for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {

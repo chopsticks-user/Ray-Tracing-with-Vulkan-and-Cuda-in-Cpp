@@ -82,12 +82,10 @@ private:
   vkw::DescriptorSetLayout descriptorSetLayout = {device.ref()};
 
   /* Step 7: Create a graphics pipeline */
-  vkw::GraphicsPipeline graphicsPipeline = {device.ref(),
-                                            swapchain.extent(),
-                                            swapchain.format(),
-                                            &descriptorSetLayout.ref(),
-                                            "/build/shaders/triangle_vert.spv",
-                                            "/build/shaders/triangle_frag.spv"};
+  vkw::GraphicsPipeline graphicsPipeline = {
+      {device.ref(), swapchain.extent(), swapchain.format(),
+       &descriptorSetLayout.ref(), "/build/shaders/triangle_vert.spv",
+       "/build/shaders/triangle_frag.spv"}};
 
   /* Step 8: Create framebuffers */
   vkw::Framebuffers framebuffers = {device.ref(), imageViews.ref(),
@@ -161,6 +159,12 @@ private:
   vkw::Image textureImage = makeTextureImage();
 
   vkw::Image makeTextureImage();
+
+  void transitionImageLayout(VkImage image, VkFormat format,
+                             VkImageLayout oldLayout, VkImageLayout newLayout);
+
+  void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
+                         uint32_t height);
 
   /* Last step: Render */
   void render();

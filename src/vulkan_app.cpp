@@ -17,12 +17,10 @@ void VulkanApp::recreateSwapchain() {
   swapchain = {surface.ref(), device.ref(), device.physical(),
                preferredPresentMode};
   imageViews = {device.ref(), swapchain.ref(), swapchain.format()};
-  graphicsPipeline = {device.ref(),
-                      swapchain.extent(),
-                      swapchain.format(),
-                      &descriptorSetLayout.ref(),
-                      "/build/shaders/triangle_vert.spv",
-                      "/build/shaders/triangle_frag.spv"};
+  graphicsPipeline = {{device.ref(), swapchain.extent(), swapchain.format(),
+                       &descriptorSetLayout.ref(),
+                       "/build/shaders/triangle_vert.spv",
+                       "/build/shaders/triangle_frag.spv"}};
   framebuffers = {device.ref(), imageViews.ref(), graphicsPipeline.renderPass(),
                   swapchain.extent()};
 }
@@ -191,11 +189,7 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
                               0.1f, 10.0f);
   ubo.proj[1][1] *= -1;
 
-  void *data;
-  vkMapMemory(device.ref(), uniformBuffers[currentImage].memory(), 0,
-              sizeof(ubo), 0, &data);
-  std::memcpy(data, &ubo, sizeof(ubo));
-  vkUnmapMemory(device.ref(), uniformBuffers[currentImage].memory());
+  uniformBuffers[currentImage].copyHostData(&ubo, sizeof(ubo));
 }
 
 vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
@@ -225,6 +219,60 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
   return sets;
 }
 
+void VulkanApp::transitionImageLayout(VkImage image,
+                                      [[maybe_unused]] VkFormat format,
+                                      VkImageLayout oldLayout,
+                                      VkImageLayout newLayout) {
+  auto commandBuffer = commandPool.allocateBuffer();
+  commandPool.beginBuffer(commandBuffer);
+
+  VkImageMemoryBarrier barrier{};
+  barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+  barrier.oldLayout = oldLayout;
+  barrier.newLayout = newLayout;
+  barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.image = image;
+  barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  barrier.subresourceRange.baseMipLevel = 0;
+  barrier.subresourceRange.levelCount = 1;
+  barrier.subresourceRange.baseArrayLayer = 0;
+  barrier.subresourceRange.layerCount = 1;
+  barrier.srcAccessMask = 0;
+  barrier.dstAccessMask = 0;
+  barrier.srcAccessMask = 0;
+  barrier.dstAccessMask = 0;
+  vkCmdPipelineBarrier(commandBuffer, 0, 0, 0, 0, nullptr, 0, nullptr, 1,
+                       &barrier);
+
+  commandPool.endBuffer(commandBuffer);
+  commandPool.submitBuffer(device.queue(), commandBuffer);
+  commandPool.freeBuffer(commandBuffer);
+}
+
+void VulkanApp::copyBufferToImage(VkBuffer buffer, VkImage image,
+                                  uint32_t width, uint32_t height) {
+  auto commandBuffer = commandPool.allocateBuffer();
+  commandPool.beginBuffer(commandBuffer);
+
+  VkBufferImageCopy region{};
+  region.bufferOffset = 0;
+  region.bufferRowLength = 0;
+  region.bufferImageHeight = 0;
+  region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  region.imageSubresource.mipLevel = 0;
+  region.imageSubresource.baseArrayLayer = 0;
+  region.imageSubresource.layerCount = 1;
+  region.imageOffset = {0, 0, 0};
+  region.imageExtent = {width, height, 1};
+  vkCmdCopyBufferToImage(commandBuffer, buffer, image,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+  commandPool.endBuffer(commandBuffer);
+  commandPool.submitBuffer(device.queue(), commandBuffer);
+  commandPool.freeBuffer(commandBuffer);
+}
+
 vkw::Image VulkanApp::makeTextureImage() {
   int imageWidth, imageHeight, imageChannels;
   stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
@@ -239,14 +287,22 @@ vkw::Image VulkanApp::makeTextureImage() {
                                    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
   stagingBuffer.copyHostData(pixels, imageSize);
   stbi_image_free(pixels);
-  return {device.ref(),
-          device.physical(),
-          static_cast<uint32_t>(imageWidth),
-          static_cast<uint32_t>(imageHeight),
-          VK_FORMAT_R8G8B8A8_SRGB,
-          VK_IMAGE_TILING_OPTIMAL,
-          VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
+  vkw::Image texImage = {
+      {device.ref(), device.physical(), static_cast<uint32_t>(imageWidth),
+       static_cast<uint32_t>(imageHeight), VK_FORMAT_R8G8B8A8_SRGB,
+       VK_IMAGE_TILING_OPTIMAL,
+       VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
+  transitionImageLayout(texImage.ref(), VK_FORMAT_R8G8_SRGB,
+                        VK_IMAGE_LAYOUT_UNDEFINED,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  copyBufferToImage(stagingBuffer.ref(), texImage.ref(),
+                    static_cast<uint32_t>(imageWidth),
+                    static_cast<uint32_t>(imageHeight));
+  transitionImageLayout(texImage.ref(), VK_FORMAT_R8G8B8A8_SRGB,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  return texImage;
 }
 
 void VulkanApp::render() {

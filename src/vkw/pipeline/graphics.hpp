@@ -9,14 +9,19 @@ namespace vkw {
 
 class GraphicsPipeline {
 public:
+  struct CustomArgs {
+    VkDevice device;
+    VkExtent2D extent;
+    VkFormat format;
+    const VkDescriptorSetLayout *desSetLayout;
+    const std::string vertexFilePath;
+    const std::string fragFilePath;
+  };
+
   GraphicsPipeline() = default;
-  GraphicsPipeline(VkDevice device, VkExtent2D extent, VkFormat format,
-                   const VkDescriptorSetLayout *desSetLayout,
-                   const std::string vertexFilePath,
-                   const std::string fragFilePath)
-      : _device{device}, _pipelineCache{nullptr}, _pAllocator{nullptr} {
-    _customInitialize(device, extent, format, desSetLayout, vertexFilePath,
-                      fragFilePath);
+  GraphicsPipeline(const CustomArgs &args)
+      : _device{args.device}, _pipelineCache{nullptr}, _pAllocator{nullptr} {
+    _customInitialize(args);
   }
   GraphicsPipeline(VkDevice device,
                    const VkGraphicsPipelineCreateInfo *pCreateInfo,
@@ -36,7 +41,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~GraphicsPipeline() { _destroyVkData(); }
+  virtual ~GraphicsPipeline() { _destroyVkData(); }
 
   const VkPipeline &ref() const noexcept { return _graphicsPipeline; }
 
@@ -46,7 +51,7 @@ public:
 
   const VkRenderPass &renderPass() const noexcept { return _renderPass; }
 
-private:
+protected:
   VkPipeline _graphicsPipeline;
   VkDevice _device;
   VkPipelineCache _pipelineCache;
@@ -81,16 +86,13 @@ private:
     }
   }
 
-  CUSTOM void _customInitialize(VkDevice device, const VkExtent2D &extent,
-                                const VkFormat &format,
-                                const VkDescriptorSetLayout *desSetLayout,
-                                const std::string &vertexFilePath,
-                                const std::string &fragFilePath) {
+private:
+  void _customInitialize(const CustomArgs &args) {
     vkw::ShaderModuleWrapper shaderModule{};
     shaderModule.vertex = vkh::createShaderModule(
-        device, vkh::absoluteDirectory + vertexFilePath);
-    shaderModule.fragment =
-        vkh::createShaderModule(device, vkh::absoluteDirectory + fragFilePath);
+        args.device, vkh::absoluteDirectory + args.vertexFilePath);
+    shaderModule.fragment = vkh::createShaderModule(
+        args.device, vkh::absoluteDirectory + args.fragFilePath);
 
     /*  */
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -136,14 +138,14 @@ private:
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(extent.width);
-    viewport.height = static_cast<float>(extent.height);
+    viewport.width = static_cast<float>(args.extent.width);
+    viewport.height = static_cast<float>(args.extent.height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = extent;
+    scissor.extent = args.extent;
 
     VkPipelineViewportStateCreateInfo viewportStateInfo{};
     viewportStateInfo.sType =
@@ -223,14 +225,15 @@ private:
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = desSetLayout;
+    pipelineLayoutInfo.pSetLayouts = args.desSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
-    _pipelineLayout = vkh::createPipelineLayout(device, &pipelineLayoutInfo);
+    _pipelineLayout =
+        vkh::createPipelineLayout(args.device, &pipelineLayoutInfo);
 
     /* Render pass */
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = format;
+    colorAttachment.format = args.format;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -265,7 +268,7 @@ private:
     renderPassInfo.pSubpasses = &subpass;
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &subPassDep;
-    _renderPass = vkh::createRenderPass(device, &renderPassInfo);
+    _renderPass = vkh::createRenderPass(args.device, &renderPassInfo);
 
     /* Create a graphics pipeline */
     VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -288,9 +291,9 @@ private:
     pipelineInfo.basePipelineIndex = -1;
 
     _graphicsPipeline = vkh::createPipeline<vkh::Graphics>(
-        device, _pipelineCache, &pipelineInfo);
-    vkh::destroyShaderModule(device, shaderModule.vertex);
-    vkh::destroyShaderModule(device, shaderModule.fragment);
+        args.device, _pipelineCache, &pipelineInfo);
+    vkh::destroyShaderModule(args.device, shaderModule.vertex);
+    vkh::destroyShaderModule(args.device, shaderModule.fragment);
     _isOwner = true;
   }
 };
