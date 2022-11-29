@@ -144,7 +144,20 @@ private:
   vkw::Buffer indexBuffer = makeIndexBuffer();
   std::vector<vkw::Buffer> uniformBuffers = makeUniformBuffers();
 
-  /* Step 13: Resource descriptors */
+  /* Step 13: Textures images */
+  vkw::Image textureImage = makeTextureImage();
+  vkw::ImageView textureView = {device.ref(), textureImage.ref(),
+                                VK_FORMAT_R8G8B8A8_SRGB};
+  vkw::Sampler textureSampler = {device.ref(), device.physical()};
+
+  vkw::Image makeTextureImage();
+
+  void transitionImageLayout(VkImage image, VkFormat format,
+                             VkImageLayout oldLayout, VkImageLayout newLayout);
+  void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
+                         uint32_t height);
+
+  /* Step 14: Resource descriptors */
   /* Usage of descriptors consists of three parts:
   • Specify a descriptor layout during pipeline creation
   • Allocate a descriptor set from a descriptor pool
@@ -154,19 +167,6 @@ private:
 
   vkw::DescriptorSets makeDescriptorSets();
   vkw::DescriptorSets descriptorSets = makeDescriptorSets();
-
-  /* Step 14: Textures images */
-  vkw::Image textureImage = makeTextureImage();
-  vkw::ImageViews textureViews = {device.ref(), swapchain.ref(),
-                                  swapchain.format()};
-  vkw::Sampler textureSampler = {device.ref(), device.physical()};
-
-  vkw::Image makeTextureImage();
-
-  void transitionImageLayout(VkImage image, VkFormat format,
-                             VkImageLayout oldLayout, VkImageLayout newLayout);
-  void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
-                         uint32_t height);
 
   /* Last step: Render */
   void render();

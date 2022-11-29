@@ -35,6 +35,7 @@ protected:
   bool _isOwner = false;
 
   void _moveDataFrom(Sampler &&rhs) {
+    _destroyVkData();
     _sampler = rhs._sampler;
     _pAllocator = rhs._pAllocator;
     if (rhs._isOwner) {

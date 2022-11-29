@@ -196,26 +196,43 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
   std::vector<VkDescriptorSetLayout> layouts{maxFramesInFlight,
                                              descriptorSetLayout.ref()};
   auto sets = descriptorPool.allocateSets(layouts);
-  std::vector<VkWriteDescriptorSet> descriptorWrites{};
   for (size_t i = 0; i < maxFramesInFlight; ++i) {
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = uniformBuffers[i].ref();
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(vkh::UniformBufferObject);
 
-    VkWriteDescriptorSet writeSet{};
-    writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    writeSet.dstSet = sets[i];
-    writeSet.dstBinding = 0;
-    writeSet.dstArrayElement = 0;
-    writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    writeSet.descriptorCount = 1;
-    writeSet.pBufferInfo = &bufferInfo;
-    writeSet.pImageInfo = nullptr;
-    writeSet.pTexelBufferView = nullptr;
-    descriptorWrites.emplace_back(writeSet);
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = textureView.ref();
+    imageInfo.sampler = textureSampler.ref();
+
+    std::array<VkWriteDescriptorSet, 2> writeSets{};
+
+    writeSets[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeSets[0].dstSet = sets[i];
+    writeSets[0].dstBinding = 0;
+    writeSets[0].dstArrayElement = 0;
+    writeSets[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    writeSets[0].descriptorCount = 1;
+    writeSets[0].pBufferInfo = &bufferInfo;
+    writeSets[0].pImageInfo = nullptr;
+    writeSets[0].pTexelBufferView = nullptr;
+
+    writeSets[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeSets[1].dstSet = sets[i];
+    writeSets[1].dstBinding = 1;
+    writeSets[1].dstArrayElement = 0;
+    writeSets[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    writeSets[1].descriptorCount = 1;
+    writeSets[1].pBufferInfo = nullptr;
+    writeSets[1].pImageInfo = &imageInfo;
+    writeSets[1].pTexelBufferView = nullptr;
+
+    vkUpdateDescriptorSets(device.ref(),
+                           static_cast<uint32_t>(writeSets.size()),
+                           writeSets.data(), 0, nullptr);
   }
-  descriptorPool.updateSets(descriptorWrites);
   return sets;
 }
 
