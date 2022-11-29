@@ -33,7 +33,7 @@ public:
     return *this;
   }
 
-  ~ImageViews() { _destroyVkData(); }
+  virtual ~ImageViews() { _destroyVkData(); }
 
   const std::vector<VkImageView> &ref() { return _imageViews; }
 
@@ -45,7 +45,7 @@ public:
     return _imageViews[index];
   }
 
-private:
+protected:
   std::vector<VkImageView> _imageViews;
   VkDevice _device;
   const VkAllocationCallbacks *_pAllocator;
@@ -74,8 +74,9 @@ private:
     }
   }
 
-  CUSTOM void _customInitialize(VkDevice device, VkSwapchainKHR swapchain,
-                                VkFormat format) {
+private:
+  void _customInitialize(VkDevice device, VkSwapchainKHR swapchain,
+                         VkFormat format) {
     auto images = vkh::getSwapchainImages(device, swapchain);
     size_t imageCount = images.size();
     _imageViews.resize(imageCount);

@@ -157,6 +157,8 @@ private:
 
   /* Step 14: Textures images */
   vkw::Image textureImage = makeTextureImage();
+  vkw::ImageViews textureViews = {device.ref(), swapchain.ref(),
+                                  swapchain.format()};
 
   vkw::Image makeTextureImage();
 
