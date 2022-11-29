@@ -159,12 +159,12 @@ private:
   vkw::Image textureImage = makeTextureImage();
   vkw::ImageViews textureViews = {device.ref(), swapchain.ref(),
                                   swapchain.format()};
+  vkw::Sampler textureSampler = {device.ref(), device.physical()};
 
   vkw::Image makeTextureImage();
 
   void transitionImageLayout(VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout);
-
   void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
                          uint32_t height);
 

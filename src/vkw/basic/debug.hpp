@@ -30,13 +30,13 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~DebugMessenger() { _destroyVkData(); }
+  virtual ~DebugMessenger() { _destroyVkData(); }
 
   const VkDebugUtilsMessengerEXT &ref() const noexcept {
     return _debugMessenger;
   }
 
-private:
+protected:
   VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
   VkInstance _instance = VK_NULL_HANDLE;
   const VkAllocationCallbacks *_pAllocator = nullptr;

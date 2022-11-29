@@ -7,6 +7,7 @@
 #include "basic/device.hpp"
 #include "basic/framebuffer.hpp"
 #include "basic/instance.hpp"
+#include "basic/sampler.hpp"
 #include "basic/surface.hpp"
 #include "basic/swapchain.hpp"
 #include "basic/window.hpp"

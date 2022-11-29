@@ -37,7 +37,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Device() { _destroyVkData(); }
+  virtual ~Device() { _destroyVkData(); }
 
   const VkDevice &ref() const noexcept { return _device; }
 
@@ -80,8 +80,9 @@ private:
     }
   }
 
-  static CUSTOM DeviceReturnWrapper _customInitialize(VkInstance instance,
-                                                      VkSurfaceKHR surface) {
+private:
+  static DeviceReturnWrapper _customInitialize(VkInstance instance,
+                                               VkSurfaceKHR surface) {
     static const std::vector<const char *> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
@@ -103,7 +104,8 @@ private:
        swapchain that will be created. */
       if (checkDeviceProperties(physDev) &&
           checkDeviceExtensionSupport(physDev, deviceExtensions) &&
-          checkDeviceSwapchainSupport(physDev)) {
+          checkDeviceSwapchainSupport(physDev) &&
+          checkDeviceFeatureSupport(physDev)) {
         if (auto returnedQueueFamily = selectQueueFamily(surface, physDev);
             returnedQueueFamily.has_value()) {
           selectedQueueFamily = returnedQueueFamily;
@@ -128,6 +130,7 @@ private:
 
     /* Create the logical device */
     VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.samplerAnisotropy = VK_TRUE;
 
     VkDeviceCreateInfo deviceCreateInfo{};
     deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -148,12 +151,12 @@ private:
     return {device, selectedPhysDev, {queueHandle, selectedIndex}};
   }
 
-  CUSTOM static bool checkDeviceProperties(VkPhysicalDevice physDev) {
+  static bool checkDeviceProperties(VkPhysicalDevice physDev) {
     auto physDevPropList = vkh::getPhysicalDevicePropertyList(physDev);
     return physDevPropList.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
   }
 
-  CUSTOM static bool checkDeviceExtensionSupport(
+  static bool checkDeviceExtensionSupport(
       VkPhysicalDevice physDev,
       const std::vector<const char *> &deviceExtensions) {
     auto availableExtensionsList =
@@ -172,12 +175,18 @@ private:
     return true;
   }
 
-  CUSTOM static bool
+  static bool
   checkDeviceSwapchainSupport([[maybe_unused]] VkPhysicalDevice physDev) {
     return true;
   }
 
-  CUSTOM static std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
+  static bool checkDeviceFeatureSupport(VkPhysicalDevice physDev) {
+    VkPhysicalDeviceFeatures supportedFeatures{};
+    vkGetPhysicalDeviceFeatures(physDev, &supportedFeatures);
+    return supportedFeatures.samplerAnisotropy;
+  }
+
+  static std::optional<std::pair<uint32_t, VkQueueFamilyProperties>>
   selectQueueFamily(VkSurfaceKHR surface, VkPhysicalDevice physDev) {
     auto graphicsFamilies = vkh::getGraphicsQueueFamilyPropertyList(physDev);
     auto computeFamilies = vkh::getComputeQueueFamilyPropertyList(physDev);
