@@ -16,8 +16,7 @@ void VulkanApp::recreateSwapchain() {
   swapchain = {};
 
   /* Recreate swapchain and its dependencies */
-  swapchain = {surface.ref(), device.ref(), device.physical(),
-               preferredPresentMode};
+  swapchain = {surface, device, preferredPresentMode};
   imageViews = {device.ref(), swapchain.ref(), swapchain.format()};
   graphicsPipeline = {{device.ref(), swapchain.extent(), swapchain.format(),
                        &descriptorSetLayout.ref(),

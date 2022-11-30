@@ -1,7 +1,10 @@
 #ifndef VULKAN_APP_HPP
 #define VULKAN_APP_HPP
 
-#include "resources.hpp"
+#include "rtvc/device.hpp"
+#include "rtvc/instance.hpp"
+#include "rtvc/resources.hpp"
+#include "rtvc/swapchain.hpp"
 
 #include <vkh.hpp>
 #include <vkw.hpp>
@@ -14,9 +17,6 @@
 
 #include <chrono>
 #include <cstring>
-
-#include "device.hpp"
-#include "instance.hpp"
 
 namespace rtvc {
 
@@ -72,8 +72,7 @@ private:
   Device device = {instance, surface};
 
   /* Step 5: Create a swapchain to render results to the surface */
-  vkw::Swapchain swapchain = {surface.ref(), device.ref(), device.physical(),
-                              preferredPresentMode};
+  Swapchain swapchain = {surface, device, preferredPresentMode};
 
   /* Included when selecting a physical device */
 

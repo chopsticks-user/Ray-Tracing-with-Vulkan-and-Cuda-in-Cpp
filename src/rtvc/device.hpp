@@ -3,8 +3,6 @@
 
 #include "instance.hpp"
 
-#include <vkw.hpp>
-
 #include <map>
 #include <optional>
 
