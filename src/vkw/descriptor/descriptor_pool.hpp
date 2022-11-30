@@ -63,21 +63,6 @@ public:
     return {_device, _pool, &allocInfo};
   }
 
-  void
-  updateSets(const std::vector<VkWriteDescriptorSet> &descriptorWrites,
-             const std::vector<VkCopyDescriptorSet> &descriptorCopies = {}) {
-    /* If size() is ​0​, data() may or may not return a null
-    pointer. */
-    uint32_t copyCount = static_cast<uint32_t>(descriptorCopies.size());
-    const VkCopyDescriptorSet *pDescriptorSet = nullptr;
-    if (copyCount > 0) {
-      pDescriptorSet = descriptorCopies.data();
-    }
-    vkUpdateDescriptorSets(_device,
-                           static_cast<uint32_t>(descriptorWrites.size()),
-                           descriptorWrites.data(), copyCount, pDescriptorSet);
-  }
-
 private:
   VkDescriptorPool _pool;
   VkDevice _device;

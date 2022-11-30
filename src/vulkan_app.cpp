@@ -158,7 +158,7 @@ vkw::Buffer VulkanApp::makeIndexBuffer() {
 }
 
 std::vector<vkw::Buffer> VulkanApp::makeUniformBuffers() {
-  VkDeviceSize bufferSize = sizeof(vkh::UniformBufferObject);
+  VkDeviceSize bufferSize = sizeof(vkw::UniformBufferObject);
   std::vector<vkw::Buffer> buffers{maxFramesInFlight};
   for (auto &buffer : buffers) {
     buffer = {device.ref(), device.physical(), bufferSize,
@@ -177,8 +177,8 @@ void VulkanApp::updateUniformBuffer(uint32_t currentImage) {
                    currentTime - startTime)
                    .count();
 
-  vkh::UniformBufferObject ubo{};
-  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(360.0f),
+  vkw::UniformBufferObject ubo{};
+  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f),
                           glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.view =
       glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -200,7 +200,7 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = uniformBuffers[i].ref();
     bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(vkh::UniformBufferObject);
+    bufferInfo.range = sizeof(vkw::UniformBufferObject);
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

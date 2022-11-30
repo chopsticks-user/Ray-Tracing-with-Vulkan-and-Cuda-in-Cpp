@@ -29,7 +29,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Instance() { _destroyVkData(); }
+  virtual ~Instance() { _destroyVkData(); }
 
   const VkInstance &ref() const noexcept { return _instance; }
 
@@ -37,11 +37,11 @@ public:
     return _debugInfo;
   }
 
-private:
-  VkInstance _instance;
+protected:
+  VkInstance _instance = VK_NULL_HANDLE;
   const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
-  VkDebugUtilsMessengerCreateInfoEXT _debugInfo;
+  VkDebugUtilsMessengerCreateInfoEXT _debugInfo = {};
 
   void _moveDataFrom(Instance &&rhs) {
     _instance = rhs._instance;
@@ -63,6 +63,7 @@ private:
     }
   }
 
+private:
   CUSTOM static VkInstance
   _customInitialize(VkDebugUtilsMessengerCreateInfoEXT &debInfo) {
     VkApplicationInfo appInfo{};

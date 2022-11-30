@@ -23,6 +23,7 @@
 #include "resource/buffer.hpp"
 #include "resource/image.hpp"
 #include "resource/image_view.hpp"
+#include "structures/structures.hpp"
 #include "sync/event.hpp"
 #include "sync/fence.hpp"
 #include "sync/semaphore.hpp"

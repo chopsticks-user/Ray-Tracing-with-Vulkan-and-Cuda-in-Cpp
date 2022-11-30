@@ -54,7 +54,7 @@ protected:
       vkh::destroyImageView(_device, _imageView, _pAllocator);
       _isOwner = false;
       if constexpr (enableValidationLayers) {
-        std::cout << "ImageViews destructor" << '\n';
+        std::cout << "ImageView destructor" << '\n';
       }
     }
   }

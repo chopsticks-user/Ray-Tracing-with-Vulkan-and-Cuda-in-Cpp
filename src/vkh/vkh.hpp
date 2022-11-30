@@ -4,7 +4,6 @@
 #include "commands/commands.hpp"
 #include "layers/validation_layers.hpp"
 #include "lists/get_list.hpp"
-#include "structures/structures.hpp"
 #include "utils/utility.hpp"
 #include "vk_objects/create_object.hpp"
 #include "vk_objects/destroy_object.hpp"

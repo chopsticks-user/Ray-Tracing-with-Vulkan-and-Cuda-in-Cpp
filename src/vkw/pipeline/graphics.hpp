@@ -3,6 +3,8 @@
 
 #include "config.hpp"
 
+#include "structures/structures.hpp"
+
 #include <vkh.hpp>
 
 namespace vkw {
@@ -115,8 +117,8 @@ private:
                                                       fragShaderStageInfo};
 
     /*  */
-    auto bindingDescription = vkh::Vertex2D_RGB::getBindingDescription();
-    auto attributeDescriptions = vkh::Vertex2D_RGB::getAttributeDescriptions();
+    auto bindingDescription = vkw::Vertex::getBindingDescription();
+    auto attributeDescriptions = vkw::Vertex::getAttributeDescriptions();
 
     VkPipelineVertexInputStateCreateInfo vertInputInfo{};
     vertInputInfo.sType =
