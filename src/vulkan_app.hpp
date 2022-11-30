@@ -14,6 +14,8 @@
 #include <chrono>
 #include <cstring>
 
+#include "instance.hpp"
+
 class VulkanApp {
 public:
   VulkanApp();
@@ -50,7 +52,7 @@ private:
   vkw::Window window = {};
 
   /* Step 1: Create an instance */
-  vkw::Instance instance = {};
+  rtvc::Instance instance = {};
 
   /* Step 2: Setup layers */
   /* Debug messenger of validation layers */

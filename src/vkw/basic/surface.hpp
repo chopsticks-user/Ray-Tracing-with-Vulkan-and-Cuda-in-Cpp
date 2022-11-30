@@ -3,8 +3,6 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 class Surface {
@@ -13,7 +11,10 @@ public:
   Surface(VkInstance instance, GLFWwindow *window,
           const VkAllocationCallbacks *pAllocator = nullptr)
       : _instance{instance}, _window{window}, _pAllocator{pAllocator} {
-    _surface = vkh::createSurface(instance, window, pAllocator);
+    if (glfwCreateWindowSurface(instance, window, pAllocator, &_surface) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Failed to create window surface.");
+    }
     _isOwner = true;
   }
   Surface(const Surface &) = delete;
@@ -23,14 +24,15 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Surface() { _destroyVkData(); }
+  virtual ~Surface() { _destroyVkData(); }
+
   const VkSurfaceKHR &ref() const noexcept { return _surface; }
 
 private:
-  VkSurfaceKHR _surface;
-  VkInstance _instance;
-  GLFWwindow *_window;
-  const VkAllocationCallbacks *_pAllocator;
+  VkSurfaceKHR _surface = VK_NULL_HANDLE;
+  VkInstance _instance = VK_NULL_HANDLE;
+  GLFWwindow *_window = nullptr;
+  const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
 
   void _moveDataFrom(Surface &&rhs) {

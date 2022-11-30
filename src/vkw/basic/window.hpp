@@ -1,16 +1,14 @@
-#ifndef VKW_WINDOW_HPP
-#define VKW_WINDOW_HPP
+#ifndef VKW_BASIC_WINDOW_HPP
+#define VKW_BASIC_WINDOW_HPP
 
 #include "config.hpp"
-
-#include <vkh.hpp>
 
 namespace vkw {
 
 class GLFW {
 public:
   GLFW() { glfwInit(); }
-  ~GLFW() { glfwTerminate(); }
+  virtual ~GLFW() { glfwTerminate(); }
   GLFW(const GLFW &) = delete;
   GLFW(GLFW &&) = delete;
   GLFW &operator=(const GLFW &) = delete;
@@ -21,12 +19,18 @@ class Window {
   typedef GLFWwindow *pGLFWwindow;
 
 public:
-  Window() : _window{vkh::createWindow(800, 600)} { _isOwner = true; };
+  Window() {
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    _window =
+        glfwCreateWindow(800, 600, "Vulkan Application", nullptr, nullptr);
+    _isOwner = true;
+  }
   Window(int width, int height, const char *title = "Vulkan Application",
          bool resizable = true, GLFWmonitor *monitor = nullptr,
-         GLFWwindow *share = nullptr)
-      : _window{vkh::createWindow(width, height, title, resizable, monitor,
-                                  share)} {
+         GLFWwindow *share = nullptr) {
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, resizable);
+    _window = glfwCreateWindow(width, height, title, monitor, share);
     _isOwner = true;
   }
   Window(const Window &) = delete;
@@ -37,6 +41,7 @@ public:
     return *this;
   }
   ~Window() { _destroyVkData(); }
+
   const pGLFWwindow &ref() const noexcept { return _window; }
 
   void whileMinimized() {
@@ -48,11 +53,12 @@ public:
     }
   }
 
-private:
-  pGLFWwindow _window;
+protected:
+  pGLFWwindow _window = nullptr;
   bool _isOwner = false;
 
   void _moveDataFrom(Window &&rhs) {
+    _destroyVkData();
     _window = rhs._window;
     if (rhs._isOwner) {
       _isOwner = true;
@@ -62,10 +68,10 @@ private:
 
   void _destroyVkData() {
     if (_isOwner) {
-      vkh::destroyWindow(_window);
+      glfwDestroyWindow(_window);
       _isOwner = false;
       if constexpr (enableValidationLayers) {
-        std::cout << "Window destructor" << '\n';
+        std::cout << "Window destructor\n";
       }
     }
   }
@@ -73,4 +79,4 @@ private:
 
 } /* namespace vkw */
 
-#endif /* VKW_WINDOW_HPP */
+#endif /* VKW_BASIC_WINDOW_HPP */
