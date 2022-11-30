@@ -30,7 +30,17 @@ private:
                    const CustomArgs &args);
 };
 
-class ImageView : public vkw::ImageView {};
+class ImageView : public vkw::ImageView {
+public:
+  using vkw::ImageView::ImageView;
+
+  ImageView(const Device &device, const Image &image, VkFormat format) {
+    _initialize(device.ref(), image.ref(), format);
+  }
+
+private:
+  void _initialize(VkDevice device, VkImage image, VkFormat format);
+};
 
 class ImageViews : public vkw::ImageViews {};
 

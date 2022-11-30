@@ -10,10 +10,10 @@ namespace vkw {
 class ImageView {
 public:
   ImageView() = default;
-  ImageView(VkDevice device, VkImage image, VkFormat format)
-      : _device{device}, _pAllocator{nullptr} {
-    _customInitialize(device, image, format);
-  }
+  // ImageView(VkDevice device, VkImage image, VkFormat format)
+  //     : _device{device}, _pAllocator{nullptr} {
+  //   _customInitialize(device, image, format);
+  // }
   ImageView(VkDevice device, const VkImageViewCreateInfo *pCreateInfo,
             const VkAllocationCallbacks *pAllocator = nullptr)
       : _device{device}, _pAllocator{pAllocator} {
@@ -33,9 +33,9 @@ public:
   const VkImageView &ref() { return _imageView; }
 
 protected:
-  VkImageView _imageView;
-  VkDevice _device;
-  const VkAllocationCallbacks *_pAllocator;
+  VkImageView _imageView = VK_NULL_HANDLE;
+  VkDevice _device = VK_NULL_HANDLE;
+  const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
 
   void _moveDataFrom(ImageView &&rhs) {
@@ -60,41 +60,41 @@ protected:
   }
 
 private:
-  void _customInitialize(VkDevice device, VkImage image, VkFormat format) {
-    // auto images = vkh::getSwapchainImages(device, swapchain);
-    // size_t imageCount = images.size();
-    // _imageViews.resize(imageCount);
-    VkImageViewCreateInfo imageViewInfo{};
-    imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    imageViewInfo.pNext = nullptr;
-    // imageViewInfo.flags =
-    imageViewInfo.image = image;
+  // void _customInitialize(VkDevice device, VkImage image, VkFormat format) {
+  //   // auto images = vkh::getSwapchainImages(device, swapchain);
+  //   // size_t imageCount = images.size();
+  //   // _imageViews.resize(imageCount);
+  //   VkImageViewCreateInfo imageViewInfo{};
+  //   imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  //   imageViewInfo.pNext = nullptr;
+  //   // imageViewInfo.flags =
+  //   imageViewInfo.image = image;
 
-    /* treat images as 2D textures */
-    imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+  //   /* treat images as 2D textures */
+  //   imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 
-    imageViewInfo.format = format;
+  //   imageViewInfo.format = format;
 
-    /* default mapping */
-    imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-    imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-    imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-    imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+  //   /* default mapping */
+  //   imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+  //   imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+  //   imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+  //   imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
-    /* color aspect */
-    imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  //   /* color aspect */
+  //   imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-    /* In stereographic 3D applications, create a swapchain with multiple
-    layers before creating multiple image views for each images representing
-    the views for the left and right eyes by accessing different layers */
-    imageViewInfo.subresourceRange.baseMipLevel = 0;
-    imageViewInfo.subresourceRange.levelCount = 1;
-    imageViewInfo.subresourceRange.baseArrayLayer = 0;
-    imageViewInfo.subresourceRange.layerCount = 1;
+  //   /* In stereographic 3D applications, create a swapchain with multiple
+  //   layers before creating multiple image views for each images representing
+  //   the views for the left and right eyes by accessing different layers */
+  //   imageViewInfo.subresourceRange.baseMipLevel = 0;
+  //   imageViewInfo.subresourceRange.levelCount = 1;
+  //   imageViewInfo.subresourceRange.baseArrayLayer = 0;
+  //   imageViewInfo.subresourceRange.layerCount = 1;
 
-    _imageView = vkh::createImageView(device, &imageViewInfo);
-    _isOwner = true;
-  }
+  //   _imageView = vkh::createImageView(device, &imageViewInfo);
+  //   _isOwner = true;
+  // }
 };
 
 class ImageViews {

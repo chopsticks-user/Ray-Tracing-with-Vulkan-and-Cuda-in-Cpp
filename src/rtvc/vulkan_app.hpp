@@ -152,8 +152,7 @@ private:
 
   /* Step 13: Textures images */
   Image textureImage = makeTextureImage();
-  vkw::ImageView textureView = {device.ref(), textureImage.ref(),
-                                VK_FORMAT_R8G8B8A8_SRGB};
+  ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB};
   vkw::Sampler textureSampler = {device.ref(), device.physical()};
 
   Image makeTextureImage();
