@@ -308,7 +308,7 @@ void VulkanApp::copyBufferToImage(VkBuffer buffer, VkImage image,
   commandPool.freeBuffer(commandBuffer);
 }
 
-vkw::Image VulkanApp::makeTextureImage() {
+Image VulkanApp::makeTextureImage() {
   int imageWidth, imageHeight, imageChannels;
   stbi_uc *pixels = stbi_load(imagePath.c_str(), &imageWidth, &imageHeight,
                               &imageChannels, STBI_rgb_alpha);
@@ -322,10 +322,10 @@ vkw::Image VulkanApp::makeTextureImage() {
                                    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
   stagingBuffer.copyHostData(pixels, imageSize);
   stbi_image_free(pixels);
-  vkw::Image texImage = {
-      {device.ref(), device.physical(), static_cast<uint32_t>(imageWidth),
-       static_cast<uint32_t>(imageHeight), VK_FORMAT_R8G8B8A8_SRGB,
-       VK_IMAGE_TILING_OPTIMAL,
+  Image texImage = {
+      device,
+      {static_cast<uint32_t>(imageWidth), static_cast<uint32_t>(imageHeight),
+       VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
   transitionImageLayout(texImage.ref(), VK_FORMAT_R8G8_SRGB,

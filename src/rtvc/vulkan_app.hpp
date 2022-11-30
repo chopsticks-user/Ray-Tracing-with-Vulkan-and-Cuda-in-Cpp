@@ -2,6 +2,7 @@
 #define VULKAN_APP_HPP
 
 #include "rtvc/device.hpp"
+#include "rtvc/image_view.hpp"
 #include "rtvc/instance.hpp"
 #include "rtvc/resources.hpp"
 #include "rtvc/swapchain.hpp"
@@ -150,12 +151,12 @@ private:
   std::vector<vkw::Buffer> uniformBuffers = makeUniformBuffers();
 
   /* Step 13: Textures images */
-  vkw::Image textureImage = makeTextureImage();
+  Image textureImage = makeTextureImage();
   vkw::ImageView textureView = {device.ref(), textureImage.ref(),
                                 VK_FORMAT_R8G8B8A8_SRGB};
   vkw::Sampler textureSampler = {device.ref(), device.physical()};
 
-  vkw::Image makeTextureImage();
+  Image makeTextureImage();
 
   void transitionImageLayout(VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout);
