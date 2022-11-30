@@ -17,9 +17,8 @@ void VulkanApp::recreateSwapchain() {
 
   /* Recreate swapchain and its dependencies */
   swapchain = {surface, device, preferredPresentMode};
-  imageViews = {device.ref(), swapchain.ref(), swapchain.format()};
-  graphicsPipeline = {{device.ref(), swapchain.extent(), swapchain.format(),
-                       &descriptorSetLayout.ref(),
+  imageViews = {device, swapchain};
+  graphicsPipeline = {{device, swapchain, descriptorSetLayout,
                        "/build/shaders/triangle_vert.spv",
                        "/build/shaders/triangle_frag.spv"}};
   framebuffers = {device.ref(), imageViews.ref(), graphicsPipeline.renderPass(),

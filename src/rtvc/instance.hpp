@@ -3,7 +3,12 @@
 
 #include <vkw.hpp>
 
+#include <filesystem>
+
 namespace rtvc {
+
+inline const std::string absoluteDirectory =
+    std::filesystem::current_path().string();
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

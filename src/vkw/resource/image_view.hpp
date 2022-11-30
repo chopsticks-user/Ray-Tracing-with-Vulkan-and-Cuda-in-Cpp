@@ -3,21 +3,15 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 class ImageView {
 public:
   ImageView() = default;
-  // ImageView(VkDevice device, VkImage image, VkFormat format)
-  //     : _device{device}, _pAllocator{nullptr} {
-  //   _customInitialize(device, image, format);
-  // }
   ImageView(VkDevice device, const VkImageViewCreateInfo *pCreateInfo,
             const VkAllocationCallbacks *pAllocator = nullptr)
       : _device{device}, _pAllocator{pAllocator} {
-    _imageView = vkh::createImageView(device, pCreateInfo);
+    vkCreateImageView(device, pCreateInfo, nullptr, &_imageView);
     _isOwner = true;
   }
   ImageView(const ImageView &) = delete;
@@ -51,7 +45,7 @@ protected:
 
   void _destroyVkData() {
     if (_isOwner) {
-      vkh::destroyImageView(_device, _imageView, _pAllocator);
+      vkDestroyImageView(_device, _imageView, _pAllocator);
       _isOwner = false;
       if constexpr (enableValidationLayers) {
         std::cout << "ImageView destructor" << '\n';
@@ -60,50 +54,11 @@ protected:
   }
 
 private:
-  // void _customInitialize(VkDevice device, VkImage image, VkFormat format) {
-  //   // auto images = vkh::getSwapchainImages(device, swapchain);
-  //   // size_t imageCount = images.size();
-  //   // _imageViews.resize(imageCount);
-  //   VkImageViewCreateInfo imageViewInfo{};
-  //   imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-  //   imageViewInfo.pNext = nullptr;
-  //   // imageViewInfo.flags =
-  //   imageViewInfo.image = image;
-
-  //   /* treat images as 2D textures */
-  //   imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-
-  //   imageViewInfo.format = format;
-
-  //   /* default mapping */
-  //   imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-  //   imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-  //   imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-  //   imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-
-  //   /* color aspect */
-  //   imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
-  //   /* In stereographic 3D applications, create a swapchain with multiple
-  //   layers before creating multiple image views for each images representing
-  //   the views for the left and right eyes by accessing different layers */
-  //   imageViewInfo.subresourceRange.baseMipLevel = 0;
-  //   imageViewInfo.subresourceRange.levelCount = 1;
-  //   imageViewInfo.subresourceRange.baseArrayLayer = 0;
-  //   imageViewInfo.subresourceRange.layerCount = 1;
-
-  //   _imageView = vkh::createImageView(device, &imageViewInfo);
-  //   _isOwner = true;
-  // }
 };
 
 class ImageViews {
 public:
   ImageViews() = default;
-  ImageViews(VkDevice device, VkSwapchainKHR swapchain, VkFormat format)
-      : _device{device}, _pAllocator{nullptr} {
-    _customInitialize(device, swapchain, format);
-  }
   ImageViews(VkDevice device,
              const std::vector<VkImageViewCreateInfo> &createInfos,
              const VkAllocationCallbacks *pAllocator = nullptr)
@@ -111,7 +66,7 @@ public:
                                                               pAllocator} {
     size_t imageCount = createInfos.size();
     for (size_t i = 0; i < imageCount; ++i) {
-      _imageViews[i] = vkh::createImageView(device, &createInfos[i]);
+      vkCreateImageView(device, &createInfos[i], nullptr, &_imageViews[i]);
     }
     _isOwner = true;
   }
@@ -136,9 +91,9 @@ public:
   }
 
 protected:
-  std::vector<VkImageView> _imageViews;
-  VkDevice _device;
-  const VkAllocationCallbacks *_pAllocator;
+  std::vector<VkImageView> _imageViews = {};
+  VkDevice _device = VK_NULL_HANDLE;
+  const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
 
   void _moveDataFrom(ImageViews &&rhs) {
@@ -155,54 +110,16 @@ protected:
   void _destroyVkData() {
     if (_isOwner) {
       for (auto &imageView : _imageViews) {
-        vkh::destroyImageView(_device, imageView, _pAllocator);
+        vkDestroyImageView(_device, imageView, _pAllocator);
       }
       _isOwner = false;
       if constexpr (enableValidationLayers) {
-        std::cout << "Framebuffers destructor" << '\n';
+        std::cout << "Imageviews destructor" << '\n';
       }
     }
   }
 
 private:
-  void _customInitialize(VkDevice device, VkSwapchainKHR swapchain,
-                         VkFormat format) {
-    auto images = vkh::getSwapchainImages(device, swapchain);
-    size_t imageCount = images.size();
-    _imageViews.resize(imageCount);
-    for (size_t i = 0; i < imageCount; ++i) {
-      VkImageViewCreateInfo imageViewInfo{};
-      imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-      imageViewInfo.pNext = nullptr;
-      // imageViewInfo.flags =
-      imageViewInfo.image = images[i];
-
-      /* treat images as 2D textures */
-      imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-
-      imageViewInfo.format = format;
-
-      /* default mapping */
-      imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-      imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-      imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-      imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-
-      /* color aspect */
-      imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
-      /* In stereographic 3D applications, create a swapchain with multiple
-      layers before creating multiple image views for each images representing
-      the views for the left and right eyes by accessing different layers */
-      imageViewInfo.subresourceRange.baseMipLevel = 0;
-      imageViewInfo.subresourceRange.levelCount = 1;
-      imageViewInfo.subresourceRange.baseArrayLayer = 0;
-      imageViewInfo.subresourceRange.layerCount = 1;
-
-      _imageViews[i] = vkh::createImageView(device, &imageViewInfo);
-    }
-    _isOwner = true;
-  }
 };
 
 } /* namespace vkw */

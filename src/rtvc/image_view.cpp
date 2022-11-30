@@ -91,4 +91,53 @@ void ImageView::_initialize(VkDevice device, VkImage image, VkFormat format) {
   _isOwner = true;
 }
 
+void SwapchainImageViews::_initialize(VkDevice device, VkSwapchainKHR swapchain,
+                                      VkFormat format) {
+  uint32_t swapchainImageCount;
+  if (vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount,
+                              nullptr) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get swapchain images");
+  }
+  std::vector<VkImage> swapchainImages{swapchainImageCount};
+  if (vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount,
+                              swapchainImages.data()) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get swapchain images");
+  }
+  size_t imageCount = swapchainImages.size();
+  _imageViews.resize(imageCount);
+  for (size_t i = 0; i < imageCount; ++i) {
+    VkImageViewCreateInfo imageViewInfo{};
+    imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    imageViewInfo.pNext = nullptr;
+    // imageViewInfo.flags =
+    imageViewInfo.image = swapchainImages[i];
+
+    /* treat images as 2D textures */
+    imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+
+    imageViewInfo.format = format;
+
+    /* default mapping */
+    imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+    /* color aspect */
+    imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+    /* In stereographic 3D applications, create a swapchain with multiple
+    layers before creating multiple image views for each images representing
+    the views for the left and right eyes by accessing different layers */
+    imageViewInfo.subresourceRange.baseMipLevel = 0;
+    imageViewInfo.subresourceRange.levelCount = 1;
+    imageViewInfo.subresourceRange.baseArrayLayer = 0;
+    imageViewInfo.subresourceRange.layerCount = 1;
+
+    _imageViews[i] = vkh::createImageView(device, &imageViewInfo);
+  }
+  _device = device;
+  _isOwner = true;
+}
+
 } /* namespace rtvc */

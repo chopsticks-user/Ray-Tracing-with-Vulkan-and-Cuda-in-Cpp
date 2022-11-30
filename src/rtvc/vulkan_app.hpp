@@ -1,7 +1,9 @@
 #ifndef VULKAN_APP_HPP
 #define VULKAN_APP_HPP
 
+#include "rtvc/descriptor.hpp"
 #include "rtvc/device.hpp"
+#include "rtvc/graphics_pipeline.hpp"
 #include "rtvc/image_view.hpp"
 #include "rtvc/instance.hpp"
 #include "rtvc/resources.hpp"
@@ -82,16 +84,14 @@ private:
   presentation. A presentable image  must be used after the image is
   returned by {vkAccquireNextImageKHR} and before it is released by
   {vkQueuePresentKHR} */
-  vkw::ImageViews imageViews = {device.ref(), swapchain.ref(),
-                                swapchain.format()};
+  SwapchainImageViews imageViews = {device, swapchain};
 
-  vkw::DescriptorSetLayout descriptorSetLayout = {device.ref()};
+  DescriptorSetLayout descriptorSetLayout = {device};
 
   /* Step 7: Create a graphics pipeline */
-  vkw::GraphicsPipeline graphicsPipeline = {
-      {device.ref(), swapchain.extent(), swapchain.format(),
-       &descriptorSetLayout.ref(), "/build/shaders/triangle_vert.spv",
-       "/build/shaders/triangle_frag.spv"}};
+  GraphicsPipeline graphicsPipeline = {{device, swapchain, descriptorSetLayout,
+                                        "/build/shaders/triangle_vert.spv",
+                                        "/build/shaders/triangle_frag.spv"}};
 
   /* Step 8: Create framebuffers */
   vkw::Framebuffers framebuffers = {device.ref(), imageViews.ref(),

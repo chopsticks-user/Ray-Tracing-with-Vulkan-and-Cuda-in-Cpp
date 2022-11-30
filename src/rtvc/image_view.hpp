@@ -2,6 +2,7 @@
 #define RTVC_IMAGE_VIEW_HPP
 
 #include "device.hpp"
+#include "swapchain.hpp"
 
 namespace rtvc {
 
@@ -42,7 +43,17 @@ private:
   void _initialize(VkDevice device, VkImage image, VkFormat format);
 };
 
-class ImageViews : public vkw::ImageViews {};
+class SwapchainImageViews : public vkw::ImageViews {
+public:
+  using vkw::ImageViews::ImageViews;
+
+  SwapchainImageViews(const Device &device, const Swapchain &swapchain) {
+    _initialize(device.ref(), swapchain.ref(), swapchain.format());
+  }
+
+private:
+  void _initialize(VkDevice device, VkSwapchainKHR swapchain, VkFormat format);
+};
 
 } /* namespace rtvc */
 #endif /* RTVC_IMAGE_VIEW_HPP */
