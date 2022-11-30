@@ -80,7 +80,7 @@ public:
 
   virtual ~ImageViews() { _destroyVkData(); }
 
-  const std::vector<VkImageView> &ref() { return _imageViews; }
+  const std::vector<VkImageView> &ref() const noexcept { return _imageViews; }
 
   template <typename SizeType = size_t> auto size() const noexcept {
     return static_cast<SizeType>(_imageViews.size());

@@ -3,6 +3,7 @@
 
 #include "rtvc/descriptor.hpp"
 #include "rtvc/device.hpp"
+#include "rtvc/framebuffers.hpp"
 #include "rtvc/graphics_pipeline.hpp"
 #include "rtvc/image_view.hpp"
 #include "rtvc/instance.hpp"
@@ -94,9 +95,7 @@ private:
                                         "/build/shaders/triangle_frag.spv"}};
 
   /* Step 8: Create framebuffers */
-  vkw::Framebuffers framebuffers = {device.ref(), imageViews.ref(),
-                                    graphicsPipeline.renderPass(),
-                                    swapchain.extent()};
+  Framebuffers framebuffers = {device, imageViews, graphicsPipeline, swapchain};
 
   /* Step 9: Recreate swapchain */
   void recreateSwapchain();

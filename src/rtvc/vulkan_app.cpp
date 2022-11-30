@@ -21,8 +21,7 @@ void VulkanApp::recreateSwapchain() {
   graphicsPipeline = {{device, swapchain, descriptorSetLayout,
                        "/build/shaders/triangle_vert.spv",
                        "/build/shaders/triangle_frag.spv"}};
-  framebuffers = {device.ref(), imageViews.ref(), graphicsPipeline.renderPass(),
-                  swapchain.extent()};
+  framebuffers = {device, imageViews, graphicsPipeline, swapchain};
 }
 
 void VulkanApp::framebufferResizeCallback(GLFWwindow *pWindow,
