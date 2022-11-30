@@ -3,6 +3,7 @@
 
 #include "resources.hpp"
 
+#include <vkh.hpp>
 #include <vkw.hpp>
 
 #ifndef GLM_FORCE_RADIANS
@@ -14,7 +15,10 @@
 #include <chrono>
 #include <cstring>
 
+#include "device.hpp"
 #include "instance.hpp"
+
+namespace rtvc {
 
 class VulkanApp {
 public:
@@ -48,24 +52,24 @@ private:
       vkh::absoluteDirectory + "/resources/textures/texture.jpeg";
 
   /* Step 0: Setup GLFW and window */
-  vkw::GLFW glfw = {};
-  vkw::Window window = {};
+  GLFW glfw = {};
+  Window window = {};
 
   /* Step 1: Create an instance */
-  rtvc::Instance instance = {};
+  Instance instance = {};
 
   /* Step 2: Setup layers */
   /* Debug messenger of validation layers */
-  vkw::DebugMessenger debugMessenger = {instance.ref(), &instance.debugInfo()};
+  DebugMessenger debugMessenger = {instance};
 
   /* Step 3: Create a window surface */
-  vkw::Surface surface = {instance.ref(), window.ref()};
+  Surface surface = {instance, window};
 
   /* Step 4: Create a logical device */
   /* For graphics, computing, and presentation */
   /* Create a logical device after succesfully selecting a physical device
   and one of its queue families by calling the selectQueueFamily function. */
-  vkw::Device device = {instance.ref(), surface.ref()};
+  Device device = {instance, surface};
 
   /* Step 5: Create a swapchain to render results to the surface */
   vkw::Swapchain swapchain = {surface.ref(), device.ref(), device.physical(),
@@ -173,4 +177,6 @@ private:
   /* Last step: Render */
   void render();
 };
+
+} /* namespace rtvc */
 #endif /* VULKAN_APP_HPP */

@@ -1,7 +1,7 @@
 #include <vulkan_app.hpp>
 
 int protected_main() {
-  auto app = new VulkanApp{};
+  auto app = new rtvc::VulkanApp{};
   app->run();
   app->writeInfo(vkh::absoluteDirectory + "/info.log");
   delete app;

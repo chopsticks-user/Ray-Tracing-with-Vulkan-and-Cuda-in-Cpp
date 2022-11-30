@@ -28,7 +28,7 @@ public:
 
   const VkSurfaceKHR &ref() const noexcept { return _surface; }
 
-private:
+protected:
   VkSurfaceKHR _surface = VK_NULL_HANDLE;
   VkInstance _instance = VK_NULL_HANDLE;
   GLFWwindow *_window = nullptr;

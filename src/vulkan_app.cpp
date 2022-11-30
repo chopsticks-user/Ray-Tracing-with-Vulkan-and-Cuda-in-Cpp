@@ -1,5 +1,7 @@
 #include "vulkan_app.hpp"
 
+namespace rtvc {
+
 void VulkanApp::recreateSwapchain() {
   /* Handle minimization */
   window.whileMinimized();
@@ -536,3 +538,5 @@ void VulkanApp::writeInfo(std::string filePath) {
   }
   fs << '\n';
 }
+
+} /* namespace rtvc */
