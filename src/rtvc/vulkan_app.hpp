@@ -1,6 +1,7 @@
 #ifndef VULKAN_APP_HPP
 #define VULKAN_APP_HPP
 
+#include "rtvc/command_pool.hpp"
 #include "rtvc/descriptor.hpp"
 #include "rtvc/device.hpp"
 #include "rtvc/framebuffers.hpp"
@@ -53,7 +54,7 @@ private:
 
   /* Image path used in {createTextureImage()} */
   const std::string imagePath =
-      vkh::absoluteDirectory + "/resources/textures/texture.jpeg";
+      absoluteDirectory + "/resources/textures/texture.jpeg";
 
   /* Step 0: Setup GLFW and window */
   GLFW glfw = {};
@@ -111,7 +112,7 @@ private:
    * well as operations that allocate, free, and reset command buffers or the
    * pool itself.
    */
-  vkw::CommandPool commandPool = {device.ref(), device.familyIndex()};
+  CommandPool commandPool = {device};
 
   std::vector<VkCommandBuffer> commandBuffers = {
       commandPool.allocateBuffers(maxFramesInFlight)};

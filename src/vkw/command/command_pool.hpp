@@ -3,21 +3,39 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 class CommandPool {
 public:
   CommandPool() = default;
-  CommandPool(VkDevice device, uint32_t queueFamilyIndex)
-      : _device{device}, _pAllocator{nullptr} {
-    _customInitialize(device, queueFamilyIndex);
+  CommandPool(VkDevice device, uint32_t queueFamilyIndex,
+              VkCommandPoolCreateFlags flags =
+                  VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+              const void *pNext = nullptr,
+              const VkAllocationCallbacks *pAllocator = nullptr)
+      : _device{device}, _queueFamilyIndex{queueFamilyIndex}, _pAllocator{
+                                                                  pAllocator} {
+    VkCommandPoolCreateInfo cmdPoolInfo{};
+    cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cmdPoolInfo.pNext = pNext;
+    /* allows any command buffer allocated from a
+    pool to be individually reset to the initial state; either by calling
+    vkResetCommandBuffer, or via the implicit reset when calling
+    vkBeginCommandBuffer. If this flag is not set on a pool, then
+    vkResetCommandBuffer must not be called for any command buffer allocated
+    from that pool. */
+    cmdPoolInfo.flags = flags;
+    /* All command buffers allocated from this command pool must be
+    submitted on queues from the same queue family. */
+    cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
+    vkCreateCommandPool(device, &cmdPoolInfo, pAllocator, &_commandPool);
+    _isOwner = true;
   }
   CommandPool(VkDevice device, const VkCommandPoolCreateInfo *pCreateInfo,
               const VkAllocationCallbacks *pAllocator = nullptr)
-      : _device{device}, _pAllocator{pAllocator} {
-    _commandPool = vkh::createCommandPool(device, pCreateInfo, pAllocator);
+      : _device{device}, _queueFamilyIndex{pCreateInfo->queueFamilyIndex},
+        _pAllocator{pAllocator} {
+    vkCreateCommandPool(device, pCreateInfo, pAllocator, &_commandPool);
     _isOwner = true;
   }
   CommandPool(const CommandPool &) = delete;
@@ -32,6 +50,8 @@ public:
   const VkCommandPool &ref() const noexcept { return _commandPool; }
 
   const VkDevice &device() const noexcept { return _device; }
+
+  uint32_t queueFamilyIndex() const noexcept { return _queueFamilyIndex; }
 
   VkCommandBuffer
   allocateBuffer(VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
@@ -59,8 +79,10 @@ public:
     bufferInfo.pNext = pNext;
     bufferInfo.commandPool = _commandPool;
     bufferInfo.level = level;
-    bufferInfo.commandBufferCount = static_cast<uint32_t>(count);
-    return vkh::allocateCommandBuffers(_device, &bufferInfo);
+    bufferInfo.commandBufferCount = count;
+    std::vector<VkCommandBuffer> commandBuffers{static_cast<size_t>(count)};
+    vkAllocateCommandBuffers(_device, &bufferInfo, commandBuffers.data());
+    return commandBuffers;
   }
 
   void
@@ -122,15 +144,17 @@ public:
                          commandBuffers.data());
   }
 
-private:
-  VkCommandPool _commandPool;
-  VkDevice _device;
-  const VkAllocationCallbacks *_pAllocator;
+protected:
+  VkCommandPool _commandPool = VK_NULL_HANDLE;
+  VkDevice _device = VK_NULL_HANDLE;
+  uint32_t _queueFamilyIndex = 0;
+  const VkAllocationCallbacks *_pAllocator = nullptr;
   bool _isOwner = false;
 
   void _moveDataFrom(CommandPool &&rhs) {
     _commandPool = rhs._commandPool;
     _device = rhs._device;
+    _queueFamilyIndex = rhs._queueFamilyIndex;
     _pAllocator = rhs._pAllocator;
     if (rhs._isOwner) {
       _isOwner = true;
@@ -140,31 +164,12 @@ private:
 
   void _destroyVkData() {
     if (_isOwner) {
-      vkh::destroyCommandPool(_device, _commandPool, _pAllocator);
+      vkDestroyCommandPool(_device, _commandPool, _pAllocator);
       _isOwner = false;
       if constexpr (enableValidationLayers) {
         std::cout << "CommandPool destructor" << '\n';
       }
     }
-  }
-
-  CUSTOM void _customInitialize(VkDevice device, uint32_t queueFamilyIndex) {
-    VkCommandPoolCreateInfo cmdPoolInfo{};
-    cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cmdPoolInfo.pNext = nullptr;
-    /* allows any command buffer allocated from a
-    pool to be individually reset to the initial state; either by calling
-    vkResetCommandBuffer, or via the implicit reset when calling
-    vkBeginCommandBuffer. If this flag is not set on a pool, then
-    vkResetCommandBuffer must not be called for any command buffer allocated
-    from that pool. */
-    cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    /* All command buffers allocated from this command pool must be
-    submitted on queues from the same queue family. */
-    cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-
-    _commandPool = vkh::createCommandPool(device, &cmdPoolInfo);
-    _isOwner = true;
   }
 };
 

@@ -40,7 +40,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~Window() { _destroyVkData(); }
+  virtual ~Window() { _destroyVkData(); }
 
   const pGLFWwindow &ref() const noexcept { return _window; }
 
