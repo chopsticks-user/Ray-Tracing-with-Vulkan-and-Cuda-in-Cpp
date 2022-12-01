@@ -1,6 +1,7 @@
 #ifndef VULKAN_APP_HPP
 #define VULKAN_APP_HPP
 
+#include "rtvc/buffer.hpp"
 #include "rtvc/command_pool.hpp"
 #include "rtvc/descriptor.hpp"
 #include "rtvc/device.hpp"
@@ -58,32 +59,32 @@ private:
   const std::string imagePath =
       absoluteDirectory + "/resources/textures/texture.jpeg";
 
-  /* Step 0: Setup GLFW and window */
+  /* Setup GLFW and window */
   GLFW glfw = {};
   Window window = {};
 
-  /* Step 1: Create an instance */
+  /* Create an instance */
   Instance instance = {};
 
-  /* Step 2: Setup layers */
+  /* Setup layers */
   /* Debug messenger of validation layers */
   DebugMessenger debugMessenger = {instance};
 
-  /* Step 3: Create a window surface */
+  /* Create a window surface */
   Surface surface = {instance, window};
 
-  /* Step 4: Create a logical device */
+  /* Create a logical device */
   /* For graphics, computing, and presentation */
   /* Create a logical device after succesfully selecting a physical device
   and one of its queue families by calling the selectQueueFamily function. */
   Device device = {instance, surface};
 
-  /* Step 5: Create a swapchain to render results to the surface */
+  /* Create a swapchain to render results to the surface */
   Swapchain swapchain = {surface, device, preferredPresentMode};
 
   /* Included when selecting a physical device */
 
-  /* Step 6: Create image views */
+  /* Create image views */
   /* Only one image is displayed at a time, the others are queued for
   presentation. A presentable image  must be used after the image is
   returned by {vkAccquireNextImageKHR} and before it is released by
@@ -92,21 +93,21 @@ private:
 
   DescriptorSetLayout descriptorSetLayout = {device};
 
-  /* Step 7: Create a graphics pipeline */
+  /* Create a graphics pipeline */
   GraphicsPipeline graphicsPipeline = {{device, swapchain, descriptorSetLayout,
                                         "/build/shaders/triangle_vert.spv",
                                         "/build/shaders/triangle_frag.spv"}};
 
-  /* Step 8: Create framebuffers */
+  /* Create framebuffers */
   Framebuffers framebuffers = {device, imageViews, graphicsPipeline, swapchain};
 
-  /* Step 9: Recreate swapchain */
+  /* Recreate swapchain */
   void recreateSwapchain();
   static void framebufferResizeCallback(GLFWwindow *windowInstance, int width,
                                         int height);
   bool framebufferResized = false;
 
-  /* Step 10: Command buffers */
+  /* Command buffers */
   /**
    * @brief Command pools are externally synchronized, meaning that a command
    * pool must not be used concurrently in multiple threads. That includes use
@@ -121,10 +122,10 @@ private:
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-  /* Step 11: Synchronization and cache control */
+  /* Synchronization and cache control */
   SyncWrapper sync = {device, maxFramesInFlight};
 
-  /* Step 12: Buffers */
+  /* Buffers */
 
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
@@ -137,7 +138,24 @@ private:
   vkw::Buffer indexBuffer = makeIndexBuffer();
   std::vector<vkw::Buffer> uniformBuffers = makeUniformBuffers();
 
-  /* Step 13: Textures images */
+  /* Depth resources */
+  /* A depth attachment is based on an image, just like the color attachment.
+  The difference is that the swap chain will not automatically create depth
+  images for us. We only need a single depth image, because only one draw
+  operation is running at once. */
+  Image depthImage;
+  ImageView depthView;
+
+  VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
+                               VkImageTiling tiling,
+                               VkFormatFeatureFlags features);
+  VkFormat findDepthFormat();
+  bool hasStencilComponent(VkFormat format);
+
+  Image makeDepthImage();
+  ImageView makeDepthView();
+
+  /* Textures images */
   Image textureImage = makeTextureImage();
   ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB};
   Sampler textureSampler = {device};
@@ -149,18 +167,18 @@ private:
   void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
                          uint32_t height);
 
-  /* Step 14: Resource descriptors */
+  /* Resource descriptors */
   /* Usage of descriptors consists of three parts:
   • Specify a descriptor layout during pipeline creation
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
-  vkw::DescriptorPool descriptorPool = {
-      device.ref(), static_cast<uint32_t>(maxFramesInFlight)};
+  DescriptorPool descriptorPool = {device,
+                                   static_cast<uint32_t>(maxFramesInFlight)};
   vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
   vkw::DescriptorSets makeDescriptorSets();
 
-  /* Last step: Render */
+  /* Render */
   void render();
 };
 

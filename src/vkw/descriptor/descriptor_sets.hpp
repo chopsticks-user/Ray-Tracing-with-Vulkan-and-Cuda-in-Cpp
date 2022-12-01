@@ -3,8 +3,6 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 class DescriptorSets {
@@ -26,13 +24,13 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~DescriptorSets() { _destroyVkData(); }
+  virtual ~DescriptorSets() { _destroyVkData(); }
 
   const std::vector<VkDescriptorSet> &ref() const noexcept { return _sets; }
 
   const VkDescriptorSet &operator[](size_t index) const { return _sets[index]; }
 
-private:
+protected:
   std::vector<VkDescriptorSet> _sets;
   VkDevice _device;
   VkDescriptorPool _pool;

@@ -4,7 +4,6 @@
 #include "config.hpp"
 
 #include <array>
-#include <vkh.hpp>
 
 namespace vkw {
 

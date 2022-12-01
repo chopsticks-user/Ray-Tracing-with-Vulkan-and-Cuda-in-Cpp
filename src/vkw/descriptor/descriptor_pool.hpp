@@ -6,7 +6,6 @@
 #include "descriptor_sets.hpp"
 
 #include <array>
-#include <vkh.hpp>
 
 namespace vkw {
 
@@ -16,10 +15,6 @@ public:
       VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
   DescriptorPool() = default;
-  DescriptorPool(VkDevice device, uint32_t descriptorCount)
-      : _device{device}, _pAllocator{nullptr} {
-    _customInitialize(device, descriptorCount);
-  }
   DescriptorPool(VkDevice device, const VkDescriptorPoolCreateInfo *pCreateInfo,
                  const VkAllocationCallbacks *pAllocator = nullptr)
       : _device{device}, _pAllocator{pAllocator} {
@@ -42,7 +37,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~DescriptorPool() { _destroyVkData(); }
+  virtual ~DescriptorPool() { _destroyVkData(); }
 
   const VkDescriptorPool &ref() const noexcept { return _pool; }
 
@@ -63,7 +58,7 @@ public:
     return {_device, _pool, &allocInfo};
   }
 
-private:
+protected:
   VkDescriptorPool _pool;
   VkDevice _device;
   const VkAllocationCallbacks *_pAllocator;
@@ -89,25 +84,7 @@ private:
     }
   }
 
-  CUSTOM void _customInitialize(VkDevice device, uint32_t descriptorCount) {
-    std::array<VkDescriptorPoolSize, 2> poolSizes{};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = static_cast<uint32_t>(descriptorCount);
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(descriptorCount);
-
-    VkDescriptorPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = static_cast<uint32_t>(descriptorCount);
-    poolInfo.flags = requiredFlag;
-    if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &_pool) !=
-        VK_SUCCESS) {
-      throw std::runtime_error("Failed to create descriptor pool.");
-    }
-    _isOwner = true;
-  }
+private:
 };
 
 } /* namespace vkw */
