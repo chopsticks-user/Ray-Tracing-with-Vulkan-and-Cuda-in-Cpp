@@ -16,6 +16,7 @@
 #include "descriptor/descriptor_pool.hpp"
 #include "descriptor/descriptor_sets.hpp"
 #include "interface/stb_image.hpp"
+#include "interface/tiny_obj_loader.hpp"
 #include "pipeline/compute.hpp"
 #include "pipeline/graphics.hpp"
 #include "pipeline/rtkhr.hpp"

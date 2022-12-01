@@ -25,7 +25,7 @@ void Image::_initialize(VkDevice device, VkPhysicalDevice physicalDevice,
   imageInfo.extent.width = args.width;
   imageInfo.extent.height = args.height;
   imageInfo.extent.depth = 1;
-  imageInfo.mipLevels = 1;
+  imageInfo.mipLevels = args.mipLevels;
   imageInfo.arrayLayers = 1;
   imageInfo.format = args.format;
   imageInfo.tiling = args.tiling;
@@ -55,14 +55,14 @@ void Image::_initialize(VkDevice device, VkPhysicalDevice physicalDevice,
 }
 
 void ImageView::_initialize(VkDevice device, VkImage image, VkFormat format,
-                            VkImageAspectFlags aspectFlags) {
+                            VkImageAspectFlags aspectFlags,
+                            uint32_t mipLevels) {
   // auto images = vkh::getSwapchainImages(device, swapchain);
   // size_t imageCount = images.size();
   // _imageViews.resize(imageCount);
   VkImageViewCreateInfo imageViewInfo{};
   imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   imageViewInfo.pNext = nullptr;
-  // imageViewInfo.flags =
   imageViewInfo.image = image;
 
   /* treat images as 2D textures */
@@ -83,7 +83,7 @@ void ImageView::_initialize(VkDevice device, VkImage image, VkFormat format,
   layers before creating multiple image views for each images representing
   the views for the left and right eyes by accessing different layers */
   imageViewInfo.subresourceRange.baseMipLevel = 0;
-  imageViewInfo.subresourceRange.levelCount = 1;
+  imageViewInfo.subresourceRange.levelCount = mipLevels;
   imageViewInfo.subresourceRange.baseArrayLayer = 0;
   imageViewInfo.subresourceRange.layerCount = 1;
 
@@ -110,7 +110,6 @@ void SwapchainImageViews::_initialize(VkDevice device, VkSwapchainKHR swapchain,
     VkImageViewCreateInfo imageViewInfo{};
     imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     imageViewInfo.pNext = nullptr;
-    // imageViewInfo.flags =
     imageViewInfo.image = swapchainImages[i];
 
     /* treat images as 2D textures */

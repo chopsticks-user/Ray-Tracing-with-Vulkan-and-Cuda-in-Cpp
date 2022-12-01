@@ -11,6 +11,7 @@ public:
   struct CustomArgs {
     uint32_t width;
     uint32_t height;
+    uint32_t mipLevels;
     VkFormat format;
     VkImageTiling tiling;
     VkImageUsageFlags usage;
@@ -36,13 +37,14 @@ public:
   using vkw::ImageView::ImageView;
 
   ImageView(const Device &device, const Image &image, VkFormat format,
-            VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT) {
-    _initialize(device.ref(), image.ref(), format, aspectFlags);
+            VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+            uint32_t mipLevels = 1) {
+    _initialize(device.ref(), image.ref(), format, aspectFlags, mipLevels);
   }
 
 private:
   void _initialize(VkDevice device, VkImage image, VkFormat format,
-                   VkImageAspectFlags aspectFlags);
+                   VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 };
 
 class SwapchainImageViews : public vkw::ImageViews {

@@ -9,7 +9,7 @@
 #include "rtvc/graphics_pipeline.hpp"
 #include "rtvc/image_view.hpp"
 #include "rtvc/instance.hpp"
-#include "rtvc/resources.hpp"
+// #include "rtvc/resources.hpp"
 #include "rtvc/sampler.hpp"
 #include "rtvc/swapchain.hpp"
 #include "rtvc/sync.hpp"
@@ -25,6 +25,7 @@
 
 #include <chrono>
 #include <cstring>
+#include <unordered_map>
 
 namespace rtvc {
 
@@ -60,9 +61,9 @@ private:
       absoluteDirectory + "/resources/textures/texture.jpeg";
 
   const std::string modelObjectPath =
-      absoluteDirectory + "/resources/models/viking_room.png";
-  const std::string modelTexturePath =
       absoluteDirectory + "/resources/models/viking_room.obj";
+  const std::string modelTexturePath =
+      absoluteDirectory + "/resources/models/viking_room.png";
 
   /* Setup GLFW and window */
   GLFW glfw = {};
@@ -152,13 +153,25 @@ private:
 
   /* Buffers */
 
+  /* Models */
+  struct ModelWrapper {
+    std::vector<vkw::Vertex> vertices;
+    std::vector<uint32_t> indices;
+  };
+
+  ModelWrapper loadModel();
+
   /* Query memory requirements */
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propFlags);
+
   vkw::Buffer makeVertexBuffer();
   vkw::Buffer makeIndexBuffer();
   std::vector<vkw::Buffer> makeUniformBuffers();
   void updateUniformBuffer(uint32_t imageIndex);
 
+  //   std::vector<vkw::Vertex> vertices;
+  //   std::vector<uint32_t> indices;
+  ModelWrapper model = loadModel();
   vkw::Buffer vertexBuffer = makeVertexBuffer();
   vkw::Buffer indexBuffer = makeIndexBuffer();
   std::vector<vkw::Buffer> uniformBuffers = makeUniformBuffers();
@@ -166,15 +179,20 @@ private:
   /* Textures images */
 
   void transitionImageLayout(VkImage image, VkFormat format,
-                             VkImageLayout oldLayout, VkImageLayout newLayout);
+                             VkImageLayout oldLayout, VkImageLayout newLayout,
+                             uint32_t mipLevels = 1);
   void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
                          uint32_t height);
+  void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t width,
+                       int32_t height, uint32_t mipLevels);
 
   Image makeTextureImage();
 
+  uint32_t _mipLevels = 1;
   Image textureImage = makeTextureImage();
-  ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB};
-  Sampler textureSampler = {device};
+  ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB,
+                           VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels};
+  Sampler textureSampler = {device, _mipLevels};
 
   /* Resource descriptors */
   /* Usage of descriptors consists of three parts:

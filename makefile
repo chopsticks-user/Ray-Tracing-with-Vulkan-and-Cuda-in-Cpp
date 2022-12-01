@@ -19,13 +19,14 @@ SOURCE_PATHS = $(ENTRY_NAME).cpp \
 	src/vkh/lists/*.cpp \
 	src/vkh/utils/*.cpp \
 	src/vkh/vk_objects/*.cpp \
+	libs/tinyobjloader/tiny_obj_loader.cc \
 	src/rtvc/*.cpp
 INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkw \
 	-I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \
 	-I$(PROJECT_ABSOLUTE_DIR)/libs/stb \
-	-I$(PROJECT_ABSOLUTE_DIR)/libs/tinyobjectloader
+	-I$(PROJECT_ABSOLUTE_DIR)/libs/tinyobjloader
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build

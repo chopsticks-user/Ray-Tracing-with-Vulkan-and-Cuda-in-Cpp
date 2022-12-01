@@ -1,6 +1,6 @@
-#ifndef VKW_API_STB_IMAGE_HPP
-#define VKW_API_STB_IMAGE_HPP
+#ifndef VKW_INTERFACE_STB_IMAGE_HPP
+#define VKW_INTERFACE_STB_IMAGE_HPP
 
 #include <stb_image.h>
 
-#endif /* VKW_API_STB_IMAGE_HPP */
+#endif /* VKW_INTERFACE_STB_IMAGE_HPP */

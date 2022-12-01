@@ -7,9 +7,14 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #endif /* GLFW_INCLUDE_VULKAN */
+#include <glm/glm.hpp>
+
+#ifndef GLM_ENABLE_EXPERIMENTAL
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+#endif /* GLM_ENABLE_EXPERIMENTAL */
 
 #include <array>
-#include <glm/glm.hpp>
 
 namespace vkw {
 
@@ -50,6 +55,11 @@ struct Vertex {
 
     return attributeDescriptions;
   }
+
+  bool operator==(const Vertex &rhs) const {
+    return position == rhs.position && color == rhs.color &&
+           texCoord == rhs.texCoord;
+  }
 };
 
 struct UniformBufferObject {
@@ -59,5 +69,16 @@ struct UniformBufferObject {
 };
 
 } // namespace vkw
+
+namespace std {
+template <> struct hash<vkw::Vertex> {
+  size_t operator()(vkw::Vertex const &vertex) const {
+    return ((hash<glm::vec3>()(vertex.position) ^
+             (hash<glm::vec3>()(vertex.color) << 1)) >>
+            1) &
+           (hash<glm::vec2>()(vertex.texCoord) << 1);
+  }
+};
+} // namespace std
 
 #endif /* VKH_VERTEX_HPP */
