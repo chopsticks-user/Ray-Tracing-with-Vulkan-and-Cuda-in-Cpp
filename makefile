@@ -24,7 +24,8 @@ INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkh \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkw \
 	-I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \
-	-I$(PROJECT_ABSOLUTE_DIR)/libs/stb
+	-I$(PROJECT_ABSOLUTE_DIR)/libs/stb \
+	-I$(PROJECT_ABSOLUTE_DIR)/libs/tinyobjectloader
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build

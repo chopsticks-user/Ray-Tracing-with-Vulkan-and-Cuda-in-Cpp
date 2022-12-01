@@ -24,7 +24,7 @@ public:
 
   virtual ~ImageView() { _destroyVkData(); }
 
-  const VkImageView &ref() { return _imageView; }
+  const VkImageView &ref() const noexcept { return _imageView; }
 
 protected:
   VkImageView _imageView = VK_NULL_HANDLE;

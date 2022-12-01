@@ -12,16 +12,22 @@ void VulkanApp::recreateSwapchain() {
   /* Free current swapchain and its dependencies */
   framebuffers = {};
   graphicsPipeline = {};
+  depthImage = {};
+  depthImageView = {};
   imageViews = {};
   swapchain = {};
 
   /* Recreate swapchain and its dependencies */
   swapchain = {surface, device, preferredPresentMode};
   imageViews = {device, swapchain};
-  graphicsPipeline = {{device, swapchain, descriptorSetLayout,
+  depthFormat = findDepthFormat();
+  graphicsPipeline = {{device, swapchain, depthFormat, descriptorSetLayout,
                        "/build/shaders/triangle_vert.spv",
                        "/build/shaders/triangle_frag.spv"}};
-  framebuffers = {device, imageViews, graphicsPipeline, swapchain};
+  depthImage = makeDepthImage(depthFormat);
+  depthImageView = makeDepthView(depthImage, depthFormat);
+  framebuffers = {device, imageViews, depthImageView, graphicsPipeline,
+                  swapchain};
 }
 
 void VulkanApp::framebufferResizeCallback(GLFWwindow *pWindow,
@@ -41,7 +47,9 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
   vkh::beginCommandBuffer(cmdBuffer, &cmdBufferBeginInfo);
 
   /* 2. Start a render pass */
-  VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+  std::array<VkClearValue, 2> clearValues{};
+  clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+  clearValues[1].depthStencil = {1.0f, 0};
 
   VkRenderPassBeginInfo renderPassBeginInfo{};
   renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -49,8 +57,9 @@ void VulkanApp::recordCommandBuffer(VkCommandBuffer cmdBuffer,
   renderPassBeginInfo.framebuffer = framebuffers[imageIndex];
   renderPassBeginInfo.renderArea.offset = {0, 0};
   renderPassBeginInfo.renderArea.extent = swapchain.extent();
-  renderPassBeginInfo.clearValueCount = 1;
-  renderPassBeginInfo.pClearValues = &clearColor;
+  renderPassBeginInfo.clearValueCount =
+      static_cast<uint32_t>(clearValues.size());
+  renderPassBeginInfo.pClearValues = clearValues.data();
 
   vkCmdBeginRenderPass(cmdBuffer, &renderPassBeginInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
@@ -245,7 +254,7 @@ VkFormat VulkanApp::findSupportedFormat(const std::vector<VkFormat> &candidates,
         (properties.linearTilingFeatures & features) == features) {
       return format;
     } else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
-               (properties.linearTilingFeatures & features) == features) {
+               (properties.optimalTilingFeatures & features) == features) {
       return format;
     }
   }
@@ -264,12 +273,21 @@ bool VulkanApp::hasStencilComponent(VkFormat format) {
          format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-Image VulkanApp::makeDepthImage() {
-  VkFormat depthFormat = findDepthFormat();
-  //
+Image VulkanApp::makeDepthImage(VkFormat format) {
+  Image image = {device,
+                 {swapchain.extent().width, swapchain.extent().height, format,
+                  VK_IMAGE_TILING_OPTIMAL,
+                  VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
+  transitionImageLayout(image.ref(), format, VK_IMAGE_LAYOUT_UNDEFINED,
+                        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+  return image;
 }
 
-ImageView VulkanApp::makeDepthView() {}
+ImageView VulkanApp::makeDepthView(const Image &image, VkFormat format) {
+  ImageView imageView = {device, image, format, VK_IMAGE_ASPECT_DEPTH_BIT};
+  return imageView;
+}
 
 void VulkanApp::transitionImageLayout(VkImage image,
                                       [[maybe_unused]] VkFormat format,
@@ -285,7 +303,16 @@ void VulkanApp::transitionImageLayout(VkImage image,
   barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
   barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
   barrier.image = image;
-  barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+  if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    if (hasStencilComponent(format)) {
+      barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+    }
+  } else {
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  }
+
   barrier.subresourceRange.baseMipLevel = 0;
   barrier.subresourceRange.levelCount = 1;
   barrier.subresourceRange.baseArrayLayer = 0;
@@ -308,6 +335,13 @@ void VulkanApp::transitionImageLayout(VkImage image,
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+             newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+    barrier.srcAccessMask = 0;
+    barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    dstStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
   } else {
     throw std::invalid_argument("Unsupported layout transition.");
   }

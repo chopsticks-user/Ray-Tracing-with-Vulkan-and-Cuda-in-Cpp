@@ -54,7 +54,8 @@ void Image::_initialize(VkDevice device, VkPhysicalDevice physicalDevice,
   _isOwner = true;
 }
 
-void ImageView::_initialize(VkDevice device, VkImage image, VkFormat format) {
+void ImageView::_initialize(VkDevice device, VkImage image, VkFormat format,
+                            VkImageAspectFlags aspectFlags) {
   // auto images = vkh::getSwapchainImages(device, swapchain);
   // size_t imageCount = images.size();
   // _imageViews.resize(imageCount);
@@ -76,7 +77,7 @@ void ImageView::_initialize(VkDevice device, VkImage image, VkFormat format) {
   imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
   /* color aspect */
-  imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  imageViewInfo.subresourceRange.aspectMask = aspectFlags;
 
   /* In stereographic 3D applications, create a swapchain with multiple
   layers before creating multiple image views for each images representing

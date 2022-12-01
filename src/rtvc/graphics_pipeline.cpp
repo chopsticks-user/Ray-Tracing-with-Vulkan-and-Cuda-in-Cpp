@@ -97,6 +97,18 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   multisampleStateInfo.alphaToOneEnable = VK_FALSE;
 
   /* Depth and stencil testing */
+  VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
+  depthStencilInfo.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+  depthStencilInfo.depthTestEnable = VK_TRUE;
+  depthStencilInfo.depthWriteEnable = VK_TRUE;
+  depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+  depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+  depthStencilInfo.minDepthBounds = 0.0f;
+  depthStencilInfo.maxDepthBounds = 1.0f;
+  depthStencilInfo.stencilTestEnable = VK_FALSE;
+  depthStencilInfo.front = {};
+  depthStencilInfo.back = {};
 
   /* Color blending */
   VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -160,24 +172,45 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   colorAttachmentRef.attachment = 0;
   colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+  VkAttachmentDescription depthAttachment{};
+  depthAttachment.format = args.depthFormat;
+  depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+  depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  depthAttachment.finalLayout =
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+  VkAttachmentReference depthAttachmentRef{};
+  depthAttachmentRef.attachment = 1;
+  depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
   VkSubpassDescription subpass{};
   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
   subpass.colorAttachmentCount = 1;
   subpass.pColorAttachments = &colorAttachmentRef;
+  subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
   VkSubpassDependency subPassDep{}; /* Needed when rendering */
   subPassDep.srcSubpass = VK_SUBPASS_EXTERNAL;
   subPassDep.dstSubpass = 0;
-  subPassDep.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  subPassDep.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
   subPassDep.srcAccessMask = 0;
-  subPassDep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-  subPassDep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+  subPassDep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+  subPassDep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
+  std::array<VkAttachmentDescription, 2> attachments = {colorAttachment,
+                                                        depthAttachment};
   VkRenderPassCreateInfo renderPassInfo{};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
   renderPassInfo.pNext = nullptr;
-  renderPassInfo.attachmentCount = 1;
-  renderPassInfo.pAttachments = &colorAttachment;
+  renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+  renderPassInfo.pAttachments = attachments.data();
   renderPassInfo.subpassCount = 1;
   renderPassInfo.pSubpasses = &subpass;
   renderPassInfo.dependencyCount = 1;
@@ -195,7 +228,7 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   pipelineInfo.pViewportState = &viewportStateInfo;
   pipelineInfo.pRasterizationState = &rastStateInfo;
   pipelineInfo.pMultisampleState = &multisampleStateInfo;
-  pipelineInfo.pDepthStencilState = nullptr;
+  pipelineInfo.pDepthStencilState = &depthStencilInfo;
   pipelineInfo.pColorBlendState = &colorBlendState;
   pipelineInfo.pDynamicState = nullptr;
   pipelineInfo.layout = _pipelineLayout;

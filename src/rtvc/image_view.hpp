@@ -35,12 +35,14 @@ class ImageView : public vkw::ImageView {
 public:
   using vkw::ImageView::ImageView;
 
-  ImageView(const Device &device, const Image &image, VkFormat format) {
-    _initialize(device.ref(), image.ref(), format);
+  ImageView(const Device &device, const Image &image, VkFormat format,
+            VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT) {
+    _initialize(device.ref(), image.ref(), format, aspectFlags);
   }
 
 private:
-  void _initialize(VkDevice device, VkImage image, VkFormat format);
+  void _initialize(VkDevice device, VkImage image, VkFormat format,
+                   VkImageAspectFlags aspectFlags);
 };
 
 class SwapchainImageViews : public vkw::ImageViews {

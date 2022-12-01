@@ -14,16 +14,18 @@ public:
 
   Framebuffers(const Device &device,
                const SwapchainImageViews &swapchainImageViews,
+               const ImageView &depthView,
                const GraphicsPipeline &graphicsPipeline,
                const Swapchain &swapchain) {
-    _initialize(device.ref(), swapchainImageViews.ref(),
+    _initialize(device.ref(), swapchainImageViews.ref(), depthView.ref(),
                 graphicsPipeline.renderPass(), swapchain.extent());
   }
 
 private:
   void _initialize(VkDevice device,
                    const std::vector<VkImageView> &swapchainImageViews,
-                   VkRenderPass renderPass, const VkExtent2D &extent);
+                   VkImageView depthView, VkRenderPass renderPass,
+                   const VkExtent2D &extent);
 };
 
 } /* namespace rtvc */

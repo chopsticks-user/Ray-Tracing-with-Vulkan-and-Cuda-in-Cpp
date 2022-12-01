@@ -12,6 +12,7 @@ public:
   struct CustomArgs {
     const Device &device;
     const Swapchain &swapchain;
+    VkFormat depthFormat;
     const DescriptorSetLayout &desSetLayout;
     const std::string &vertPath;
     const std::string &fragPath;
@@ -20,9 +21,11 @@ public:
   using vkw::GraphicsPipeline::GraphicsPipeline;
 
   GraphicsPipeline(const Device &device, const Swapchain &swapchain,
+                   VkFormat depthFormat,
                    const DescriptorSetLayout &desSetLayout,
                    const std::string &vertPath, const std::string &fragPath) {
-    _initialize({device, swapchain, desSetLayout, vertPath, fragPath});
+    _initialize(
+        {device, swapchain, depthFormat, desSetLayout, vertPath, fragPath});
   }
 
   GraphicsPipeline(const CustomArgs &args) { _initialize(args); }

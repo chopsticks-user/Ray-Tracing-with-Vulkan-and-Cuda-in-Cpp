@@ -59,6 +59,11 @@ private:
   const std::string imagePath =
       absoluteDirectory + "/resources/textures/texture.jpeg";
 
+  const std::string modelObjectPath =
+      absoluteDirectory + "/resources/models/viking_room.png";
+  const std::string modelTexturePath =
+      absoluteDirectory + "/resources/models/viking_room.obj";
+
   /* Setup GLFW and window */
   GLFW glfw = {};
   Window window = {};
@@ -93,20 +98,6 @@ private:
 
   DescriptorSetLayout descriptorSetLayout = {device};
 
-  /* Create a graphics pipeline */
-  GraphicsPipeline graphicsPipeline = {{device, swapchain, descriptorSetLayout,
-                                        "/build/shaders/triangle_vert.spv",
-                                        "/build/shaders/triangle_frag.spv"}};
-
-  /* Create framebuffers */
-  Framebuffers framebuffers = {device, imageViews, graphicsPipeline, swapchain};
-
-  /* Recreate swapchain */
-  void recreateSwapchain();
-  static void framebufferResizeCallback(GLFWwindow *windowInstance, int width,
-                                        int height);
-  bool framebufferResized = false;
-
   /* Command buffers */
   /**
    * @brief Command pools are externally synchronized, meaning that a command
@@ -121,6 +112,40 @@ private:
       commandPool.allocateBuffers(maxFramesInFlight)};
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+  /* Depth resources */
+  /* A depth attachment is based on an image, just like the color attachment.
+  The difference is that the swap chain will not automatically create depth
+  images for us. We only need a single depth image, because only one draw
+  operation is running at once. */
+
+  VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
+                               VkImageTiling tiling,
+                               VkFormatFeatureFlags features);
+  VkFormat findDepthFormat();
+  bool hasStencilComponent(VkFormat format);
+
+  Image makeDepthImage(VkFormat format);
+  ImageView makeDepthView(const Image &image, VkFormat format);
+
+  VkFormat depthFormat = findDepthFormat();
+  Image depthImage = makeDepthImage(depthFormat);
+  ImageView depthImageView = makeDepthView(depthImage, depthFormat);
+
+  /* Create a graphics pipeline */
+  GraphicsPipeline graphicsPipeline = {
+      {device, swapchain, depthFormat, descriptorSetLayout,
+       "/build/shaders/triangle_vert.spv", "/build/shaders/triangle_frag.spv"}};
+
+  /* Create framebuffers */
+  Framebuffers framebuffers = {device, imageViews, depthImageView,
+                               graphicsPipeline, swapchain};
+
+  /* Recreate swapchain */
+  void recreateSwapchain();
+  static void framebufferResizeCallback(GLFWwindow *windowInstance, int width,
+                                        int height);
+  bool framebufferResized = false;
 
   /* Synchronization and cache control */
   SyncWrapper sync = {device, maxFramesInFlight};
@@ -138,45 +163,30 @@ private:
   vkw::Buffer indexBuffer = makeIndexBuffer();
   std::vector<vkw::Buffer> uniformBuffers = makeUniformBuffers();
 
-  /* Depth resources */
-  /* A depth attachment is based on an image, just like the color attachment.
-  The difference is that the swap chain will not automatically create depth
-  images for us. We only need a single depth image, because only one draw
-  operation is running at once. */
-  Image depthImage;
-  ImageView depthView;
-
-  VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
-                               VkImageTiling tiling,
-                               VkFormatFeatureFlags features);
-  VkFormat findDepthFormat();
-  bool hasStencilComponent(VkFormat format);
-
-  Image makeDepthImage();
-  ImageView makeDepthView();
-
   /* Textures images */
-  Image textureImage = makeTextureImage();
-  ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB};
-  Sampler textureSampler = {device};
-
-  Image makeTextureImage();
 
   void transitionImageLayout(VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout);
   void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
                          uint32_t height);
 
+  Image makeTextureImage();
+
+  Image textureImage = makeTextureImage();
+  ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB};
+  Sampler textureSampler = {device};
+
   /* Resource descriptors */
   /* Usage of descriptors consists of three parts:
   • Specify a descriptor layout during pipeline creation
   • Allocate a descriptor set from a descriptor pool
   • Bind the descriptor set during rendering */
+
+  vkw::DescriptorSets makeDescriptorSets();
+
   DescriptorPool descriptorPool = {device,
                                    static_cast<uint32_t>(maxFramesInFlight)};
   vkw::DescriptorSets descriptorSets = makeDescriptorSets();
-
-  vkw::DescriptorSets makeDescriptorSets();
 
   /* Render */
   void render();

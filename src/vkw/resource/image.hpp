@@ -57,6 +57,7 @@ protected:
   bool _isOwner = false;
 
   void _moveDataFrom(Image &&rhs) {
+    _destroyVkData();
     _image = rhs._image;
     _device = rhs._device;
     _deviceMemory = rhs._deviceMemory;
