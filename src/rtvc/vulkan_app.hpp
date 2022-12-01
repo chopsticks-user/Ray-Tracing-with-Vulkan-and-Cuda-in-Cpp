@@ -9,7 +9,9 @@
 #include "rtvc/image_view.hpp"
 #include "rtvc/instance.hpp"
 #include "rtvc/resources.hpp"
+#include "rtvc/sampler.hpp"
 #include "rtvc/swapchain.hpp"
+#include "rtvc/sync.hpp"
 
 #include <vkh.hpp>
 #include <vkw.hpp>
@@ -114,28 +116,13 @@ private:
    */
   CommandPool commandPool = {device};
 
-  std::vector<VkCommandBuffer> commandBuffers = {
+  CommandBuffers commandBuffers = {
       commandPool.allocateBuffers(maxFramesInFlight)};
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
   /* Step 11: Synchronization and cache control */
-  struct SyncWrapper {
-    std::vector<vkw::Semaphore> imageAvailableSemaphore;
-    std::vector<vkw::Semaphore> renderFinishedSemaphore;
-    std::vector<vkw::Fence> inFlightFence;
-    size_t currentFrame = 0;
-
-    SyncWrapper(VkDevice device, size_t frameCount)
-        : imageAvailableSemaphore{frameCount},
-          renderFinishedSemaphore{frameCount}, inFlightFence{frameCount} {
-      for (size_t i = 0; i < frameCount; ++i) {
-        imageAvailableSemaphore[i] = {device};
-        renderFinishedSemaphore[i] = {device};
-        inFlightFence[i] = {device, VK_FENCE_CREATE_SIGNALED_BIT};
-      }
-    }
-  } sync = {device.ref(), maxFramesInFlight};
+  SyncWrapper sync = {device, maxFramesInFlight};
 
   /* Step 12: Buffers */
 
@@ -153,7 +140,7 @@ private:
   /* Step 13: Textures images */
   Image textureImage = makeTextureImage();
   ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB};
-  vkw::Sampler textureSampler = {device.ref(), device.physical()};
+  Sampler textureSampler = {device};
 
   Image makeTextureImage();
 
