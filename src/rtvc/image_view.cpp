@@ -32,7 +32,7 @@ void Image::_initialize(VkDevice device, VkPhysicalDevice physicalDevice,
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   imageInfo.usage = args.usage;
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+  imageInfo.samples = args.nSamples;
   imageInfo.flags = 0;
   if (vkCreateImage(device, &imageInfo, nullptr, &_image) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create image.");

@@ -4,11 +4,13 @@ namespace rtvc {
 
 void Framebuffers::_initialize(
     VkDevice device, const std::vector<VkImageView> &swapchainImageViews,
-    VkImageView depthView, VkRenderPass renderPass, const VkExtent2D &extent) {
+    VkImageView depthView, VkImageView colorView, VkRenderPass renderPass,
+    const VkExtent2D &extent) {
   size_t imageCount = swapchainImageViews.size();
   _framebuffers.resize(imageCount);
   for (size_t i = 0; i < imageCount; ++i) {
-    std::array<VkImageView, 2> attachments{swapchainImageViews[i], depthView};
+    std::array<VkImageView, 3> attachments{colorView, depthView,
+                                           swapchainImageViews[i]};
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferInfo.renderPass = renderPass;

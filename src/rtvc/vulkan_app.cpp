@@ -11,9 +11,11 @@ void VulkanApp::recreateSwapchain() {
 
   /* Free current swapchain and its dependencies */
   framebuffers = {};
-  graphicsPipeline = {};
+  colorImage = {};
+  colorImageView = {};
   depthImage = {};
   depthImageView = {};
+  graphicsPipeline = {};
   imageViews = {};
   swapchain = {};
 
@@ -21,13 +23,36 @@ void VulkanApp::recreateSwapchain() {
   swapchain = {surface, device, preferredPresentMode};
   imageViews = {device, swapchain};
   depthFormat = findDepthFormat();
-  graphicsPipeline = {{device, swapchain, depthFormat, descriptorSetLayout,
-                       "/build/shaders/triangle_vert.spv",
-                       "/build/shaders/triangle_frag.spv"}};
+  graphicsPipeline = {{
+      device,
+      swapchain,
+      depthFormat,
+      msaaSamples,
+      descriptorSetLayout,
+      "/build/shaders/triangle_vert.spv",
+      "/build/shaders/triangle_frag.spv",
+  }};
+  colorImage = {device,
+                {
+                    swapchain.extent().width,
+                    swapchain.extent().height,
+                    1,
+                    msaaSamples,
+                    swapchain.format(),
+                    VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT |
+                        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                }};
+  colorImageView = {
+      device, colorImage, swapchain.format(), VK_IMAGE_ASPECT_COLOR_BIT, 1,
+  };
   depthImage = makeDepthImage(depthFormat);
   depthImageView = makeDepthView(depthImage, depthFormat);
-  framebuffers = {device, imageViews, depthImageView, graphicsPipeline,
-                  swapchain};
+  framebuffers = {
+      device,         imageViews,       depthImageView,
+      colorImageView, graphicsPipeline, swapchain,
+  };
 }
 
 void VulkanApp::framebufferResizeCallback(GLFWwindow *pWindow,
@@ -244,7 +269,7 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = textureView.ref();
+    imageInfo.imageView = textureImageView.ref();
     imageInfo.sampler = textureSampler.ref();
 
     std::array<VkWriteDescriptorSet, 2> writeSets{};
@@ -274,6 +299,36 @@ vkw::DescriptorSets VulkanApp::makeDescriptorSets() {
                            writeSets.data(), 0, nullptr);
   }
   return sets;
+}
+
+VkSampleCountFlagBits VulkanApp::getMaxSampleCount() {
+  if (!enableMSAA) {
+    return VK_SAMPLE_COUNT_1_BIT;
+  }
+
+  VkPhysicalDeviceProperties properties;
+  vkGetPhysicalDeviceProperties(device.physical(), &properties);
+  VkSampleCountFlags counts = properties.limits.framebufferColorSampleCounts &
+                              properties.limits.framebufferDepthSampleCounts;
+  if (counts & VK_SAMPLE_COUNT_64_BIT) {
+    return VK_SAMPLE_COUNT_64_BIT;
+  }
+  if (counts & VK_SAMPLE_COUNT_32_BIT) {
+    return VK_SAMPLE_COUNT_32_BIT;
+  }
+  if (counts & VK_SAMPLE_COUNT_16_BIT) {
+    return VK_SAMPLE_COUNT_16_BIT;
+  }
+  if (counts & VK_SAMPLE_COUNT_8_BIT) {
+    return VK_SAMPLE_COUNT_8_BIT;
+  }
+  if (counts & VK_SAMPLE_COUNT_4_BIT) {
+    return VK_SAMPLE_COUNT_4_BIT;
+  }
+  if (counts & VK_SAMPLE_COUNT_2_BIT) {
+    return VK_SAMPLE_COUNT_2_BIT;
+  }
+  return VK_SAMPLE_COUNT_1_BIT;
 }
 
 VkFormat VulkanApp::findSupportedFormat(const std::vector<VkFormat> &candidates,
@@ -308,7 +363,7 @@ bool VulkanApp::hasStencilComponent(VkFormat format) {
 Image VulkanApp::makeDepthImage(VkFormat format) {
   Image image = {device,
                  {swapchain.extent().width, swapchain.extent().height, 1,
-                  format, VK_IMAGE_TILING_OPTIMAL,
+                  msaaSamples, format, VK_IMAGE_TILING_OPTIMAL,
                   VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
   transitionImageLayout(image.ref(), format, VK_IMAGE_LAYOUT_UNDEFINED,
@@ -514,7 +569,8 @@ Image VulkanApp::makeTextureImage() {
   Image texImage = {
       device,
       {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight),
-       _mipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+       _mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB,
+       VK_IMAGE_TILING_OPTIMAL,
        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
            VK_IMAGE_USAGE_SAMPLED_BIT,
        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};

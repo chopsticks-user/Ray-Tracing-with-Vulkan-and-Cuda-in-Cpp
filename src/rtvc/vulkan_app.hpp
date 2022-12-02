@@ -114,6 +114,29 @@ private:
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
+  /* MSAA */
+
+  VkSampleCountFlagBits getMaxSampleCount();
+
+  bool enableMSAA = true;
+  VkSampleCountFlagBits msaaSamples = getMaxSampleCount();
+
+  Image colorImage = {device,
+                      {
+                          swapchain.extent().width,
+                          swapchain.extent().height,
+                          1,
+                          msaaSamples,
+                          swapchain.format(),
+                          VK_IMAGE_TILING_OPTIMAL,
+                          VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT |
+                              VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+                          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                      }};
+  ImageView colorImageView = {
+      device, colorImage, swapchain.format(), VK_IMAGE_ASPECT_COLOR_BIT, 1,
+  };
+
   /* Depth resources */
   /* A depth attachment is based on an image, just like the color attachment.
   The difference is that the swap chain will not automatically create depth
@@ -134,13 +157,21 @@ private:
   ImageView depthImageView = makeDepthView(depthImage, depthFormat);
 
   /* Create a graphics pipeline */
-  GraphicsPipeline graphicsPipeline = {
-      {device, swapchain, depthFormat, descriptorSetLayout,
-       "/build/shaders/triangle_vert.spv", "/build/shaders/triangle_frag.spv"}};
+  GraphicsPipeline graphicsPipeline = {{
+      device,
+      swapchain,
+      depthFormat,
+      msaaSamples,
+      descriptorSetLayout,
+      "/build/shaders/triangle_vert.spv",
+      "/build/shaders/triangle_frag.spv",
+  }};
 
   /* Create framebuffers */
-  Framebuffers framebuffers = {device, imageViews, depthImageView,
-                               graphicsPipeline, swapchain};
+  Framebuffers framebuffers = {
+      device,         imageViews,       depthImageView,
+      colorImageView, graphicsPipeline, swapchain,
+  };
 
   /* Recreate swapchain */
   void recreateSwapchain();
@@ -190,8 +221,13 @@ private:
 
   uint32_t _mipLevels = 1;
   Image textureImage = makeTextureImage();
-  ImageView textureView = {device, textureImage, VK_FORMAT_R8G8B8A8_SRGB,
-                           VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels};
+  ImageView textureImageView = {
+      device,
+      textureImage,
+      VK_FORMAT_R8G8B8A8_SRGB,
+      VK_IMAGE_ASPECT_COLOR_BIT,
+      _mipLevels,
+  };
   Sampler textureSampler = {device, _mipLevels};
 
   /* Resource descriptors */

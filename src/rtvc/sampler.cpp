@@ -21,7 +21,7 @@ void Sampler::_initialize(VkDevice device, VkPhysicalDevice physicalDevice,
   samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
   samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
   samplerInfo.mipLodBias = 0.0f;
-  samplerInfo.minLod = static_cast<float>(mipLevels / 2);
+  samplerInfo.minLod = 0;
   samplerInfo.maxLod = static_cast<float>(mipLevels);
   if (vkCreateSampler(device, &samplerInfo, nullptr, &_sampler) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create sampler.");

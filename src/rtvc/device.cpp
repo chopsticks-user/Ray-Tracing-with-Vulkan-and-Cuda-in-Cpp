@@ -68,6 +68,7 @@ void Device::_initialize(VkInstance instance, VkSurfaceKHR surface) {
   /* Create the logical device */
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
+  deviceFeatures.sampleRateShading = VK_TRUE;
 
   VkDeviceCreateInfo deviceCreateInfo{};
   deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

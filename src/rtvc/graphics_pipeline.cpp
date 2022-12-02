@@ -3,6 +3,7 @@
 namespace rtvc {
 
 void GraphicsPipeline::_initialize(const CustomArgs &args) {
+  //   bool enableMSAA = args.nSamples != VK_SAMPLE_COUNT_1_BIT;
   auto vertShaderModule =
       _makeShaderModule(args.device.ref(), absoluteDirectory + args.vertPath);
   auto fragShaderModule =
@@ -89,9 +90,9 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   VkPipelineMultisampleStateCreateInfo multisampleStateInfo{};
   multisampleStateInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-  multisampleStateInfo.sampleShadingEnable = VK_FALSE;
-  multisampleStateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-  multisampleStateInfo.minSampleShading = 1.0f;
+  multisampleStateInfo.sampleShadingEnable = VK_TRUE;
+  multisampleStateInfo.rasterizationSamples = args.nSamples;
+  multisampleStateInfo.minSampleShading = 0.2f;
   multisampleStateInfo.pSampleMask = nullptr;
   multisampleStateInfo.alphaToCoverageEnable = VK_FALSE;
   multisampleStateInfo.alphaToOneEnable = VK_FALSE;
@@ -166,7 +167,8 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
   colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
   colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+  colorAttachment.samples = args.nSamples;
 
   VkAttachmentReference colorAttachmentRef{};
   colorAttachmentRef.attachment = 0;
@@ -182,16 +184,32 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   depthAttachment.finalLayout =
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+  depthAttachment.samples = args.nSamples;
 
   VkAttachmentReference depthAttachmentRef{};
   depthAttachmentRef.attachment = 1;
   depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+  VkAttachmentDescription colorAttachmentResolve{};
+  colorAttachmentResolve.format = args.swapchain.format();
+  colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+  colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+  VkAttachmentReference colorAttachmentResolveRef{};
+  colorAttachmentResolveRef.attachment = 2;
+  colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
   VkSubpassDescription subpass{};
   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
   subpass.colorAttachmentCount = 1;
   subpass.pColorAttachments = &colorAttachmentRef;
   subpass.pDepthStencilAttachment = &depthAttachmentRef;
+  subpass.pResolveAttachments = &colorAttachmentResolveRef;
 
   VkSubpassDependency subPassDep{}; /* Needed when rendering */
   subPassDep.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -204,8 +222,12 @@ void GraphicsPipeline::_initialize(const CustomArgs &args) {
   subPassDep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
                              VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-  std::array<VkAttachmentDescription, 2> attachments = {colorAttachment,
-                                                        depthAttachment};
+  std::array<VkAttachmentDescription, 3> attachments = {
+      colorAttachment,
+      depthAttachment,
+      colorAttachmentResolve,
+  };
+
   VkRenderPassCreateInfo renderPassInfo{};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
   renderPassInfo.pNext = nullptr;
