@@ -1,9 +1,13 @@
+#include <vulkan_app.hpp>
+
 #include <iostream>
-#include <vulkan/vulkan.hpp>
 
 int protected_main() {
-  vk::Instance instance{};
-  instance.destroy();
+  rtvc::VulkanApp app{};
+  vk::InstanceCreateInfo instanceInfo{
+      .flags{vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR},
+  };
+  std::cout << vk::to_string(instanceInfo.flags) << '\n';
   return EXIT_SUCCESS;
 }
 
