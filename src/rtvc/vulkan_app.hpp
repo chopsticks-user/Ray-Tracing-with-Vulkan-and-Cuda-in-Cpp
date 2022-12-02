@@ -242,9 +242,17 @@ private:
                                    static_cast<uint32_t>(maxFramesInFlight)};
   vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
-  /* Render */
+  /* Handle events and render */
 
   void getInputEvents();
+
+  /* Zoom */
+  const float minScale = 0.5f;
+  const float maxScale = 2.0f;
+  const float incScale = 0.1f;
+  float currentScale = 1.0f;
+  static void scrollEventCallback(GLFWwindow *pWindow, double xOffset,
+                                  double yOffset);
 
   void updateFrame(uint32_t imageIndex);
 
