@@ -3,8 +3,6 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 class Fence {
@@ -52,9 +50,6 @@ private:
     if (_isOwner) {
       vkDestroyFence(_device, _fence, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Fence destructor" << '\n';
-      }
     }
   }
 };

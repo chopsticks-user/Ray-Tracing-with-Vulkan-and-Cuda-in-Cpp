@@ -3,6 +3,9 @@
 
 #include "config.hpp"
 
+#include <fstream>
+#include <vector>
+
 namespace vkw {
 
 class GraphicsPipeline {
@@ -65,9 +68,6 @@ protected:
       vkDestroyPipelineLayout(_device, _pipelineLayout, _pAllocator);
       vkDestroyRenderPass(_device, _renderPass, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "GraphicsPipeline destructor" << '\n';
-      }
     }
   }
 

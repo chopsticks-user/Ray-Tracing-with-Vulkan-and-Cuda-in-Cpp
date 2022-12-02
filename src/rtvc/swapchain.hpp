@@ -4,6 +4,8 @@
 #include "device.hpp"
 #include "instance.hpp"
 
+#include <vector>
+
 namespace rtvc {
 
 class Swapchain : public vkw::Swapchain {

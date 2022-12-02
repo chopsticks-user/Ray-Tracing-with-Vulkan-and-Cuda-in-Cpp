@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #endif /* GLFW_INCLUDE_VULKAN */
 
+#include <stdexcept>
+
 #ifndef CUSTOM
 #define CUSTOM
 #endif /* CUSTOM */

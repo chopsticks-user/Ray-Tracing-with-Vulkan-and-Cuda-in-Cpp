@@ -3,6 +3,8 @@
 
 #include "config.hpp"
 
+#include <vector>
+
 namespace vkw {
 
 class CommandPool {
@@ -45,7 +47,7 @@ public:
     _moveDataFrom(std::move(rhs));
     return *this;
   }
-  ~CommandPool() { _destroyVkData(); }
+  virtual ~CommandPool() { _destroyVkData(); }
 
   const VkCommandPool &ref() const noexcept { return _commandPool; }
 
@@ -166,9 +168,6 @@ protected:
     if (_isOwner) {
       vkDestroyCommandPool(_device, _commandPool, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "CommandPool destructor" << '\n';
-      }
     }
   }
 };

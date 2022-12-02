@@ -7,12 +7,23 @@ void Swapchain::_initialize(VkSurfaceKHR surface, VkDevice device,
                             VkPresentModeKHR preferredPresentMode) {
   /* Vulkan 1.3.231 - A Specification, pg 2235 */
 
-  auto surfaceCapabilities =
-      vkh::getPhysicalDeviceSurfaceCapabilities(physicalDevice, surface);
-  auto surfaceFormats =
-      vkh::getPhysicalDeviceSurfaceFormatList(physicalDevice, surface);
-  auto surfacePresentModes =
-      vkh::getPhysicalDeviceSurfacePresentModeList(physicalDevice, surface);
+  VkSurfaceCapabilitiesKHR surfaceCapabilities;
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface,
+                                            &surfaceCapabilities);
+
+  uint32_t surfaceFormatCount;
+  vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface,
+                                       &surfaceFormatCount, nullptr);
+  std::vector<VkSurfaceFormatKHR> surfaceFormats{surfaceFormatCount};
+  vkGetPhysicalDeviceSurfaceFormatsKHR(
+      physicalDevice, surface, &surfaceFormatCount, surfaceFormats.data());
+
+  uint32_t presentModeCount;
+  vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
+                                            &presentModeCount, nullptr);
+  std::vector<VkPresentModeKHR> presentModes{presentModeCount};
+  vkGetPhysicalDeviceSurfacePresentModesKHR(
+      physicalDevice, surface, &presentModeCount, presentModes.data());
 
   VkSwapchainCreateInfoKHR swapchainInfo{};
   swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -84,7 +95,7 @@ void Swapchain::_initialize(VkSurfaceKHR surface, VkDevice device,
   /* {VK_PRESENT_MODE_FIFO_KHR} is guaranteed to be available */
   swapchainInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
   // auto  = VK_PRESENT_MODE_IMMEDIATE_KHR;
-  for (const auto &presentMode : surfacePresentModes) {
+  for (const auto &presentMode : presentModes) {
     if (presentMode == preferredPresentMode) {
       swapchainInfo.presentMode = preferredPresentMode;
       break;

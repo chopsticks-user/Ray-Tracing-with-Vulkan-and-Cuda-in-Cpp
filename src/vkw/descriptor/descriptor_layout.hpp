@@ -50,9 +50,6 @@ protected:
     if (_isOwner) {
       vkDestroyDescriptorSetLayout(_device, _setLayout, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "DescriptorSetLayout destructor" << '\n';
-      }
     }
   }
 

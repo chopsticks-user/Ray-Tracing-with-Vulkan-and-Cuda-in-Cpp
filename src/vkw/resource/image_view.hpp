@@ -47,9 +47,6 @@ protected:
     if (_isOwner) {
       vkDestroyImageView(_device, _imageView, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "ImageView destructor" << '\n';
-      }
     }
   }
 
@@ -113,9 +110,6 @@ protected:
         vkDestroyImageView(_device, imageView, _pAllocator);
       }
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Imageviews destructor" << '\n';
-      }
     }
   }
 

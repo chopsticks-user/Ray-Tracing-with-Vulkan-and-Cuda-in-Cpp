@@ -3,8 +3,6 @@
 
 #include "config.hpp"
 
-// #include <vkh.hpp>
-
 namespace vkw {
 
 class Swapchain {
@@ -58,9 +56,6 @@ protected:
     if (_isOwner) {
       vkDestroySwapchainKHR(_device, _swapchain, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Swapchain destructor" << '\n';
-      }
     }
   }
 

@@ -3,7 +3,6 @@
 int protected_main() {
   auto app = new rtvc::VulkanApp{};
   app->run();
-  app->writeInfo(vkh::absoluteDirectory + "/info.log");
   delete app;
   return EXIT_SUCCESS;
 }

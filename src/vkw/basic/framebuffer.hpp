@@ -3,6 +3,8 @@
 
 #include "config.hpp"
 
+#include <vector>
+
 namespace vkw {
 
 class Framebuffers {
@@ -64,9 +66,6 @@ protected:
         vkDestroyFramebuffer(_device, framebuffer, _pAllocator);
       }
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Framebuffers destructor" << '\n';
-      }
     }
   }
 

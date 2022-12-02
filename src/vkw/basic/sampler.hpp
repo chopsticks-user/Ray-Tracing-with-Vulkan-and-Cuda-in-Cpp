@@ -47,9 +47,6 @@ protected:
     if (_isOwner) {
       vkDestroySampler(_device, _sampler, _pAllocator);
       _isOwner = false;
-      if (enableValidationLayers) {
-        std::cout << "Sampler destructor" << '\n';
-      }
     }
   }
 

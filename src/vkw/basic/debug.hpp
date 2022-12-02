@@ -3,9 +3,8 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 #include <string>
+#include <vector>
 
 namespace vkw {
 
@@ -54,7 +53,7 @@ public:
                  const VkAllocationCallbacks *pAllocator = nullptr)
       : _instance{instance}, _pAllocator{pAllocator} {
     if constexpr (vkw::enableValidationLayers) {
-      if (vkh::checkValidationLayerSupport() == false) {
+      if (_checkValidationLayerSupport() == false) {
         throw std::runtime_error("Validation layers are not supported.");
       }
       _debugMessenger =
@@ -95,9 +94,6 @@ protected:
     if (_isOwner) {
       destroyDebugMessenger(_instance, _debugMessenger, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "DebugMessenger destructor" << '\n';
-      }
     }
   }
 

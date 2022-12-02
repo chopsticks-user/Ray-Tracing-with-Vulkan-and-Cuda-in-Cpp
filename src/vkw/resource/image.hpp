@@ -4,7 +4,6 @@
 #include "config.hpp"
 
 #include "interface/stb_image.hpp"
-#include <vkh.hpp>
 
 namespace vkw {
 
@@ -75,9 +74,6 @@ protected:
       vkDestroyImage(_device, _image, _pImageAllocator);
       vkFreeMemory(_device, _deviceMemory, _pMemoryAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Image destructor" << '\n';
-      }
     }
   }
 

@@ -3,6 +3,8 @@
 
 #include "config.hpp"
 
+#include <vector>
+
 namespace vkw {
 
 class DescriptorSets {
@@ -51,9 +53,6 @@ protected:
       vkFreeDescriptorSets(_device, _pool, static_cast<uint32_t>(_sets.size()),
                            _sets.data());
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "DescriptorSets destructor" << '\n';
-      }
     }
   }
 };

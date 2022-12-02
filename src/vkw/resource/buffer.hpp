@@ -6,8 +6,8 @@
 #include "command/command_pool.hpp"
 
 #include <cstring>
+#include <stdexcept>
 #include <type_traits>
-#include <vkh.hpp>
 
 namespace vkw {
 
@@ -116,9 +116,6 @@ protected:
       vkDestroyBuffer(_device, _buffer, _pBufferAllocator);
       vkFreeMemory(_device, _deviceMemory, _pMemoryAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Buffer destructor" << '\n';
-      }
     }
   }
 

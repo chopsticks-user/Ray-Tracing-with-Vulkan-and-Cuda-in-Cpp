@@ -3,9 +3,6 @@
 
 #include "config.hpp"
 
-#include <map>
-#include <optional>
-
 namespace vkw {
 
 class Device {
@@ -14,7 +11,7 @@ public:
   Device(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCreateInfo,
          const VkAllocationCallbacks *pAllocator = nullptr)
       : _physicalDevice{physicalDevice}, _pAllocator{pAllocator} {
-    _device = vkh::createDevice(physicalDevice, pCreateInfo, pAllocator);
+    vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, &_device);
     if (pCreateInfo->queueCreateInfoCount != 1) {
       throw std::runtime_error("pCreateInfo->queueCreateInfoCount != 1");
     }
@@ -64,11 +61,8 @@ protected:
 
   void _destroyVkData() {
     if (_isOwner) {
-      vkh::destroyDevice(_device, _pAllocator);
+      vkDestroyDevice(_device, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Device destructor" << '\n';
-      }
     }
   }
 };

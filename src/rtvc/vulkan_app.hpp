@@ -14,8 +14,8 @@
 #include "rtvc/swapchain.hpp"
 #include "rtvc/sync.hpp"
 
-#include <vkh.hpp>
-#include <vkw.hpp>
+// #include <vkh.hpp>
+// #include <vkw.hpp>
 
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
@@ -198,7 +198,7 @@ private:
   vkw::Buffer makeVertexBuffer();
   vkw::Buffer makeIndexBuffer();
   std::vector<vkw::Buffer> makeUniformBuffers();
-  void updateUniformBuffer(uint32_t imageIndex);
+  vkw::UniformBufferObject updateUBO(float elapsedTime);
 
   //   std::vector<vkw::Vertex> vertices;
   //   std::vector<uint32_t> indices;
@@ -243,6 +243,11 @@ private:
   vkw::DescriptorSets descriptorSets = makeDescriptorSets();
 
   /* Render */
+
+  void getInputEvents();
+
+  void updateFrame(uint32_t imageIndex);
+
   void render();
 };
 

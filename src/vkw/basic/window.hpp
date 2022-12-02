@@ -70,9 +70,6 @@ protected:
     if (_isOwner) {
       glfwDestroyWindow(_window);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Window destructor\n";
-      }
     }
   }
 };

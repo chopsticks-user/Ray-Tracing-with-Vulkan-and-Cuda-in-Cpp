@@ -3,8 +3,6 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 class Instance {
@@ -54,9 +52,6 @@ protected:
     if (_isOwner) {
       vkDestroyInstance(_instance, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Instance destructor" << '\n';
-      }
     }
   }
 

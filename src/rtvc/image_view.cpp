@@ -134,7 +134,7 @@ void SwapchainImageViews::_initialize(VkDevice device, VkSwapchainKHR swapchain,
     imageViewInfo.subresourceRange.baseArrayLayer = 0;
     imageViewInfo.subresourceRange.layerCount = 1;
 
-    _imageViews[i] = vkh::createImageView(device, &imageViewInfo);
+    vkCreateImageView(device, &imageViewInfo, nullptr, &_imageViews[i]);
   }
   _device = device;
   _isOwner = true;

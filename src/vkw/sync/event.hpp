@@ -3,8 +3,6 @@
 
 #include "config.hpp"
 
-#include <vkh.hpp>
-
 namespace vkw {
 
 // class Semaphore {
@@ -52,9 +50,6 @@ namespace vkw {
 //     if (_isOwner) {
 //       vkDestroySemaphore(_device, _semaphore, _pAllocator);
 //       _isOwner = false;
-//       if constexpr (enableValidationLayers) {
-//         std::cout << "Semaphore destructor" << '\n';
-//       }
 //     }
 //   }
 // };

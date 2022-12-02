@@ -47,11 +47,8 @@ protected:
 
   void _destroyVkData() {
     if (_isOwner) {
-      vkh::destroySurface(_instance, _surface, _pAllocator);
+      vkDestroySurfaceKHR(_instance, _surface, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "Surface destructor" << '\n';
-      }
     }
   }
 };

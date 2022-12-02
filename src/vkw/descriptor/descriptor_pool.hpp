@@ -6,6 +6,7 @@
 #include "descriptor_sets.hpp"
 
 #include <array>
+#include <vector>
 
 namespace vkw {
 
@@ -78,9 +79,6 @@ protected:
     if (_isOwner) {
       vkDestroyDescriptorPool(_device, _pool, _pAllocator);
       _isOwner = false;
-      if constexpr (enableValidationLayers) {
-        std::cout << "DescriptorPool destructor" << '\n';
-      }
     }
   }
 
