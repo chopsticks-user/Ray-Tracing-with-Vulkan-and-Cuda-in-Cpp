@@ -1,9 +1,9 @@
-#include <vulkan_app.hpp>
+#include <iostream>
+#include <vulkan/vulkan.hpp>
 
 int protected_main() {
-  // auto app = new rtvc::VulkanApp{};
-  // app->run();
-  // delete app;
+  vk::Instance instance{};
+  instance.destroy();
   return EXIT_SUCCESS;
 }
 

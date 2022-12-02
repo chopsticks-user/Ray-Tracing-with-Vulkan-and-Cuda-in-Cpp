@@ -14,13 +14,13 @@ MDFLAGS =
 
 SHADERS_DIR = resources/shaders
 SOURCE_PATHS = $(ENTRY_NAME).cpp \
-	libs/tinyobjloader/tiny_obj_loader.cc \
-	src/rtvc/*.cpp
+	# libs/tinyobjloader/tiny_obj_loader.cc \
+	# src/rtvc/*.cpp
 INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
-	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkw \
-	-I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \
-	-I$(PROJECT_ABSOLUTE_DIR)/libs/stb \
-	-I$(PROJECT_ABSOLUTE_DIR)/libs/tinyobjloader
+	# -I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkw \
+	# -I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \
+	# -I$(PROJECT_ABSOLUTE_DIR)/libs/stb \
+	# -I$(PROJECT_ABSOLUTE_DIR)/libs/tinyobjloader
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
@@ -34,11 +34,11 @@ test: MDFLAGS += -DGLFW_INCLUDE_VULKAN
 test: build-debug
 	@./build/$(ENTRY_NAME)
 	
-compile-shaders:
-	@mkdir -p build/shaders
-	@glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
-	@glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
-	@echo "Shaders compiled successfully."
+# compile-shaders:
+# 	@mkdir -p build/shaders
+# 	@glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
+# 	@glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
+# 	@echo "Shaders compiled successfully."
 
 build-debug: clean compile-shaders $(ENTRY_NAME)
 
