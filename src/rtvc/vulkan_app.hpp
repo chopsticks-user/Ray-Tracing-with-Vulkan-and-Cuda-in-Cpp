@@ -246,13 +246,20 @@ private:
 
   void getInputEvents();
 
-  /* Zoom */
+  /* Scroll: zoom */
+  static void scrollEventCallback(GLFWwindow *pWindow, double xOffset,
+                                  double yOffset);
   const float minScale = 0.5f;
   const float maxScale = 2.0f;
   const float incScale = 0.1f;
   float currentScale = 1.0f;
-  static void scrollEventCallback(GLFWwindow *pWindow, double xOffset,
-                                  double yOffset);
+
+  /* Keyboard events */
+  static void keyboardEventCallback(GLFWwindow *pWindow, int key, int scancode,
+                                    int action, int mods);
+  bool paused = false;
+  float currentAngle = 0.0f;
+  const float angleVelocity = 45.0f;
 
   void updateFrame(uint32_t imageIndex);
 

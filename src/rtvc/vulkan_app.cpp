@@ -242,13 +242,23 @@ void VulkanApp::scrollEventCallback(GLFWwindow *pWindow,
   }
 }
 
-void VulkanApp::getInputEvents() {
-  //
+void VulkanApp::keyboardEventCallback(GLFWwindow *pWindow,
+                                      [[maybe_unused]] int key,
+                                      [[maybe_unused]] int scancode,
+                                      [[maybe_unused]] int action,
+                                      [[maybe_unused]] int mods) {
+  auto app = reinterpret_cast<VulkanApp *>(glfwGetWindowUserPointer(pWindow));
+  if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+    app->paused = !app->paused;
+  }
 }
 
 vkw::UniformBufferObject VulkanApp::updateUBO(float elapsedTime) {
   vkw::UniformBufferObject ubo{};
-  ubo.model = glm::rotate(glm::mat4(1.0f), elapsedTime * glm::radians(45.0f),
+  if (!paused) {
+    currentAngle = elapsedTime * angleVelocity;
+  }
+  ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(currentAngle),
                           glm::vec3(0.0f, 0.0f, 1.0f));
   float cameraPosition = 2.0f / currentScale;
   ubo.view = glm::lookAt(
@@ -281,7 +291,6 @@ void VulkanApp::updateFrame(uint32_t currentImage) {
   float time = std::chrono::duration<float, std::chrono::seconds::period>(
                    currentTime - startTime)
                    .count();
-  getInputEvents();
   auto ubo = updateUBO(time);
   uniformBuffers[currentImage].copyHostData(&ubo, sizeof(ubo));
 }
@@ -694,6 +703,7 @@ VulkanApp::VulkanApp() {
   glfwSetWindowUserPointer(window.ref(), this);
   glfwSetFramebufferSizeCallback(window.ref(), framebufferResizeCallback);
   glfwSetScrollCallback(window.ref(), scrollEventCallback);
+  glfwSetKeyCallback(window.ref(), keyboardEventCallback);
 }
 
 void VulkanApp::run() {
