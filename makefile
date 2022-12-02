@@ -13,9 +13,11 @@ LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 MDFLAGS =
 
 SHADERS_DIR = resources/shaders
+
 SOURCE_PATHS = $(ENTRY_NAME).cpp \
 	libs/tinyobjloader/tiny_obj_loader.cc \
 	src/rtvc/*.cpp
+
 INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
 	-I$(SHADERS_DIR) -I$(PROJECT_ABSOLUTE_DIR)/src/vkw \
 	-I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \

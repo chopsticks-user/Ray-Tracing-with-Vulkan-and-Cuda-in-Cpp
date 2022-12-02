@@ -10,12 +10,11 @@
 #include "rtvc/image_view.hpp"
 #include "rtvc/instance.hpp"
 // #include "rtvc/resources.hpp"
+#include "rtvc/compute_pipeline.hpp"
+#include "rtvc/ray_tracing_pipeline.hpp"
 #include "rtvc/sampler.hpp"
 #include "rtvc/swapchain.hpp"
 #include "rtvc/sync.hpp"
-
-// #include <vkh.hpp>
-// #include <vkw.hpp>
 
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
