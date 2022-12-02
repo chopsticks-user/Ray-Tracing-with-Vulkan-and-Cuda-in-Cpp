@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/Application.dir/Application.cpp.o -o Application  -Wl,-rpath,/home/xunililak/Code/Projects/1-VulkanEngine/build/src src/libneko.so 

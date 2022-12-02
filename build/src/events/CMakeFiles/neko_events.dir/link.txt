@@ -1,2 +1,0 @@
-/usr/bin/ar qc libneko_events.a CMakeFiles/neko_events.dir/events.cpp.o
-/usr/bin/ranlib libneko_events.a

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libneko_utils.a CMakeFiles/neko_utils.dir/utils.cpp.o CMakeFiles/neko_utils.dir/settings.cpp.o CMakeFiles/neko_utils.dir/json_utils.cpp.o
-/usr/bin/ranlib libneko_utils.a
