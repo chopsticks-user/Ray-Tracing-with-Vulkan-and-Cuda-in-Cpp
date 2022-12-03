@@ -3,21 +3,21 @@
 #include <iostream>
 
 int protected_main() {
-  rtvc::VulkanApp app{};
-  vk::InstanceCreateInfo instanceInfo{
-      .flags{vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR},
-  };
-  std::cout << vk::to_string(instanceInfo.flags) << '\n';
+  auto app = new rtvc::VulkanApp{};
+  app->render();
+  delete app;
   return EXIT_SUCCESS;
 }
 
 int main() {
   try {
     return protected_main();
-  } catch (const std::exception &e) {
-    std::cerr << e.what() << '\n';
+  } catch (vk::SystemError &e) {
+    std::cerr << e.what() << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
   } catch (...) {
-    std::cerr << "Uncaught exception.\n";
+    std::cerr << "Uncaught exception" << std::endl;
   }
   return EXIT_FAILURE;
 }

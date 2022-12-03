@@ -14,12 +14,9 @@ MDFLAGS =
 
 SHADERS_DIR = resources/shaders
 SOURCE_PATHS = $(ENTRY_NAME).cpp \
-	# libs/tinyobjloader/tiny_obj_loader.cc \
-	# src/rtvc/*.cpp
-INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
-	# -I$(PROJECT_ABSOLUTE_DIR)/libs/nlohmann_json/single_include \
-	# -I$(PROJECT_ABSOLUTE_DIR)/libs/stb \
-	# -I$(PROJECT_ABSOLUTE_DIR)/libs/tinyobjloader
+	$(shell find $(PROJECT_ABSOLUTE_DIR)/src -type f -name "*.cpp")
+
+INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
@@ -27,11 +24,7 @@ $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@objdump $(OBJDUMP_FLAGS) build/$(ENTRY_NAME) > build/$(ENTRY_NAME).dump
 	@echo "Build successfully."
 
-.PHONY: compile-shaders build-debug build-release run-debug run-release clean test
-
-test: MDFLAGS += -DGLFW_INCLUDE_VULKAN
-test: build-debug
-	@./build/$(ENTRY_NAME)
+.PHONY: compile-shaders build-debug build-release run-debug run-release cleans
 	
 # compile-shaders:
 # 	@mkdir -p build/shaders
