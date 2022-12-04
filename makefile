@@ -28,8 +28,8 @@ $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	
 # compile-shaders:
 # 	@mkdir -p build/shaders
-# 	@glslc $(SHADERS_DIR)/triangle.vert -o build/shaders/triangle_vert.spv
-# 	@glslc $(SHADERS_DIR)/triangle.frag -o build/shaders/triangle_frag.spv
+# 	@glslc $(SHADERS_DIR)/basic.vert -o build/shaders/basic_vert.spv
+# 	@glslc $(SHADERS_DIR)/basic.frag -o build/shaders/basic_frag.spv
 # 	@echo "Shaders compiled successfully."
 
 build-debug: clean compile-shaders $(ENTRY_NAME)

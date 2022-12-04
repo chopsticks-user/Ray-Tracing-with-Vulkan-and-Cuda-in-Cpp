@@ -11,9 +11,29 @@
 
 #include <chrono>
 #include <cstring>
+#include <iostream>
 #include <unordered_map>
 
 namespace rtvc {
+
+#ifdef NODEBUG
+inline constexpr bool debugMode = false;
+#else
+inline constexpr bool debugMode = true;
+#endif // NODEBUG
+
+constexpr const char *const validationLayerName = "VK_LAYER_KHRONOS_validation";
+
+VKAPI_ATTR VkBool32 VKAPI_CALL
+debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+              [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
+              const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+              [[maybe_unused]] void *pUserData);
+
+[[nodiscard]] vk::raii::Instance makeInstance(const vk::raii::Context &context);
+
+[[nodiscard]] vk::raii::DebugUtilsMessengerEXT
+makeDebugMessenger(const vk::raii::Instance &instance);
 
 struct GLFW {
   GLFW() { glfwInit(); }
@@ -63,14 +83,12 @@ public:
 private:
   vk::raii::Context _context = {};
   rtvc::GLFW _glfw = {};
-
   rtvc::Window _window = {};
 
-  [[nodiscard]] vk::raii::Instance makeInstance();
-  vk::raii::Instance _instance = makeInstance();
+  vk::raii::Instance _instance = makeInstance(_context);
 
-  [[nodiscard]] vk::raii::DebugUtilsMessengerEXT makeDebugMessenger();
-  // vk::raii::DebugUtilsMessengerEXT debugMessenger = makeDebugMessenger();
+  vk::raii::DebugUtilsMessengerEXT _debugMessenger =
+      makeDebugMessenger(_instance);
 };
 
 } /* namespace rtvc */
