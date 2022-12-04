@@ -14,9 +14,12 @@
 #define VULKAN_HPP_NO_CONSTRUCTORS
 #endif /* VULKAN_HPP_NO_CONSTRUCTORS */
 
-#include <GLFW/glfw3.h>
-#include <stdexcept>
 #include <vulkan/vulkan.hpp>
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
+#include <stdexcept>
 #include <vulkan/vulkan_raii.hpp>
 
 namespace rtvc::config {

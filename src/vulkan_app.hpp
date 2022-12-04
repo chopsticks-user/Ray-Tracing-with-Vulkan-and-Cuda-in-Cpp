@@ -16,24 +16,16 @@
 
 namespace rtvc {
 
-#ifdef NODEBUG
+#ifdef NDEBUG
 inline constexpr bool debugMode = false;
 #else
 inline constexpr bool debugMode = true;
-#endif // NODEBUG
+#endif // NDEBUG
 
-constexpr const char *const validationLayerName = "VK_LAYER_KHRONOS_validation";
-
-VKAPI_ATTR VkBool32 VKAPI_CALL
-debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-              [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
-              const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-              [[maybe_unused]] void *pUserData);
-
-[[nodiscard]] vk::raii::Instance makeInstance(const vk::raii::Context &context);
-
-[[nodiscard]] vk::raii::DebugUtilsMessengerEXT
-makeDebugMessenger(const vk::raii::Instance &instance);
+inline constexpr std::string_view validationLayerName =
+    "VK_LAYER_KHRONOS_validation";
+inline constexpr std::string_view mangohudLayerName =
+    "VK_LAYER_MANGOHUD_overlay";
 
 struct GLFW {
   GLFW() { glfwInit(); }
@@ -59,11 +51,41 @@ public:
   Window &operator=(const Window &) = delete;
   Window &operator=(Window &&) = delete;
 
-  const pGLFWwindow &ref() { return _window; }
+  const pGLFWwindow &ref() const noexcept { return _window; }
 
 private:
   pGLFWwindow _window;
 };
+
+struct DeviceWrapper {
+  uint32_t queueFamilyIndex;
+  vk::raii::Queue queue;
+  vk::raii::PhysicalDevice physical = VK_NULL_HANDLE;
+  vk::raii::Device logical = VK_NULL_HANDLE;
+};
+
+VKAPI_ATTR VkBool32 VKAPI_CALL
+debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+              [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
+              const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+              [[maybe_unused]] void *pUserData);
+
+[[nodiscard]] vk::raii::Instance makeInstance(const vk::raii::Context &context);
+
+[[nodiscard]] vk::DebugUtilsMessengerCreateInfoEXT makeDebugMessengerInfo();
+
+[[nodiscard]] vk::raii::DebugUtilsMessengerEXT
+makeDebugMessenger(const vk::raii::Instance &instance);
+
+bool validationLayerSupported();
+
+vk::raii::SurfaceKHR makeSurface(const vk::raii::Instance &instance,
+                                 const Window &window);
+
+DeviceWrapper makeLogicalDevice(const vk::raii::Instance &instance,
+                                const vk::raii::SurfaceKHR &surface);
+
+vk::raii::CommandPool makeCommandPool(const DeviceWrapper &device);
 
 class VulkanApp {
 public:
@@ -89,6 +111,12 @@ private:
 
   vk::raii::DebugUtilsMessengerEXT _debugMessenger =
       makeDebugMessenger(_instance);
+
+  vk::raii::SurfaceKHR _surface = makeSurface(_instance, _window);
+
+  DeviceWrapper _device = makeLogicalDevice(_instance, _surface);
+
+  vk::raii::CommandPool _commandPool = makeCommandPool(_device);
 };
 
 } /* namespace rtvc */

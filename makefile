@@ -7,7 +7,7 @@ ENTRY_NAME = Application
 
 CFLAGS = $(VERSION) -g
 ASM_FLAGS = $(CFLAGS) -S -fverbose-asm
-BIN_FLAGS = $(CFLAGS) -Wall -Wextra -pedantic -Wextra -Wshadow
+BIN_FLAGS = $(CFLAGS) -Wall -Wextra -pedantic -Wextra -Wshadow -Wconversion
 OBJDUMP_FLAGS = -S --disassemble
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 MDFLAGS =
