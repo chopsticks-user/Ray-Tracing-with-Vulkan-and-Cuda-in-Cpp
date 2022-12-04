@@ -29,8 +29,8 @@ void VulkanApp::recreateSwapchain() {
       depthFormat,
       msaaSamples,
       descriptorSetLayout,
-      "/build/shaders/triangle_vert.spv",
-      "/build/shaders/triangle_frag.spv",
+      vertShaderPath,
+      fragShaderPath,
   }};
   colorImage = {device,
                 {

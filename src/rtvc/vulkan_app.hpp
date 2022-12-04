@@ -58,11 +58,14 @@ private:
   /* Image path used in {createTextureImage()} */
   const std::string imagePath =
       absoluteDirectory + "/resources/textures/texture.jpeg";
-
   const std::string modelObjectPath =
       absoluteDirectory + "/resources/models/viking_room.obj";
   const std::string modelTexturePath =
       absoluteDirectory + "/resources/models/viking_room.png";
+  const std::string vertShaderPath =
+      absoluteDirectory + "/build/shaders/basic_vert.spv";
+  const std::string fragShaderPath =
+      absoluteDirectory + "/build/shaders/basic_frag.spv";
 
   /* Setup GLFW and window */
   GLFW glfw = {};
@@ -162,8 +165,8 @@ private:
       depthFormat,
       msaaSamples,
       descriptorSetLayout,
-      "/build/shaders/triangle_vert.spv",
-      "/build/shaders/triangle_frag.spv",
+      vertShaderPath,
+      fragShaderPath,
   }};
 
   /* Create framebuffers */

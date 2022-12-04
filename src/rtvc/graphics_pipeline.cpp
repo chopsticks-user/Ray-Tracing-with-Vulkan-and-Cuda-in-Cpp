@@ -4,10 +4,8 @@ namespace rtvc {
 
 void GraphicsPipeline::_initialize(const CustomArgs &args) {
   //   bool enableMSAA = args.nSamples != VK_SAMPLE_COUNT_1_BIT;
-  auto vertShaderModule =
-      _makeShaderModule(args.device.ref(), absoluteDirectory + args.vertPath);
-  auto fragShaderModule =
-      _makeShaderModule(args.device.ref(), absoluteDirectory + args.fragPath);
+  auto vertShaderModule = _makeShaderModule(args.device.ref(), args.vertPath);
+  auto fragShaderModule = _makeShaderModule(args.device.ref(), args.fragPath);
 
   /*  */
   VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
