@@ -10,4 +10,16 @@ vk::raii::CommandPool makeCommandPool(const DeviceWrapper &device) {
   return {device.logical, commandPoolInfo};
 }
 
+vk::raii::CommandBuffers
+makeCommandBuffers(const vk::raii::Device &device,
+                   const vk::raii::CommandPool &commandPool, uint32_t count,
+                   vk::CommandBufferLevel level) {
+  vk::CommandBufferAllocateInfo allocInfo{
+      .commandPool{*commandPool},
+      .level{level},
+      .commandBufferCount{count},
+  };
+  return {device, allocInfo};
+}
+
 } /* namespace rtvc */

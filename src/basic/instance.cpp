@@ -74,7 +74,7 @@ vk::raii::Instance makeInstance(const vk::raii::Context &context) {
   return {
       .messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
                          vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-                         //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
+                         vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
                          vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
       .messageType =
           vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |

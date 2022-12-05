@@ -78,6 +78,12 @@ struct DeviceWrapper {
   vk::raii::Device logical = VK_NULL_HANDLE;
 };
 
+struct SwapchainWrapper {
+  vk::raii::SwapchainKHR self;
+  vk::Format format;
+  vk::Extent2D extent;
+};
+
 } /* namespace rtvc */
 
 #endif /* RTVC_CONFIG_HPP */

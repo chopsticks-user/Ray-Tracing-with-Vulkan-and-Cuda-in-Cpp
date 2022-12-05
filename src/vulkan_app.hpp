@@ -4,6 +4,7 @@
 #include "basic/command_pool.hpp"
 #include "basic/device.hpp"
 #include "basic/instance.hpp"
+#include "basic/swapchain.hpp"
 
 namespace rtvc {
 
@@ -37,6 +38,14 @@ private:
   DeviceWrapper _device = makeLogicalDevice(_instance, _surface);
 
   vk::raii::CommandPool _commandPool = makeCommandPool(_device);
+
+  const uint32_t _maxFramesInFlight = 2;
+
+  vk::raii::CommandBuffers _commandBuffers =
+      makeCommandBuffers(_device.logical, _commandPool, 2);
+
+  SwapchainWrapper _swapchain =
+      makeSwapchain(_surface, _device, vk::PresentModeKHR::eImmediate);
 };
 
 } /* namespace rtvc */
