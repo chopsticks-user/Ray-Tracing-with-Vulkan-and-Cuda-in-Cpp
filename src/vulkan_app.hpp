@@ -24,6 +24,7 @@ public:
   }
 
 private:
+  Settings _settings = {};
   vk::raii::Context _context = {};
   rtvc::GLFW _glfw = {};
   rtvc::Window _window = {};
@@ -39,13 +40,10 @@ private:
 
   vk::raii::CommandPool _commandPool = makeCommandPool(_device);
 
-  const uint32_t _maxFramesInFlight = 2;
+  vk::raii::CommandBuffers _commandBuffers = makeCommandBuffers(
+      _device.logical, _commandPool, _settings.maxFramesInFlight);
 
-  vk::raii::CommandBuffers _commandBuffers =
-      makeCommandBuffers(_device.logical, _commandPool, 2);
-
-  SwapchainWrapper _swapchain =
-      makeSwapchain(_surface, _device, vk::PresentModeKHR::eImmediate);
+  SwapchainWrapper _swapchain = makeSwapchain(_settings, _surface, _device);
 };
 
 } /* namespace rtvc */

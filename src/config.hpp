@@ -84,6 +84,23 @@ struct SwapchainWrapper {
   vk::Extent2D extent;
 };
 
+struct DepthBufferWrapper {
+  vk::Format format;
+  vk::raii::Image image;
+  vk::raii::ImageView imageView;
+};
+
+struct Settings {
+  const uint32_t maxFramesInFlight = 2;
+
+  vk::PresentModeKHR presentMode = vk::PresentModeKHR::eImmediate;
+
+  vk::SampleCountFlagBits msaaSamples = vk::SampleCountFlagBits::e1;
+  bool msaaOn() const noexcept {
+    return msaaSamples != vk::SampleCountFlagBits::e1;
+  }
+};
+
 } /* namespace rtvc */
 
 #endif /* RTVC_CONFIG_HPP */

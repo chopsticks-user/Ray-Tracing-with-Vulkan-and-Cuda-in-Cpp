@@ -5,9 +5,13 @@
 
 namespace rtvc {
 
-SwapchainWrapper makeSwapchain(
-    const vk::raii::SurfaceKHR &surface, const DeviceWrapper &device,
-    vk::PresentModeKHR preferredPresentMode = vk::PresentModeKHR::eImmediate);
+vk::PresentModeKHR
+selectPresentMode(const Settings &settings,
+                  const std::vector<vk::PresentModeKHR> &availablePresentModes);
+
+SwapchainWrapper makeSwapchain(const Settings &settings,
+                               const vk::raii::SurfaceKHR &surface,
+                               const DeviceWrapper &device);
 
 } /* namespace rtvc */
 #endif /* RTVC_BASIC_SWAPCHAIN_HPP */

@@ -2,9 +2,20 @@
 
 namespace rtvc {
 
-SwapchainWrapper makeSwapchain(const vk::raii::SurfaceKHR &surface,
-                               const DeviceWrapper &device,
-                               vk::PresentModeKHR preferredPresentMode) {
+vk::PresentModeKHR selectPresentMode(
+    const Settings &settings,
+    const std::vector<vk::PresentModeKHR> &availablePresentModes) {
+  for (auto &presentMode : availablePresentModes) {
+    if (presentMode == settings.presentMode) {
+      return presentMode;
+    }
+  }
+  return vk::PresentModeKHR::eFifo;
+}
+
+SwapchainWrapper makeSwapchain(const Settings &settings,
+                               const vk::raii::SurfaceKHR &surface,
+                               const DeviceWrapper &device) {
   auto surfaceCapabilities =
       device.physical.getSurfaceCapabilitiesKHR(*surface);
   auto surfaceFormats = device.physical.getSurfaceFormatsKHR(*surface);
@@ -37,16 +48,6 @@ SwapchainWrapper makeSwapchain(const vk::raii::SurfaceKHR &surface,
     selectedImageExtent = surfaceCapabilities.maxImageExtent;
   }
 
-  vk::PresentModeKHR selectedPresentMode = vk::PresentModeKHR::eFifo;
-  if (preferredPresentMode != selectedPresentMode) {
-    for (auto &presentMode : surfacePresentModes) {
-      if (presentMode == preferredPresentMode) {
-        selectedPresentMode = presentMode;
-        break;
-      }
-    }
-  }
-
   vk::SurfaceTransformFlagBitsKHR selectedTransform;
   if (surfaceCapabilities.supportedTransforms &
       vk::SurfaceTransformFlagBitsKHR::eIdentity) {
@@ -64,26 +65,26 @@ SwapchainWrapper makeSwapchain(const vk::raii::SurfaceKHR &surface,
   }
 
   vk::SwapchainCreateInfoKHR swapchainInfo{
-      .surface{*surface},
-      .minImageCount{minImageCount},
-      .imageFormat{selectedImageFormat},
-      .imageColorSpace{selectedColorSpace},
-      .imageExtent{selectedImageExtent},
-      .imageArrayLayers{1},
-      .imageUsage{vk::ImageUsageFlagBits::eColorAttachment},
-      .imageSharingMode{vk::SharingMode::eExclusive},
-      .queueFamilyIndexCount{0},
-      .pQueueFamilyIndices{nullptr},
-      .preTransform{selectedTransform},
-      .compositeAlpha{selectedCompositeAlpha},
-      .presentMode{selectedPresentMode},
-      .clipped{VK_TRUE},
-      .oldSwapchain{VK_NULL_HANDLE},
+      .surface = *surface,
+      .minImageCount = minImageCount,
+      .imageFormat = selectedImageFormat,
+      .imageColorSpace = selectedColorSpace,
+      .imageExtent = selectedImageExtent,
+      .imageArrayLayers = 1,
+      .imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
+      .imageSharingMode = vk::SharingMode::eExclusive,
+      .queueFamilyIndexCount = 0,
+      .pQueueFamilyIndices = nullptr,
+      .preTransform = selectedTransform,
+      .compositeAlpha = selectedCompositeAlpha,
+      .presentMode = selectPresentMode(settings, surfacePresentModes),
+      .clipped = VK_TRUE,
+      .oldSwapchain = VK_NULL_HANDLE,
   };
   return {
-      .self{device.logical, swapchainInfo},
-      .format{selectedImageFormat},
-      .extent{selectedImageExtent},
+      .self = {device.logical, swapchainInfo},
+      .format = selectedImageFormat,
+      .extent = selectedImageExtent,
   };
 }
 
