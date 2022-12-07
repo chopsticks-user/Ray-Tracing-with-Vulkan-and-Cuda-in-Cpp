@@ -5,7 +5,7 @@ namespace neko {
 VkResult Context::createDebugMessenger(
     VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
     const VkAllocationCallbacks *pAllocator,
-    VkDebugUtilsMessengerEXT *pMessenger) {
+    VkDebugUtilsMessengerEXT *pMessenger) const {
   auto pFunc = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
       instance, "vkCreateDebugUtilsMessengerEXT");
   if (pFunc != nullptr) {
@@ -15,9 +15,9 @@ VkResult Context::createDebugMessenger(
   }
 }
 
-void Context::destroyDebugMessenger(VkInstance instance,
-                                    VkDebugUtilsMessengerEXT debugMessenger,
-                                    const VkAllocationCallbacks *pAllocator) {
+void Context::destroyDebugMessenger(
+    VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+    const VkAllocationCallbacks *pAllocator) const noexcept {
   auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
       instance, "vkDestroyDebugUtilsMessengerEXT");
   if (func != nullptr) {

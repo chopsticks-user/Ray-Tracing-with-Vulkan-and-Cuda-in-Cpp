@@ -12,6 +12,7 @@ int protected_main() {
 int main() {
   try {
     return protected_main();
+    //
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
   } catch (...) {

@@ -5,10 +5,32 @@
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace neko {
 
-class Settings {};
+#ifndef NDEBUG
+inline constexpr bool debugMode = true;
+#else
+inline constexpr bool debugMode = false;
+#endif /* NDEBUG */
+
+struct Settings {
+  struct {
+    std::string appName = "Vulkan Application";
+    uint32_t appVersion = VK_MAKE_VERSION(1, 0, 0);
+    std::string engineName = "Neko Engine";
+    uint32_t engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    uint32_t apiVersion = VK_API_VERSION_1_3;
+  } general;
+  struct {
+    uint32_t screenWidth = 800;
+    uint32_t screenHeight = 600;
+
+    bool enableRaytracing = false;
+  } graphics;
+};
 
 } /* namespace neko */
 

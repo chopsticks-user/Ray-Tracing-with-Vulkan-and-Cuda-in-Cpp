@@ -7,7 +7,7 @@ ENTRY_NAME = Application
 
 CFLAGS = $(VERSION) -g
 ASM_FLAGS = $(CFLAGS) -S -fverbose-asm
-BIN_FLAGS = $(CFLAGS) -Wall -Wextra -pedantic -Wextra -Wshadow -Wconversion
+BIN_FLAGS = $(CFLAGS) -Wall -Wextra -pedantic -Wshadow -Wconversion
 OBJDUMP_FLAGS = -S --disassemble
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 MDFLAGS =
@@ -16,7 +16,8 @@ SHADERS_DIR = resources/shaders
 SOURCE_PATHS = $(ENTRY_NAME).cpp \
 	$(shell find $(PROJECT_ABSOLUTE_DIR)/src -type f -name "*.cpp")
 
-INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src
+INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
+	-I$(PROJECT_ABSOLUTE_DIR)/src/settings
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build
