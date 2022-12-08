@@ -13,13 +13,13 @@ public:
 
   explicit Window(const Settings &settings);
 
-  ~Window();
+  virtual ~Window();
 
   const GLWindow &operator*() const noexcept { return mWindow; }
 
   void open();
 
-private:
+protected:
   GLWindow mWindow;
   uint32_t mWidth;
   uint32_t mHeight;

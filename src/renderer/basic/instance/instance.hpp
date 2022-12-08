@@ -13,13 +13,13 @@ public:
 
   Instance(const Settings &settings, const Context &context);
 
-  ~Instance();
+  virtual ~Instance();
 
   const VkInstance &operator*() const noexcept { return mInstance; }
 
   std::vector<const char *> getRequiredExtensions();
 
-private:
+protected:
   const Context &mcrContext;
   VkInstance mInstance;
   VkDebugUtilsMessengerEXT mDebugMessenger;

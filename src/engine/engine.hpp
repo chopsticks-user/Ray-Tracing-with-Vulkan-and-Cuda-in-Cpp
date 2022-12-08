@@ -11,11 +11,13 @@ class Engine : public StaticObject {
 public:
   using StaticObject::StaticObject;
 
+  virtual ~Engine() = default;
+
   void start() { mRenderer.start(); };
 
-private:
-  Settings mSettings;
-  Renderer mRenderer{mSettings};
+protected:
+  Settings mSettings = {};
+  Renderer mRenderer = Renderer{mSettings};
 };
 
 } /* namespace neko */

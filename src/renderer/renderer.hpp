@@ -18,30 +18,28 @@ public:
 
   explicit Renderer(const Settings &settings) : mSettings{settings} {}
 
-  ~Renderer() = default;
+  virtual ~Renderer() = default;
 
   void start() { mWindow.open(); };
 
-private:
+protected:
   const Settings &mSettings;
 
-  Context mContext{};
+  Context mContext = {};
 
-  Instance mInstance{
+  Instance mInstance = {
       mSettings,
       mContext,
   };
 
-  Window mWindow{
-      mSettings,
-  };
+  Window mWindow = Window{mSettings};
 
-  Surface mSurface{
+  Surface mSurface = {
       mInstance,
       mWindow,
   };
 
-  LogicalDevice mDevice{
+  LogicalDevice mDevice = {
       mInstance,
       mSurface,
   };

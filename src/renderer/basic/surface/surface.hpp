@@ -14,11 +14,11 @@ public:
 
   Surface(const Instance &crInstance, const Window &crWindow);
 
-  ~Surface();
+  virtual ~Surface();
 
   const VkSurfaceKHR &operator*() const noexcept { return mSurface; }
 
-private:
+protected:
   const Instance &mcrInstance;
   VkSurfaceKHR mSurface;
 };

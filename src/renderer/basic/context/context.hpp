@@ -17,7 +17,7 @@ public:
     }
   }
 
-  ~Context() { glfwTerminate(); }
+  virtual ~Context() { glfwTerminate(); }
 
   VkResult
   createDebugMessenger(VkInstance instance,
@@ -30,7 +30,7 @@ public:
                         VkDebugUtilsMessengerEXT debugMessenger,
                         const VkAllocationCallbacks *pAllocator) const noexcept;
 
-private:
+protected:
 };
 
 } /* namespace neko */

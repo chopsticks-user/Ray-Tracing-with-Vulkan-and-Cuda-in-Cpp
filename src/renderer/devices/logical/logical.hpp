@@ -31,7 +31,7 @@ public:
 
   LogicalDevice(const Instance &crInstance, const Surface &crSurface);
 
-  ~LogicalDevice();
+  virtual ~LogicalDevice();
 
   const VkDevice &operator*() const noexcept { return mLogicalDevice; }
 
@@ -39,7 +39,7 @@ public:
 
   const UniversalQueue &queue() const noexcept { return mQueue; }
 
-private:
+protected:
   VkDevice mLogicalDevice;
   VkPhysicalDevice mPhysicalDevice;
   UniversalQueue mQueue;
