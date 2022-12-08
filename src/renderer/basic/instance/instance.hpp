@@ -7,14 +7,12 @@ namespace neko {
 
 class Context;
 
-class Instance {
+class Instance : public StaticObject {
 public:
-  Instance() = delete;
-  explicit Instance(const Settings &settings, const Context &context);
-  Instance(const Instance &) = delete;
-  Instance(Instance &&) = delete;
-  Instance &operator=(const Instance &) = delete;
-  Instance &operator=(Instance &&) = delete;
+  using StaticObject::StaticObject;
+
+  Instance(const Settings &settings, const Context &context);
+
   ~Instance();
 
   const VkInstance &operator*() const noexcept { return mInstance; }

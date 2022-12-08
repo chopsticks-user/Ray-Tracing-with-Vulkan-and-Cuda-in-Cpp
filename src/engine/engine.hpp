@@ -7,10 +7,10 @@
 
 namespace neko {
 
-class Engine {
+class Engine : public StaticObject {
 public:
-  Engine() = default;
-  ~Engine() = default;
+  using StaticObject::StaticObject;
+
   void start() { mRenderer.start(); };
 
 private:

@@ -5,16 +5,14 @@
 
 namespace neko {
 
-class Window {
+class Window : public StaticObject {
   typedef GLFWwindow *GLWindow;
 
 public:
-  Window() = delete;
+  using StaticObject::StaticObject;
+
   explicit Window(const Settings &settings);
-  Window(const Window &) = delete;
-  Window(Window &&) = delete;
-  Window &operator=(const Window &) = delete;
-  Window &operator=(Window &&) = delete;
+
   ~Window();
 
   const GLWindow &operator*() const noexcept { return mWindow; }

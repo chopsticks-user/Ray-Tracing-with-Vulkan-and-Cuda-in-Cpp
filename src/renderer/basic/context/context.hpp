@@ -5,8 +5,10 @@
 
 namespace neko {
 
-class Context {
+class Context : public StaticObject {
 public:
+  using StaticObject::StaticObject;
+
   Context() {
     if (glfwInit() != GLFW_TRUE) {
       throw std::runtime_error(
@@ -14,10 +16,7 @@ public:
           "system or its drivers, or a lack of required resources.");
     }
   }
-  Context(const Context &) = delete;
-  Context(Context &&) = delete;
-  Context &operator=(const Context &) = delete;
-  Context &operator=(Context &&) = delete;
+
   ~Context() { glfwTerminate(); }
 
   VkResult

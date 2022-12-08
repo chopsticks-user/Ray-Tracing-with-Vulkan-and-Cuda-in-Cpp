@@ -5,29 +5,27 @@
 #include "basic/instance/instance.hpp"
 #include "basic/surface/surface.hpp"
 #include "basic/window/window.hpp"
+#include "commands/commands.hpp"
 #include "devices/logical/logical.hpp"
-#include "devices/physical/physical.hpp"
-// #include "devices/queues/queues.hpp"
 
 #include <memory>
 
 namespace neko {
 
-class Renderer {
+class Renderer : public StaticObject {
 public:
-  Renderer() = delete;
+  using StaticObject::StaticObject;
+
   explicit Renderer(const Settings &settings) : mSettings{settings} {}
-  Renderer(const Renderer &) = delete;
-  Renderer(Renderer &&) = delete;
-  Renderer &operator=(const Renderer &) = delete;
-  Renderer &operator=(Renderer &&) = delete;
+
   ~Renderer() = default;
+
   void start() { mWindow.open(); };
 
 private:
   const Settings &mSettings;
 
-  Context mContext;
+  Context mContext{};
 
   Instance mInstance{
       mSettings,
@@ -41,6 +39,11 @@ private:
   Surface mSurface{
       mInstance,
       mWindow,
+  };
+
+  LogicalDevice mDevice{
+      mInstance,
+      mSurface,
   };
 };
 

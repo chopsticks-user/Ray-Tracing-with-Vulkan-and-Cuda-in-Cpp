@@ -16,6 +16,24 @@ inline constexpr bool debugMode = true;
 inline constexpr bool debugMode = false;
 #endif /* NDEBUG */
 
+struct StaticObject {
+  StaticObject() = default;
+  StaticObject(const StaticObject &) = delete;
+  StaticObject(StaticObject &&) = delete;
+  StaticObject &operator=(const StaticObject &) = delete;
+  StaticObject &operator=(StaticObject &&) = delete;
+  virtual ~StaticObject() = default;
+};
+
+struct MoveOnlyObject {
+  MoveOnlyObject() = default;
+  MoveOnlyObject(const MoveOnlyObject &) = delete;
+  MoveOnlyObject(MoveOnlyObject &&) = default;
+  MoveOnlyObject &operator=(const MoveOnlyObject &) = delete;
+  MoveOnlyObject &operator=(MoveOnlyObject &&) = default;
+  virtual ~MoveOnlyObject() = default;
+};
+
 struct Settings {
   struct {
     std::string appName = "Vulkan Application";
