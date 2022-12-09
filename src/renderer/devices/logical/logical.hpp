@@ -25,13 +25,21 @@ struct UniversalQueue {
  *
  * !Use only one universal queue
  */
-class LogicalDevice : public StaticObject {
+class Device {
 public:
-  using StaticObject::StaticObject;
+  Device() = default;
 
-  LogicalDevice(const Instance &crInstance, const Surface &crSurface);
+  Device(const Instance &crInstance, const Surface &crSurface);
 
-  virtual ~LogicalDevice();
+  Device(const Device &) = delete;
+
+  Device(Device &&) = default;
+
+  Device &operator=(const Device &) = delete;
+
+  Device &operator=(Device &&) = default;
+
+  ~Device();
 
   const VkDevice &operator*() const noexcept { return mLogicalDevice; }
 
@@ -39,7 +47,7 @@ public:
 
   const UniversalQueue &queue() const noexcept { return mQueue; }
 
-protected:
+private:
   VkDevice mLogicalDevice;
   VkPhysicalDevice mPhysicalDevice;
   UniversalQueue mQueue;

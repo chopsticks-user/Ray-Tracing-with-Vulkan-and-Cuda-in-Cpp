@@ -8,41 +8,36 @@
 #include "commands/commands.hpp"
 #include "devices/logical/logical.hpp"
 
-#include <memory>
-
 namespace neko {
 
-class Renderer : public StaticObject {
+class Renderer {
 public:
-  using StaticObject::StaticObject;
+  Renderer() = delete;
 
-  explicit Renderer(const Settings &settings) : mSettings{settings} {}
+  explicit Renderer(const Settings &settings) : mpSettings{&settings} {}
 
-  virtual ~Renderer() = default;
+  Renderer(const Renderer &) = delete;
 
-  void start() { mWindow.open(); };
+  Renderer(Renderer &&) = default;
 
-protected:
-  const Settings &mSettings;
+  Renderer &operator=(const Renderer &) = delete;
 
-  Context mContext = {};
+  Renderer &operator=(Renderer &&) = default;
 
-  Instance mInstance = {
-      mSettings,
-      mContext,
+  ~Renderer() = default;
+
+  void start() {
+    mWindow.open();
+    // Instance instance = std::move(mInstance);
+    // mInstance.release();
   };
 
-  Window mWindow = Window{mSettings};
-
-  Surface mSurface = {
-      mInstance,
-      mWindow,
-  };
-
-  LogicalDevice mDevice = {
-      mInstance,
-      mSurface,
-  };
+private:
+  const Settings *mpSettings = nullptr;
+  Instance mInstance = Instance{*mpSettings};
+  Window mWindow = Window{*mpSettings};
+  Surface mSurface = {mInstance, mWindow};
+  Device mDevice = {mInstance, mSurface};
 };
 
 } /* namespace neko */

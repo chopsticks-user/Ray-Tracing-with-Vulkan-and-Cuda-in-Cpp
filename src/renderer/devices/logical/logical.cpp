@@ -9,14 +9,13 @@
 
 namespace neko {
 
-LogicalDevice::LogicalDevice(const Instance &crInstance,
-                             const Surface &crSurface) {
+Device::Device(const Instance &crInstance, const Surface &crSurface) {
   VkPhysicalDevice selectedPhysicalDevice =
       selectPhysicalDevice(getPhysicalDevices(*crInstance));
 
-  uint32_t selectedQueueFamilyIndex =
+  u32 selectedQueueFamilyIndex =
       selectUniversalQueueFamily(selectedPhysicalDevice, *crSurface);
-  uint32_t selectedQueueIndex = 0;
+  u32 selectedQueueIndex = 0;
 
   float queuePriority = 1.0f;
 
@@ -54,12 +53,11 @@ LogicalDevice::LogicalDevice(const Instance &crInstance,
   mQueue = {selectedQueueFamilyIndex, selectedQueueIndex, queueHandle};
 }
 
-LogicalDevice::~LogicalDevice() { vkDestroyDevice(mLogicalDevice, nullptr); }
+Device::~Device() { vkDestroyDevice(mLogicalDevice, nullptr); }
 
-uint32_t
-LogicalDevice::selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
-                                          VkSurfaceKHR surface) {
-  uint32_t queueFamilyCount;
+u32 Device::selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
+                                            VkSurfaceKHR surface) {
+  u32 queueFamilyCount;
   vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
                                            nullptr);
   if (queueFamilyCount == 0) {
@@ -74,7 +72,7 @@ LogicalDevice::selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
   supporting presentation to the surface */
   /* any queue family with {VK_QUEUE_GRAPHICS_BIT} or {VK_QUEUE_COMPUTE_BIT}
   capabilities already implicitly support {VK_QUEUE_TRANSFER_BIT} operations */
-  uint32_t iQueueFamily = 0;
+  u32 iQueueFamily = 0;
   for (const auto &queueFamily : queueFamilyProperties) {
     if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
         (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
@@ -90,7 +88,7 @@ LogicalDevice::selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
   throw std::runtime_error("Failed to select a queue family.");
 }
 
-VkPhysicalDevice LogicalDevice::selectPhysicalDevice(
+VkPhysicalDevice Device::selectPhysicalDevice(
     std::vector<VkPhysicalDevice> &&rrPhysicalDevices) {
   if (rrPhysicalDevices.size() == 1) {
     return rrPhysicalDevices[0];
@@ -103,22 +101,22 @@ VkPhysicalDevice LogicalDevice::selectPhysicalDevice(
   throw std::runtime_error("No suitable physical device found.");
 }
 
-bool LogicalDevice::checkRequirements(VkPhysicalDevice physicalDevice) {
+bool Device::checkRequirements(VkPhysicalDevice physicalDevice) {
   return checkProperties(physicalDevice) && checkExtensions(physicalDevice) &&
          checkFeatures(physicalDevice);
 }
 
-bool LogicalDevice::checkProperties(VkPhysicalDevice physicalDevice) {
+bool Device::checkProperties(VkPhysicalDevice physicalDevice) {
   VkPhysicalDeviceProperties properties;
   vkGetPhysicalDeviceProperties(physicalDevice, &properties);
   return properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 }
 
-bool LogicalDevice::checkExtensions(VkPhysicalDevice physicalDevice) {
+bool Device::checkExtensions(VkPhysicalDevice physicalDevice) {
   const std::vector<const char *> requiredExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-  uint32_t propertyCount;
+  u32 propertyCount;
   if (vkEnumerateDeviceExtensionProperties(
           physicalDevice, nullptr, &propertyCount, nullptr) != VK_SUCCESS) {
     throw std::runtime_error("Failed to get device extension list.");
@@ -131,7 +129,7 @@ bool LogicalDevice::checkExtensions(VkPhysicalDevice physicalDevice) {
   }
 
   /* Check if all required extension are supported */
-  std::map<std::string, uint32_t> helper;
+  std::map<std::string, u32> helper;
   for (const auto &availableExtension : availableExtensions) {
     helper[availableExtension.extensionName]++;
   }
@@ -144,15 +142,14 @@ bool LogicalDevice::checkExtensions(VkPhysicalDevice physicalDevice) {
   return true;
 }
 
-bool LogicalDevice::checkFeatures(VkPhysicalDevice physicalDevice) {
+bool Device::checkFeatures(VkPhysicalDevice physicalDevice) {
   VkPhysicalDeviceFeatures supportedFeatures;
   vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
   return supportedFeatures.samplerAnisotropy;
 }
 
-std::vector<VkPhysicalDevice>
-LogicalDevice::getPhysicalDevices(VkInstance instance) {
-  uint32_t physicalDeviceCount;
+std::vector<VkPhysicalDevice> Device::getPhysicalDevices(VkInstance instance) {
+  u32 physicalDeviceCount;
   VkResult result;
   if (result =
           vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);

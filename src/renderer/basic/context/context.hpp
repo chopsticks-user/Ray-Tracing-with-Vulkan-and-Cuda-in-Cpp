@@ -5,19 +5,19 @@
 
 namespace neko {
 
-class Context : public StaticObject {
+class Context {
 public:
-  using StaticObject::StaticObject;
+  Context() { createContext(); }
 
-  Context() {
-    if (glfwInit() != GLFW_TRUE) {
-      throw std::runtime_error(
-          "A bug or configuration error in GLFW, the underlying operating "
-          "system or its drivers, or a lack of required resources.");
-    }
-  }
+  Context(const Context &) = delete;
 
-  virtual ~Context() { glfwTerminate(); }
+  Context(Context &&) { moveCreateContext(); }
+
+  Context &operator=(const Context &) = delete;
+
+  Context &operator=(Context &&) = default;
+
+  ~Context() { destroyContext(); }
 
   VkResult
   createDebugMessenger(VkInstance instance,
@@ -30,7 +30,12 @@ public:
                         VkDebugUtilsMessengerEXT debugMessenger,
                         const VkAllocationCallbacks *pAllocator) const noexcept;
 
-protected:
+private:
+  static void createContext();
+
+  static void moveCreateContext();
+
+  static void destroyContext();
 };
 
 } /* namespace neko */

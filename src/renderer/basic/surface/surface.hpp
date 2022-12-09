@@ -8,17 +8,25 @@ namespace neko {
 class Instance;
 class Window;
 
-class Surface : public StaticObject {
+class Surface {
 public:
-  using StaticObject::StaticObject;
+  Surface() = default;
 
   Surface(const Instance &crInstance, const Window &crWindow);
 
-  virtual ~Surface();
+  Surface(const Surface &) = delete;
+
+  Surface(Surface &&) = default;
+
+  Surface &operator=(const Surface &) = delete;
+
+  Surface &operator=(Surface &&) = default;
+
+  ~Surface();
 
   const VkSurfaceKHR &operator*() const noexcept { return mSurface; }
 
-protected:
+private:
   const Instance &mcrInstance;
   VkSurfaceKHR mSurface;
 };

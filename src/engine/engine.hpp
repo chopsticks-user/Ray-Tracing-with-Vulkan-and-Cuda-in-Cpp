@@ -5,19 +5,29 @@
 
 #include "renderer/renderer.hpp"
 
+#include <memory>
+
 namespace neko {
 
-class Engine : public StaticObject {
+class Engine {
 public:
-  using StaticObject::StaticObject;
+  Engine() = default;
 
-  virtual ~Engine() = default;
+  Engine(const Engine &) = delete;
 
-  void start() { mRenderer.start(); };
+  Engine(Engine &&) = default;
 
-protected:
-  Settings mSettings = {};
-  Renderer mRenderer = Renderer{mSettings};
+  Engine &operator=(const Engine &) = delete;
+
+  Engine &operator=(Engine &&) = default;
+
+  ~Engine() = default;
+
+  void start() { mRenderer->start(); };
+
+private:
+  std::unique_ptr<Settings> mSettings = std::make_unique<Settings>();
+  std::unique_ptr<Renderer> mRenderer = std::make_unique<Renderer>(*mSettings);
 };
 
 } /* namespace neko */

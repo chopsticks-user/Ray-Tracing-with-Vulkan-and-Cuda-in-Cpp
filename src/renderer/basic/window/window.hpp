@@ -5,24 +5,32 @@
 
 namespace neko {
 
-class Window : public StaticObject {
+class Window {
   typedef GLFWwindow *GLWindow;
 
 public:
-  using StaticObject::StaticObject;
+  Window() = default;
 
   explicit Window(const Settings &settings);
 
-  virtual ~Window();
+  Window(const Window &) = delete;
+
+  Window(Window &&) = default;
+
+  Window &operator=(const Window &) = delete;
+
+  Window &operator=(Window &&) = default;
+
+  ~Window();
 
   const GLWindow &operator*() const noexcept { return mWindow; }
 
   void open();
 
-protected:
+private:
   GLWindow mWindow;
-  uint32_t mWidth;
-  uint32_t mHeight;
+  u32 mWidth;
+  u32 mHeight;
 };
 
 } /* namespace neko */

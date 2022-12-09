@@ -1,6 +1,29 @@
 #include "context.hpp"
 
+#include <atomic>
+#include <iostream>
+
 namespace neko {
+
+static std::atomic<u32> contextCount = 0;
+
+void Context::createContext() {
+  if (glfwInit() != GLFW_TRUE) {
+    throw std::runtime_error(
+        "A bug or configuration error in GLFW, the underlying operating "
+        "system or its drivers, or a lack of required resources.");
+  }
+  ++contextCount;
+}
+
+void Context::moveCreateContext() { ++contextCount; }
+
+void Context::destroyContext() {
+  --contextCount;
+  if (contextCount == 0) {
+    glfwTerminate();
+  }
+}
 
 VkResult Context::createDebugMessenger(
     VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,

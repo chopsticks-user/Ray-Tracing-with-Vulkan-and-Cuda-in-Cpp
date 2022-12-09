@@ -23,7 +23,7 @@ void Instance::populateDebugMessengerInfo(
       VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
   debugMessengerInfo.messageSeverity =
       VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-      VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+      // VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
       VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
       VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
   debugMessengerInfo.messageType =
@@ -48,8 +48,7 @@ std::vector<const char *> Instance::getRequiredExtensions() {
   return requiredExtensions;
 }
 
-Instance::Instance(const Settings &settings, const Context &context)
-    : mcrContext{context} {
+Instance::Instance(const Settings &settings) {
   uint32_t apiVersion;
   vkEnumerateInstanceVersion(&apiVersion);
 
@@ -62,7 +61,7 @@ Instance::Instance(const Settings &settings, const Context &context)
   applicationInfo.apiVersion = apiVersion;
 
   std::vector<const char *> layers = {"VK_LAYER_MANGOHUD_overlay"};
-  auto extensions = this->getRequiredExtensions();
+  auto extensions = getRequiredExtensions();
 
   VkDebugUtilsMessengerCreateInfoEXT *pDebugMessengerInfo = nullptr;
   VkDebugUtilsMessengerCreateInfoEXT debugMessengerInfo{};
@@ -71,7 +70,7 @@ Instance::Instance(const Settings &settings, const Context &context)
     layers.emplace_back("VK_LAYER_KHRONOS_validation");
     extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-    this->populateDebugMessengerInfo(debugMessengerInfo);
+    populateDebugMessengerInfo(debugMessengerInfo);
     pDebugMessengerInfo = &debugMessengerInfo;
   }
 
@@ -79,9 +78,9 @@ Instance::Instance(const Settings &settings, const Context &context)
   instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   instanceInfo.pNext = pDebugMessengerInfo;
   instanceInfo.pApplicationInfo = &applicationInfo;
-  instanceInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+  instanceInfo.enabledLayerCount = vku32(layers.size());
   instanceInfo.ppEnabledLayerNames = layers.data();
-  instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+  instanceInfo.enabledExtensionCount = vku32(extensions.size());
   instanceInfo.ppEnabledExtensionNames = extensions.data();
 
   if (vkCreateInstance(&instanceInfo, nullptr, &mInstance) != VK_SUCCESS) {
@@ -89,16 +88,38 @@ Instance::Instance(const Settings &settings, const Context &context)
   }
 
   if constexpr (neko::debugMode) {
-    if (mcrContext.createDebugMessenger(mInstance, pDebugMessengerInfo, nullptr,
-                                        &mDebugMessenger) != VK_SUCCESS) {
+    if (mContext.createDebugMessenger(mInstance, pDebugMessengerInfo, nullptr,
+                                      &mDebugMessenger) != VK_SUCCESS) {
       throw std::runtime_error("Failed to create debug messenger");
     }
   }
+
+  mIsOwner = true;
 }
 
-Instance::~Instance() {
-  mcrContext.destroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
-  vkDestroyInstance(mInstance, nullptr);
+Instance::Instance(Instance &&rhs) noexcept
+    : mContext{std::move(rhs.mContext)}, mInstance{std::move(rhs.mInstance)},
+      mDebugMessenger{std::move(rhs.mDebugMessenger)}, mIsOwner{std::exchange(
+                                                           rhs.mIsOwner,
+                                                           false)} {}
+
+Instance &Instance::operator=(Instance &&rhs) {
+  release();
+  mContext = std::move(rhs.mContext);
+  mInstance = std::move(rhs.mInstance);
+  mDebugMessenger = std::move(rhs.mDebugMessenger);
+  mIsOwner = std::exchange(rhs.mIsOwner, false);
+  return *this;
+}
+
+void Instance::release() noexcept {
+  if (mIsOwner) {
+    if constexpr (neko::debugMode) {
+      mContext.destroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
+    }
+    vkDestroyInstance(mInstance, nullptr);
+    mIsOwner = false;
+  }
 }
 
 } /* namespace neko */
