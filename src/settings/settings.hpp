@@ -55,6 +55,12 @@ inline constexpr bool debugMode = true;
 inline constexpr bool debugMode = false;
 #endif /* NDEBUG */
 
+enum CPUThreadUsage {
+  low = 3,
+  medium = 2,
+  high = 1,
+};
+
 struct Settings {
   struct {
     std::string appName = "Vulkan Application";
@@ -68,6 +74,10 @@ struct Settings {
     u32 screenHeight = 600;
 
   } graphics;
+
+  struct {
+    CPUThreadUsage cpuThreadUsage = medium;
+  } system;
 };
 
 } /* namespace neko */
