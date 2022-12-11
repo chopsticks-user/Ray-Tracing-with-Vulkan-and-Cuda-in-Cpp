@@ -17,7 +17,8 @@ SOURCE_PATHS = $(ENTRY_NAME).cpp \
 	$(shell find $(PROJECT_ABSOLUTE_DIR)/src -type f -name "*.cpp")
 
 INCLUDE_DIRS = -I$(PROJECT_ABSOLUTE_DIR)/include -I$(PROJECT_ABSOLUTE_DIR)/src \
-	-I$(PROJECT_ABSOLUTE_DIR)/src/utils
+	-I$(PROJECT_ABSOLUTE_DIR)/src/utils \
+	-I$(PROJECT_ABSOLUTE_DIR)/json/single_include
 
 $(ENTRY_NAME): $(ENTRY_NAME).cpp
 	@mkdir -p build

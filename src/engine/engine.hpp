@@ -4,7 +4,7 @@
 #include "utils.hpp"
 
 #include "renderer/renderer.hpp"
-#include "threads/thread_pool.hpp"
+#include "threads/threads.hpp"
 
 #include <iostream>
 #include <memory>

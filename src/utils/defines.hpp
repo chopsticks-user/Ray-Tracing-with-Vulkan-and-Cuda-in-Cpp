@@ -46,6 +46,7 @@ static_assert(sizeof(b8) == 1, "sizeof(u16) != 1 byte");
 static_assert(sizeof(b32) == 4, "sizeof(b32) != 4 bytes");
 
 #define vku32(x) static_cast<u32>(x)
+#define stdu64(x) static_cast<size_t>(x)
 
 namespace neko {
 

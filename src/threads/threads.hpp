@@ -1,5 +1,5 @@
-#ifndef NEKO_THREAD_POOL_HPP
-#define NEKO_THREAD_POOL_HPP
+#ifndef NEKO_THREADS_HPP
+#define NEKO_THREADS_HPP
 
 #include "utils.hpp"
 
@@ -141,4 +141,4 @@ inline void waitTillReady(bool &readyFlag) {
 
 } /* namespace neko */
 
-#endif /* NEKO_THREAD_POOL_HPP */
+#endif /* NEKO_THREADS_HPP */

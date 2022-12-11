@@ -3,15 +3,10 @@
 #include <iostream>
 
 int protected_main() {
-  auto start = std::chrono::steady_clock::now();
+  auto timer = neko::ScopedTimer{neko::TimeUnit::milliseconds};
   auto engine = std::make_unique<neko::Engine>();
-  std::cout << "Load time: "
-            << static_cast<float>(
-                   std::chrono::duration_cast<std::chrono::microseconds>(
-                       std::chrono::steady_clock::now() - start)
-                       .count()) /
-                   1000.0f
-            << " ms\n";
+  timer.invoke([](float x) { std::cout << "Load time: " << x << " ms\n"; });
+
   engine->start();
   return EXIT_SUCCESS;
 }

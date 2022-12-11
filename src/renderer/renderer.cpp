@@ -1,5 +1,5 @@
 #include "renderer.hpp"
 
-#include "threads/thread_pool.hpp"
+#include "threads/threads.hpp"
 
 namespace neko {} /* namespace neko */
