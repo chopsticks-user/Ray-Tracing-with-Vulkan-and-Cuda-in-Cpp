@@ -1,7 +1,8 @@
 #ifndef NEKO_RENDERER_HPP
 #define NEKO_RENDERER_HPP
 
-#include "basic/context/context.hpp"
+#include "settings/settings.hpp"
+
 #include "basic/instance/instance.hpp"
 #include "basic/surface/surface.hpp"
 #include "basic/window/window.hpp"
@@ -10,11 +11,16 @@
 
 namespace neko {
 
+class ThreadPool;
+
 class Renderer {
 public:
   Renderer() = delete;
 
-  explicit Renderer(const Settings &settings) : mpSettings{&settings} {}
+  Renderer(const Settings &settings, ThreadPool &threadPool)
+      : mpSettings{&settings},
+        mpThreadPool{&threadPool}, mInstance{*mpSettings}, mWindow{*mpSettings},
+        mSurface{mInstance, mWindow}, mDevice{mInstance, mSurface} {}
 
   Renderer(const Renderer &) = delete;
 
@@ -30,14 +36,16 @@ public:
     mWindow.open();
     // Instance instance = std::move(mInstance);
     // mInstance.release();
-  };
+  }
 
 private:
-  const Settings *mpSettings = nullptr;
-  Instance mInstance = Instance{*mpSettings};
-  Window mWindow = Window{*mpSettings};
-  Surface mSurface = {mInstance, mWindow};
-  Device mDevice = {mInstance, mSurface};
+  const Settings *mpSettings;
+  ThreadPool *mpThreadPool;
+
+  Instance mInstance;
+  Window mWindow;
+  Surface mSurface;
+  Device mDevice;
 };
 
 } /* namespace neko */

@@ -19,9 +19,12 @@ class ThreadPool {
 public:
   ThreadPool() = delete;
   ThreadPool(const Settings &settings) : mShouldTerminate{false} {
-    auto threadCount =
-        std::thread::hardware_concurrency() / settings.system.cpuThreadUsage;
-    mThreads.resize(threadCount);
+    auto supportedThreadCount = std::thread::hardware_concurrency();
+    if (supportedThreadCount < 4) {
+      throw std::runtime_error("std::thread::hardware_concurrency() < 4");
+    }
+    mThreads.resize(std::thread::hardware_concurrency() /
+                    settings.system.cpuThreadUsage);
     for (auto &thread : mThreads) {
       thread = std::thread{ThreadPool::threadLoop, this};
     }
@@ -33,6 +36,18 @@ public:
   ~ThreadPool() { release(); }
 
   size_t threadCount() const noexcept { return mThreads.size(); }
+
+  void submitJob(const Job_T &job, bool &readyFlag) {
+    readyFlag = false;
+    {
+      MutexLock_T lock{mQueueMutex};
+      mJobs.push([&] {
+        job();
+        readyFlag = true;
+      });
+    }
+    mMutexCondition.notify_one();
+  }
 
   void submitJob(const Job_T &job) {
     {
@@ -100,6 +115,20 @@ private:
     }
   }
 };
+
+inline void
+waitTillReady(const std::vector<std::reference_wrapper<bool>> &readyFlags) {
+  bool stopFlag = false;
+  u64 flagCount = readyFlags.size();
+  while (!stopFlag) {
+    for (u64 iFlag = 0; iFlag < flagCount; ++iFlag) {
+      if (readyFlags[iFlag] == false) {
+        iFlag = 0;
+      }
+    }
+    stopFlag = true;
+  }
+}
 
 } /* namespace neko */
 

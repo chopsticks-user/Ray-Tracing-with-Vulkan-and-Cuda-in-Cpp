@@ -76,7 +76,7 @@ struct Settings {
   } graphics;
 
   struct {
-    CPUThreadUsage cpuThreadUsage = medium;
+    CPUThreadUsage cpuThreadUsage = high;
   } system;
 };
 
