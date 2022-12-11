@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERER_BASIC_WINDOW_HPP
 #define NEKO_RENDERER_BASIC_WINDOW_HPP
 
-#include "settings.hpp"
+#include "utils.hpp"
 
 namespace neko {
 

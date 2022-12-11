@@ -1,7 +1,7 @@
 #ifndef NEKO_THREAD_POOL_HPP
 #define NEKO_THREAD_POOL_HPP
 
-#include "settings.hpp"
+#include "utils.hpp"
 
 #include <condition_variable>
 #include <functional>
@@ -17,17 +17,9 @@ class ThreadPool {
   typedef std::unique_lock<std::mutex> MutexLock_T;
 
 public:
-  ThreadPool() = delete;
-  ThreadPool(const Settings &settings) : mShouldTerminate{false} {
-    auto supportedThreadCount = std::thread::hardware_concurrency();
-    if (supportedThreadCount < 4) {
-      throw std::runtime_error("std::thread::hardware_concurrency() < 4");
-    }
-    mThreads.resize(std::thread::hardware_concurrency() /
-                    settings.system.cpuThreadUsage);
-    for (auto &thread : mThreads) {
-      thread = std::thread{ThreadPool::threadLoop, this};
-    }
+  ThreadPool() { initializePool(); }
+  ThreadPool(const Settings &settings) {
+    initializePool(settings.system.cpuThreadUsage);
   }
   ThreadPool(const ThreadPool &) = delete;
   ThreadPool(ThreadPool &&) = delete;
@@ -38,9 +30,9 @@ public:
   size_t threadCount() const noexcept { return mThreads.size(); }
 
   void submitJob(const Job_T &job, bool &readyFlag) {
-    readyFlag = false;
     {
       MutexLock_T lock{mQueueMutex};
+      readyFlag = false;
       mJobs.push([&] {
         job();
         readyFlag = true;
@@ -96,6 +88,18 @@ private:
   bool mShouldTerminate;
   std::map<std::thread::id, u64> mJobStatus;
 
+  void initializePool(CPUThreadUsage usageMode = medium) {
+    auto supportedThreadCount = std::thread::hardware_concurrency();
+    if (supportedThreadCount < 4) {
+      throw std::runtime_error("std::thread::hardware_concurrency() < 4");
+    }
+    mShouldTerminate = false;
+    mThreads.resize(std::thread::hardware_concurrency() / usageMode);
+    for (auto &thread : mThreads) {
+      thread = std::thread{ThreadPool::threadLoop, this};
+    }
+  }
+
   static void threadLoop(ThreadPool *pool) {
     while (true) {
       Job_T job;
@@ -127,6 +131,11 @@ waitTillReady(const std::vector<std::reference_wrapper<bool>> &readyFlags) {
       }
     }
     stopFlag = true;
+  }
+}
+
+inline void waitTillReady(bool &readyFlag) {
+  while (!readyFlag) {
   }
 }
 

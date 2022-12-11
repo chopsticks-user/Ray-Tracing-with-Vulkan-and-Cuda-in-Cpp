@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERER_HPP
 #define NEKO_RENDERER_HPP
 
-#include "settings/settings.hpp"
+#include "utils.hpp"
 
 #include "basic/instance/instance.hpp"
 #include "basic/surface/surface.hpp"

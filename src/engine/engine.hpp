@@ -1,7 +1,7 @@
 #ifndef NEKO_ENGINE_HPP
 #define NEKO_ENGINE_HPP
 
-#include "settings.hpp"
+#include "utils.hpp"
 
 #include "renderer/renderer.hpp"
 #include "threads/thread_pool.hpp"
@@ -43,10 +43,9 @@ private:
 
   /**
    * @brief
-   * !{mThreadPool} is only destroyed when all resources are no longer in
-   * !used by all the threads. Therefore, it must be destroyed first to
-   * !prevent any thread from unexpectedly being released or using destroyed
-   * !resources.
+   * !{mThreadPool} should only be destroyed when all resources are no longer in
+   * !used by all the threads. Therefore, it must be destroyed first to prevent
+   * !any thread from unexpectedly being released or using destroyed resources.
    */
   std::unique_ptr<ThreadPool> mpThreadPool;
 };
