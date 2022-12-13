@@ -1,12 +1,10 @@
+#include <iostream>
 #include <neko.hpp>
 
-#include <iostream>
-
 int protected_main() {
-  auto timer = neko::ScopedTimer{neko::TimeUnit::milliseconds};
+  TIMER_START(t1);
   auto engine = std::make_unique<neko::Engine>();
-  timer.invoke([](float x) { std::cout << "Load time: " << x << " ms\n"; });
-
+  TIMER_STOP(t1, "Engine's load time");
   engine->start();
   return EXIT_SUCCESS;
 }

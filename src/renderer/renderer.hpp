@@ -3,11 +3,13 @@
 
 #include "utils.hpp"
 
-#include "basic/instance/instance.hpp"
-#include "basic/surface/surface.hpp"
-#include "basic/window/window.hpp"
+#include "basic/instance.hpp"
+#include "basic/surface.hpp"
+#include "basic/window.hpp"
 #include "commands/commands.hpp"
-#include "devices/logical/logical.hpp"
+#include "devices/logical_device.hpp"
+#include "devices/physical_device.hpp"
+#include "devices/queues.hpp"
 
 namespace neko {
 

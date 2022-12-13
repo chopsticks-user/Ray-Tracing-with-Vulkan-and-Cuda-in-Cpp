@@ -1,8 +1,6 @@
 #ifndef NEKO_RENDERER_DEVICES_QUEUES_HPP
 #define NEKO_RENDERER_DEVICES_QUEUES_HPP
 
-#include "settings.hpp"
-
 namespace neko {
 
 // class LogicalDevice;

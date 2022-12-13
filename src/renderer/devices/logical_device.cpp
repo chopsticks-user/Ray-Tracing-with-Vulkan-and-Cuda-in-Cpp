@@ -1,8 +1,7 @@
-#include "logical.hpp"
+#include "logical_device.hpp"
 
-#include "renderer/basic/instance/instance.hpp"
-#include "renderer/basic/surface/surface.hpp"
-// #include "renderer/devices/physical/physical.hpp"
+#include "../basic/instance.hpp"
+#include "../basic/surface.hpp"
 
 #include <map>
 #include <optional>
@@ -56,7 +55,7 @@ Device::Device(const Instance &crInstance, const Surface &crSurface) {
 Device::~Device() { vkDestroyDevice(mLogicalDevice, nullptr); }
 
 u32 Device::selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
-                                            VkSurfaceKHR surface) {
+                                       VkSurfaceKHR surface) {
   u32 queueFamilyCount;
   vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
                                            nullptr);

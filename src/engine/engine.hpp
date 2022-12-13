@@ -3,10 +3,9 @@
 
 #include "utils.hpp"
 
-#include "renderer/renderer.hpp"
-#include "threads/threads.hpp"
+#include "../renderer/renderer.hpp"
+#include "../threads/threads.hpp"
 
-#include <iostream>
 #include <memory>
 
 namespace neko {
@@ -14,11 +13,24 @@ namespace neko {
 class Engine {
 public:
   Engine() {
+    TIMER_START(settingsTimer);
     mpSettings = std::make_unique<Settings>();
+    TIMER_STOP(settingsTimer, "Settings' load time");
 
+    TIMER_START(threadPoolTimer);
     mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
+    TIMER_STOP(threadPoolTimer, "Thread pool's creation time");
 
-    mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+    TIMER_START(rendererTimer);
+    bool rendererReady;
+    mpThreadPool->submitJob(
+        [&] {
+          mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+        },
+        rendererReady);
+    TIMER_STOP(rendererTimer, "Renderer's creation time");
+
+    waitTillReady(rendererReady);
   };
 
   Engine(const Engine &) = delete;

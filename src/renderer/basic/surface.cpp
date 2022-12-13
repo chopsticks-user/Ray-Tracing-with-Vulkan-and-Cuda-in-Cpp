@@ -1,7 +1,7 @@
 #include "surface.hpp"
 
-#include "renderer/basic/instance/instance.hpp"
-#include "renderer/basic/window/window.hpp"
+#include "instance.hpp"
+#include "window.hpp"
 
 namespace neko {
 

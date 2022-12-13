@@ -3,7 +3,7 @@
 
 #include "utils.hpp"
 
-#include "renderer/basic/context/context.hpp"
+#include "context.hpp"
 
 namespace neko {
 

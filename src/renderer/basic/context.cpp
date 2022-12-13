@@ -1,7 +1,6 @@
 #include "context.hpp"
 
 #include <atomic>
-#include <iostream>
 
 namespace neko {
 

@@ -29,56 +29,29 @@ public:
 
   size_t threadCount() const noexcept { return mThreads.size(); }
 
-  void submitJob(const Job_T &job, bool &readyFlag) {
-    {
-      MutexLock_T lock{mQueueMutex};
-      readyFlag = false;
-      mJobs.push([&] {
-        job();
-        readyFlag = true;
-      });
-    }
-    mMutexCondition.notify_one();
-  }
+  /**
+   * @brief
+   * ! {neko::waitTillReady} must be called in the same scope where {readyFlag}
+   * ! lives
+   *
+   * @param job
+   * @param readyFlag
+   */
+  void submitJob(const Job_T &job, bool &readyFlag);
 
-  void submitJob(const Job_T &job) {
-    {
-      MutexLock_T lock{mQueueMutex};
-      mJobs.push(job);
-    }
-    mMutexCondition.notify_one();
-  }
+  void submitJob(const Job_T &job);
 
-  bool busy() {
-    bool poolbusy;
-    {
-      MutexLock_T lock{mQueueMutex};
-      poolbusy = mJobs.empty();
-    }
-    return poolbusy;
-  }
+  bool busy();
 
   const std::map<std::thread::id, u64> &jobStatus() const noexcept {
     return mJobStatus;
   }
 
-  void force_release() {
-    {
-      MutexLock_T lock{mQueueMutex};
-      mShouldTerminate = true;
-    }
-    mMutexCondition.notify_all();
-    for (auto &activeThread : mThreads) {
-      activeThread.join();
-    }
-    mThreads.clear();
-  }
+  u64 totalSubmittedJob() const noexcept { return mTotalSubmittedJob; }
 
-  void release() {
-    while (!busy()) {
-    }
-    force_release();
-  }
+  void force_release();
+
+  void release();
 
 private:
   std::vector<std::thread> mThreads;
@@ -87,57 +60,16 @@ private:
   std::condition_variable mMutexCondition;
   bool mShouldTerminate;
   std::map<std::thread::id, u64> mJobStatus;
+  u64 mTotalSubmittedJob;
 
-  void initializePool(CPUThreadUsage usageMode = medium) {
-    auto supportedThreadCount = std::thread::hardware_concurrency();
-    if (supportedThreadCount < 4) {
-      throw std::runtime_error("std::thread::hardware_concurrency() < 4");
-    }
-    mShouldTerminate = false;
-    mThreads.resize(std::thread::hardware_concurrency() / usageMode);
-    for (auto &thread : mThreads) {
-      thread = std::thread{ThreadPool::threadLoop, this};
-    }
-  }
+  void initializePool(CPUThreadUsage usageMode = medium);
 
-  static void threadLoop(ThreadPool *pool) {
-    while (true) {
-      Job_T job;
-      {
-        MutexLock_T lock{pool->mQueueMutex};
-        pool->mMutexCondition.wait(lock, [pool] {
-          return !pool->mJobs.empty() || pool->mShouldTerminate;
-        });
-        if (pool->mShouldTerminate) {
-          return;
-        }
-        job = pool->mJobs.front();
-        pool->mJobs.pop();
-        pool->mJobStatus[std::this_thread::get_id()]++;
-      }
-      job();
-    }
-  }
+  static void threadLoop(ThreadPool *pool);
 };
 
-inline void
-waitTillReady(const std::vector<std::reference_wrapper<bool>> &readyFlags) {
-  bool stopFlag = false;
-  u64 flagCount = readyFlags.size();
-  while (!stopFlag) {
-    for (u64 iFlag = 0; iFlag < flagCount; ++iFlag) {
-      if (readyFlags[iFlag] == false) {
-        iFlag = 0;
-      }
-    }
-    stopFlag = true;
-  }
-}
+void waitTillReady(const std::vector<std::reference_wrapper<bool>> &readyFlags);
 
-inline void waitTillReady(bool &readyFlag) {
-  while (!readyFlag) {
-  }
-}
+void waitTillReady(bool &readyFlag);
 
 } /* namespace neko */
 
