@@ -1,0 +1,2 @@
+/usr/bin/ar qc libneko_threads.a CMakeFiles/neko_threads.dir/threads.cpp.o
+/usr/bin/ranlib libneko_threads.a

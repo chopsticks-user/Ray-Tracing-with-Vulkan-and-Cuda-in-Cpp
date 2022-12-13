@@ -1,0 +1,2 @@
+/usr/bin/ar qc libneko_renderer.a CMakeFiles/neko_renderer.dir/renderer.cpp.o
+/usr/bin/ranlib libneko_renderer.a

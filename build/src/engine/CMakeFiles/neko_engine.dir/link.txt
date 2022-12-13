@@ -1,0 +1,2 @@
+/usr/bin/ar qc libneko_engine.a CMakeFiles/neko_engine.dir/engine.cpp.o
+/usr/bin/ranlib libneko_engine.a
