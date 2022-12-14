@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 option(BUILD_SHARED_LIBS ON)
 
-add_subdirectory(src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 
 add_executable(Application
-    ${CMAKE_CURRENT_SOURCE_DIR}/Application.cpp
+    ${PROJECT_SOURCE_DIR}/Application.cpp
 )
 target_include_directories(Application PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include
 )
 target_link_libraries(Application PRIVATE neko)
