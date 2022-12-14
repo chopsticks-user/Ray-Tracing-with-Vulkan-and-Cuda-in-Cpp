@@ -12,6 +12,7 @@ add_library(neko_renderer STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/basic/window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/basic/instance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/basic/surface.cpp
+    
     ${CMAKE_CURRENT_SOURCE_DIR}/devices/logical_device.cpp
 )
 target_include_directories(neko_renderer PUBLIC
