@@ -1,2 +1,0 @@
-/usr/bin/ar qc libneko_renderer_basic.a CMakeFiles/neko_renderer_basic.dir/context.cpp.o CMakeFiles/neko_renderer_basic.dir/window.cpp.o CMakeFiles/neko_renderer_basic.dir/instance.cpp.o CMakeFiles/neko_renderer_basic.dir/surface.cpp.o
-/usr/bin/ranlib libneko_renderer_basic.a

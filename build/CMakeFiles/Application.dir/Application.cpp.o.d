@@ -149,7 +149,7 @@ CMakeFiles/Application.dir/Application.cpp.o: \
  /usr/include/c++/12/bits/ostream.tcc /usr/include/c++/12/istream \
  /usr/include/c++/12/bits/istream.tcc \
  /home/xunililak/Code/Projects/1-VulkanEngine/include/neko.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/engine.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/engine.hpp \
  /home/xunililak/Code/Projects/1-VulkanEngine/src/utils/utils.hpp \
  /home/xunililak/Code/Projects/1-VulkanEngine/src/utils/defines.hpp \
  /usr/include/GLFW/glfw3.h /usr/include/vulkan/vulkan.h \
@@ -167,16 +167,16 @@ CMakeFiles/Application.dir/Application.cpp.o: \
  /usr/include/c++/12/chrono /usr/include/c++/12/bits/chrono.h \
  /usr/include/c++/12/ratio /usr/include/c++/12/limits \
  /usr/include/c++/12/ctime /usr/include/c++/12/bits/parse_numbers.h \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/renderer.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/basic/instance.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/basic/context.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/basic/surface.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/basic/window.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/commands/commands.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/devices/logical_device.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/devices/physical_device.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../renderer/devices/queues.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/engine/../threads/threads.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/renderer.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/basic/instance.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/basic/context.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/basic/surface.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/basic/window.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/commands/commands.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/devices/logical_device.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/devices/physical_device.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../renderer/devices/queues.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/engine/../threads/threads.hpp \
  /usr/include/c++/12/condition_variable \
  /usr/include/c++/12/bits/std_mutex.h \
  /usr/include/c++/12/bits/unique_lock.h \
@@ -214,6 +214,6 @@ CMakeFiles/Application.dir/Application.cpp.o: \
  /usr/include/c++/12/backward/auto_ptr.h \
  /usr/include/c++/12/pstl/glue_memory_defs.h \
  /usr/include/c++/12/pstl/execution_defs.h \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/events/events.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/renderer/renderer.hpp \
- /home/xunililak/Code/Projects/1-VulkanEngine/include/../src/threads/threads.hpp
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/events/events.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/renderer.hpp \
+ /home/xunililak/Code/Projects/1-VulkanEngine/src/threads/threads.hpp

@@ -83,17 +83,97 @@ src/renderer/CMakeFiles/neko_renderer.dir/renderer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/neko_renderer.dir/renderer.cpp.s"
 	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/renderer.cpp -o CMakeFiles/neko_renderer.dir/renderer.cpp.s
 
+src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/flags.make
+src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o: /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/context.cpp
+src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o -MF CMakeFiles/neko_renderer.dir/basic/context.cpp.o.d -o CMakeFiles/neko_renderer.dir/basic/context.cpp.o -c /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/context.cpp
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/neko_renderer.dir/basic/context.cpp.i"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/context.cpp > CMakeFiles/neko_renderer.dir/basic/context.cpp.i
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/neko_renderer.dir/basic/context.cpp.s"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/context.cpp -o CMakeFiles/neko_renderer.dir/basic/context.cpp.s
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/flags.make
+src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o: /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/window.cpp
+src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o -MF CMakeFiles/neko_renderer.dir/basic/window.cpp.o.d -o CMakeFiles/neko_renderer.dir/basic/window.cpp.o -c /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/window.cpp
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/neko_renderer.dir/basic/window.cpp.i"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/window.cpp > CMakeFiles/neko_renderer.dir/basic/window.cpp.i
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/neko_renderer.dir/basic/window.cpp.s"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/window.cpp -o CMakeFiles/neko_renderer.dir/basic/window.cpp.s
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/flags.make
+src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o: /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/instance.cpp
+src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o -MF CMakeFiles/neko_renderer.dir/basic/instance.cpp.o.d -o CMakeFiles/neko_renderer.dir/basic/instance.cpp.o -c /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/instance.cpp
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/neko_renderer.dir/basic/instance.cpp.i"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/instance.cpp > CMakeFiles/neko_renderer.dir/basic/instance.cpp.i
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/neko_renderer.dir/basic/instance.cpp.s"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/instance.cpp -o CMakeFiles/neko_renderer.dir/basic/instance.cpp.s
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/flags.make
+src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o: /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/surface.cpp
+src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o -MF CMakeFiles/neko_renderer.dir/basic/surface.cpp.o.d -o CMakeFiles/neko_renderer.dir/basic/surface.cpp.o -c /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/surface.cpp
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/neko_renderer.dir/basic/surface.cpp.i"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/surface.cpp > CMakeFiles/neko_renderer.dir/basic/surface.cpp.i
+
+src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/neko_renderer.dir/basic/surface.cpp.s"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/basic/surface.cpp -o CMakeFiles/neko_renderer.dir/basic/surface.cpp.s
+
+src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/flags.make
+src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o: /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/devices/logical_device.cpp
+src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o: src/renderer/CMakeFiles/neko_renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o -MF CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o.d -o CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o -c /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/devices/logical_device.cpp
+
+src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.i"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/devices/logical_device.cpp > CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.i
+
+src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.s"
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xunililak/Code/Projects/1-VulkanEngine/src/renderer/devices/logical_device.cpp -o CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.s
+
 # Object files for target neko_renderer
 neko_renderer_OBJECTS = \
-"CMakeFiles/neko_renderer.dir/renderer.cpp.o"
+"CMakeFiles/neko_renderer.dir/renderer.cpp.o" \
+"CMakeFiles/neko_renderer.dir/basic/context.cpp.o" \
+"CMakeFiles/neko_renderer.dir/basic/window.cpp.o" \
+"CMakeFiles/neko_renderer.dir/basic/instance.cpp.o" \
+"CMakeFiles/neko_renderer.dir/basic/surface.cpp.o" \
+"CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o"
 
 # External object files for target neko_renderer
 neko_renderer_EXTERNAL_OBJECTS =
 
 src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/renderer.cpp.o
+src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o
+src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o
+src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o
+src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o
+src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o
 src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/build.make
 src/renderer/libneko_renderer.a: src/renderer/CMakeFiles/neko_renderer.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libneko_renderer.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library libneko_renderer.a"
 	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && $(CMAKE_COMMAND) -P CMakeFiles/neko_renderer.dir/cmake_clean_target.cmake
 	cd /home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/neko_renderer.dir/link.txt --verbose=$(VERBOSE)
 

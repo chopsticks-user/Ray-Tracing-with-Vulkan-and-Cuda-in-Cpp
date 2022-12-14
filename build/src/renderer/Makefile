@@ -130,6 +130,126 @@ neko_renderer/fast:
 	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/build
 .PHONY : neko_renderer/fast
 
+basic/context.o: basic/context.cpp.o
+.PHONY : basic/context.o
+
+# target to build an object file
+basic/context.cpp.o:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.o
+.PHONY : basic/context.cpp.o
+
+basic/context.i: basic/context.cpp.i
+.PHONY : basic/context.i
+
+# target to preprocess a source file
+basic/context.cpp.i:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.i
+.PHONY : basic/context.cpp.i
+
+basic/context.s: basic/context.cpp.s
+.PHONY : basic/context.s
+
+# target to generate assembly for a file
+basic/context.cpp.s:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/context.cpp.s
+.PHONY : basic/context.cpp.s
+
+basic/instance.o: basic/instance.cpp.o
+.PHONY : basic/instance.o
+
+# target to build an object file
+basic/instance.cpp.o:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.o
+.PHONY : basic/instance.cpp.o
+
+basic/instance.i: basic/instance.cpp.i
+.PHONY : basic/instance.i
+
+# target to preprocess a source file
+basic/instance.cpp.i:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.i
+.PHONY : basic/instance.cpp.i
+
+basic/instance.s: basic/instance.cpp.s
+.PHONY : basic/instance.s
+
+# target to generate assembly for a file
+basic/instance.cpp.s:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/instance.cpp.s
+.PHONY : basic/instance.cpp.s
+
+basic/surface.o: basic/surface.cpp.o
+.PHONY : basic/surface.o
+
+# target to build an object file
+basic/surface.cpp.o:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.o
+.PHONY : basic/surface.cpp.o
+
+basic/surface.i: basic/surface.cpp.i
+.PHONY : basic/surface.i
+
+# target to preprocess a source file
+basic/surface.cpp.i:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.i
+.PHONY : basic/surface.cpp.i
+
+basic/surface.s: basic/surface.cpp.s
+.PHONY : basic/surface.s
+
+# target to generate assembly for a file
+basic/surface.cpp.s:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/surface.cpp.s
+.PHONY : basic/surface.cpp.s
+
+basic/window.o: basic/window.cpp.o
+.PHONY : basic/window.o
+
+# target to build an object file
+basic/window.cpp.o:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.o
+.PHONY : basic/window.cpp.o
+
+basic/window.i: basic/window.cpp.i
+.PHONY : basic/window.i
+
+# target to preprocess a source file
+basic/window.cpp.i:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.i
+.PHONY : basic/window.cpp.i
+
+basic/window.s: basic/window.cpp.s
+.PHONY : basic/window.s
+
+# target to generate assembly for a file
+basic/window.cpp.s:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/basic/window.cpp.s
+.PHONY : basic/window.cpp.s
+
+devices/logical_device.o: devices/logical_device.cpp.o
+.PHONY : devices/logical_device.o
+
+# target to build an object file
+devices/logical_device.cpp.o:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.o
+.PHONY : devices/logical_device.cpp.o
+
+devices/logical_device.i: devices/logical_device.cpp.i
+.PHONY : devices/logical_device.i
+
+# target to preprocess a source file
+devices/logical_device.cpp.i:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.i
+.PHONY : devices/logical_device.cpp.i
+
+devices/logical_device.s: devices/logical_device.cpp.s
+.PHONY : devices/logical_device.s
+
+# target to generate assembly for a file
+devices/logical_device.cpp.s:
+	cd /home/xunililak/Code/Projects/1-VulkanEngine/build && $(MAKE) $(MAKESILENT) -f src/renderer/CMakeFiles/neko_renderer.dir/build.make src/renderer/CMakeFiles/neko_renderer.dir/devices/logical_device.cpp.s
+.PHONY : devices/logical_device.cpp.s
+
 renderer.o: renderer.cpp.o
 .PHONY : renderer.o
 
@@ -163,6 +283,21 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... neko_renderer"
+	@echo "... basic/context.o"
+	@echo "... basic/context.i"
+	@echo "... basic/context.s"
+	@echo "... basic/instance.o"
+	@echo "... basic/instance.i"
+	@echo "... basic/instance.s"
+	@echo "... basic/surface.o"
+	@echo "... basic/surface.i"
+	@echo "... basic/surface.s"
+	@echo "... basic/window.o"
+	@echo "... basic/window.i"
+	@echo "... basic/window.s"
+	@echo "... devices/logical_device.o"
+	@echo "... devices/logical_device.i"
+	@echo "... devices/logical_device.s"
 	@echo "... renderer.o"
 	@echo "... renderer.i"
 	@echo "... renderer.s"

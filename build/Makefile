@@ -195,32 +195,6 @@ neko_renderer/fast:
 .PHONY : neko_renderer/fast
 
 #=============================================================================
-# Target rules for targets named neko_renderer_basic
-
-# Build rule for target.
-neko_renderer_basic: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 neko_renderer_basic
-.PHONY : neko_renderer_basic
-
-# fast build rule for target.
-neko_renderer_basic/fast:
-	$(MAKE) $(MAKESILENT) -f src/renderer/basic/CMakeFiles/neko_renderer_basic.dir/build.make src/renderer/basic/CMakeFiles/neko_renderer_basic.dir/build
-.PHONY : neko_renderer_basic/fast
-
-#=============================================================================
-# Target rules for targets named neko_renderer_devices
-
-# Build rule for target.
-neko_renderer_devices: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 neko_renderer_devices
-.PHONY : neko_renderer_devices
-
-# fast build rule for target.
-neko_renderer_devices/fast:
-	$(MAKE) $(MAKESILENT) -f src/renderer/devices/CMakeFiles/neko_renderer_devices.dir/build.make src/renderer/devices/CMakeFiles/neko_renderer_devices.dir/build
-.PHONY : neko_renderer_devices/fast
-
-#=============================================================================
 # Target rules for targets named neko_threads
 
 # Build rule for target.
@@ -270,8 +244,6 @@ help:
 	@echo "... neko_engine"
 	@echo "... neko_events"
 	@echo "... neko_renderer"
-	@echo "... neko_renderer_basic"
-	@echo "... neko_renderer_devices"
 	@echo "... neko_threads"
 	@echo "... neko_utils"
 	@echo "... Application.o"

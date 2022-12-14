@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -Dneko_EXPORTS
 
-CXX_INCLUDES = -I/home/xunililak/Code/Projects/1-VulkanEngine/src/utils -I/home/xunililak/Code/Projects/1-VulkanEngine/src/renderer -I/home/xunililak/Code/Projects/1-VulkanEngine/src/threads
+CXX_INCLUDES = -I/home/xunililak/Code/Projects/1-VulkanEngine/src/utils -I/home/xunililak/Code/Projects/1-VulkanEngine/src -I/home/xunililak/Code/Projects/1-VulkanEngine/src/renderer -I/home/xunililak/Code/Projects/1-VulkanEngine/src/threads
 
 CXX_FLAGS = -fPIC -std=gnu++17
 

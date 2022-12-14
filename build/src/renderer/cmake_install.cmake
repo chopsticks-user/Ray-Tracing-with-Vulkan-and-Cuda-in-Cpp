@@ -42,28 +42,3 @@ if(NOT DEFINED CMAKE_OBJDUMP)
   set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/basic/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/commands/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/devices/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/pipelines/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/resources/cmake_install.cmake")
-endif()
-

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/xunililak/Code/Projects/1-VulkanEngine/include -I/home/xunililak/Code/Projects/1-VulkanEngine/src/utils
+CXX_INCLUDES = -I/home/xunililak/Code/Projects/1-VulkanEngine/include -I/home/xunililak/Code/Projects/1-VulkanEngine/src/utils -I/home/xunililak/Code/Projects/1-VulkanEngine/src
 
 CXX_FLAGS = -std=gnu++17
 

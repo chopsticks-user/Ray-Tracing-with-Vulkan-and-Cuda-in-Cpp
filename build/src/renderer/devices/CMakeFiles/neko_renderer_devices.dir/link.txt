@@ -1,2 +1,0 @@
-/usr/bin/ar qc libneko_renderer_devices.a CMakeFiles/neko_renderer_devices.dir/logical_device.cpp.o CMakeFiles/neko_renderer_devices.dir/physical_device.cpp.o CMakeFiles/neko_renderer_devices.dir/queues.cpp.o
-/usr/bin/ranlib libneko_renderer_devices.a

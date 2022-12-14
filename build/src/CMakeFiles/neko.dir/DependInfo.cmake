@@ -27,8 +27,6 @@ set(CMAKE_TARGET_LINKED_INFO_FILES
   "/home/xunililak/Code/Projects/1-VulkanEngine/build/src/events/CMakeFiles/neko_events.dir/DependInfo.cmake"
   "/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/CMakeFiles/neko_renderer.dir/DependInfo.cmake"
   "/home/xunililak/Code/Projects/1-VulkanEngine/build/src/threads/CMakeFiles/neko_threads.dir/DependInfo.cmake"
-  "/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/devices/CMakeFiles/neko_renderer_devices.dir/DependInfo.cmake"
-  "/home/xunililak/Code/Projects/1-VulkanEngine/build/src/renderer/basic/CMakeFiles/neko_renderer_basic.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

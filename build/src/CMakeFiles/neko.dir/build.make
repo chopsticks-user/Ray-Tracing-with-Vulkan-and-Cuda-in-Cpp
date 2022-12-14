@@ -241,8 +241,6 @@ src/libneko.so: src/engine/libneko_engine.a
 src/libneko.so: src/events/libneko_events.a
 src/libneko.so: src/renderer/libneko_renderer.a
 src/libneko.so: src/threads/libneko_threads.a
-src/libneko.so: src/renderer/devices/libneko_renderer_devices.a
-src/libneko.so: src/renderer/basic/libneko_renderer_basic.a
 src/libneko.so: src/utils/libneko_utils.a
 src/libneko.so: src/CMakeFiles/neko.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xunililak/Code/Projects/1-VulkanEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX shared library libneko.so"
