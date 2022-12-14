@@ -22,11 +22,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/threads)
 
 add_library(neko ${libSourcePaths})
 
-# if(BUILD_SHARED_LIBS)
-# add_library(neko SHARED ${libSourcePaths})
-# else()
-# add_library(neko STATIC ${libSourcePaths})
-# endif()
 target_include_directories(neko PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/utils
     ${PROJECT_SOURCE_DIR}/src

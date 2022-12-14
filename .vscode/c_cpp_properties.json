@@ -7,7 +7,7 @@
                 "${workspaceFolder}/src/utils",
                 "${workspaceFolder}/src/renderer",
                 "${workspaceFolder}/src/threads",
-                "${workspaceFolder}/src/renderer/basic/context"
+                "${workspaceFolder}/src/renderer/basic"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
