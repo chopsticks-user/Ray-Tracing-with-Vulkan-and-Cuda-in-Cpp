@@ -1,5 +1,8 @@
 
-add_library(neko_events events.cpp events.hpp)
+add_library(neko_events STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/events.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/events.hpp
+)
 
 # target_include_directories(neko_events
 # PRIVATE ${PROJECT_SOURCE_DIR}/src/utils

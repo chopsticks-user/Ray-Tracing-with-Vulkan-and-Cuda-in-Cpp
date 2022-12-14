@@ -1,5 +1,5 @@
 
-add_library(neko_renderer_devices
+add_library(neko_renderer_devices OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/logical_device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physical_device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/queues.cpp
@@ -8,6 +8,7 @@ target_include_directories(neko_renderer_devices PUBLIC
     ${PROJECT_SOURCE_DIR}/src/utils
     ${PROJECT_SOURCE_DIR}/src/renderer/basic
 )
-target_link_libraries(neko_renderer_devices PRIVATE
-    neko_renderer_basic
-)
+
+# target_link_libraries(neko_renderer_devices PUBLIC
+# neko_renderer_basic
+# )
