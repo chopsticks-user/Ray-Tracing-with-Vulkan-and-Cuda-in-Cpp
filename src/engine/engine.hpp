@@ -14,12 +14,14 @@ class Engine {
 public:
   Engine() {
     TIMER_START(settingsTimer);
-    mpSettings = std::make_unique<Settings>();
+    mpSettings = std::make_unique<Settings>("configs/settings.json");
     TIMER_STOP(settingsTimer, "Settings' load time");
 
     TIMER_START(threadPoolTimer);
     mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
     TIMER_STOP(threadPoolTimer, "Thread pool's creation time");
+
+    printf("%ld\n", mpThreadPool->threadCount());
 
     TIMER_START(rendererTimer);
     bool rendererReady;

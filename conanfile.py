@@ -13,7 +13,7 @@ class NekoEngineConan(ConanFile):
     
     def build(self):
         try:
-            shutil.copy(PWD + "config/MangoHud.conf", 
+            shutil.copy(PWD + "configs/MangoHud.conf", 
                         PWD + "build/MangoHud.conf")
         except OSError:
             raise Exception("shutil.copy() failed")

@@ -12,6 +12,12 @@ enum CPUThreadUsage {
   high = 1,
 };
 
+struct Version {
+  u32 major;
+  u32 minor;
+  u32 patch;
+};
+
 struct Settings {
   struct {
     std::string appName = "Vulkan Application";
@@ -30,6 +36,9 @@ struct Settings {
   struct {
     CPUThreadUsage cpuThreadUsage = high;
   } system;
+
+  Settings() = default;
+  Settings(const std::string &settingsFilePath);
 };
 
 } /* namespace neko */
