@@ -2,4 +2,19 @@
 
 #include "threads.hpp"
 
-namespace neko {} /* namespace neko */
+namespace neko {
+
+Renderer::Renderer(const Settings &settings, ThreadPool &threadPool)
+    : mpSettings{&settings}, mpThreadPool{&threadPool}, mInstance{*mpSettings},
+      mWindow{*mpSettings}, mSurface{mInstance, mWindow}, mDevice{mInstance,
+                                                                  mSurface} {}
+
+Renderer::~Renderer() = default;
+
+void Renderer::start() {
+  mWindow.open();
+  // Instance instance = std::move(mInstance);
+  // mInstance.release();
+}
+
+} /* namespace neko */

@@ -1,7 +1,7 @@
 #include "logical_device.hpp"
 
-#include "../basic/instance.hpp"
-#include "../basic/surface.hpp"
+#include "instance.hpp"
+#include "surface.hpp"
 
 #include <map>
 #include <optional>

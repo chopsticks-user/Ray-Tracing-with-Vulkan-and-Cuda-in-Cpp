@@ -13,10 +13,11 @@ class NekoEngineConan(ConanFile):
     
     def build(self):
         try:
-            shutil.copy(PWD + "configs/MangoHud.conf", 
+            shutil.copy(PWD + "data/configs/MangoHud.conf", 
                         PWD + "build/MangoHud.conf")
         except OSError:
             raise Exception("shutil.copy() failed")
         cmake = CMake(self)
+        cmake.definitions["BUILD_SHARED_LIBS"] = "ON"
         cmake.configure()
         cmake.build()

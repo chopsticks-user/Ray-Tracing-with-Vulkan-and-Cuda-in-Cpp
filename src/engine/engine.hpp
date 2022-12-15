@@ -3,53 +3,27 @@
 
 #include "utils.hpp"
 
-#include "../renderer/renderer.hpp"
-#include "../threads/threads.hpp"
-
 #include <memory>
 
 namespace neko {
 
+class Renderer;
+class ThreadPool;
+
 class Engine {
 public:
-  Engine() {
-    TIMER_START(settingsTimer);
-    mpSettings = std::make_unique<Settings>("configs/settings.json");
-    TIMER_STOP(settingsTimer, "Settings' load time");
-
-    TIMER_START(threadPoolTimer);
-    mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
-    TIMER_STOP(threadPoolTimer, "Thread pool's creation time");
-
-    printf("%ld\n", mpThreadPool->threadCount());
-
-    TIMER_START(rendererTimer);
-    bool rendererReady;
-    mpThreadPool->submitJob(
-        [&] {
-          mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
-        },
-        rendererReady);
-    TIMER_STOP(rendererTimer, "Renderer's creation time");
-
-    waitTillReady(rendererReady);
-  };
-
   Engine(const Engine &) = delete;
-
   Engine(Engine &&) = default;
-
   Engine &operator=(const Engine &) = delete;
-
   Engine &operator=(Engine &&) = default;
 
-  ~Engine() = default;
+  Engine();
 
-  void start() {
-    mpThreadPool->submitJob([&] { mpRenderer->start(); });
-  }
+  ~Engine();
 
-  void stop() { mpThreadPool->release(); }
+  void start();
+
+  void stop();
 
 private:
   std::unique_ptr<Settings> mpSettings;

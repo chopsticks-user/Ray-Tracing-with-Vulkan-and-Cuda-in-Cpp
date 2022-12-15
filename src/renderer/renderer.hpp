@@ -18,27 +18,16 @@ class ThreadPool;
 class Renderer {
 public:
   Renderer() = delete;
-
-  Renderer(const Settings &settings, ThreadPool &threadPool)
-      : mpSettings{&settings},
-        mpThreadPool{&threadPool}, mInstance{*mpSettings}, mWindow{*mpSettings},
-        mSurface{mInstance, mWindow}, mDevice{mInstance, mSurface} {}
-
   Renderer(const Renderer &) = delete;
-
   Renderer(Renderer &&) = default;
-
   Renderer &operator=(const Renderer &) = delete;
-
   Renderer &operator=(Renderer &&) = default;
 
-  ~Renderer() = default;
+  Renderer(const Settings &settings, ThreadPool &threadPool);
 
-  void start() {
-    mWindow.open();
-    // Instance instance = std::move(mInstance);
-    // mInstance.release();
-  }
+  ~Renderer();
+
+  void start();
 
 private:
   const Settings *mpSettings;
