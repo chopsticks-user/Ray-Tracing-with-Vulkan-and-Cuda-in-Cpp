@@ -34,6 +34,19 @@ static u32 makeVkVersion(const std::string &versionStr) {
   return VK_MAKE_VERSION(version.major, version.minor, version.patch);
 }
 
+static CPUThreadUsage makeCPUThreadUsage(const std::string &usageModeStr) {
+  if (usageModeStr == "high") {
+    return high;
+  }
+  if (usageModeStr == "medium") {
+    return medium;
+  }
+  if (usageModeStr == "low") {
+    return low;
+  }
+  throw std::runtime_error("Unknown CPU thread usage mode.");
+}
+
 Settings::Settings(const std::string &settingsFilePath) {
   std::fstream fs(settingsFilePath);
   if (!fs.is_open()) {
@@ -56,13 +69,8 @@ Settings::Settings(const std::string &settingsFilePath) {
   graphics.screenHeight = graphicsSettings["render-window"]["height"];
 
   auto systemSettings = jsonData["system"];
-  std::map<std::string, CPUThreadUsage> cpuThreadUsageOptions{
-      {"high", high},
-      {"medium", medium},
-      {"low", low},
-  };
   system.cpuThreadUsage =
-      cpuThreadUsageOptions.at(systemSettings["cpu-thread-usage"]);
+      makeCPUThreadUsage(systemSettings["cpu-thread-usage"]);
 
   auto advancedSettings = jsonData["advanced"];
 }

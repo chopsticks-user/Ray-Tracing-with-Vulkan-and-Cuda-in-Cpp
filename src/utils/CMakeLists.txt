@@ -2,7 +2,6 @@
 add_library(neko_utils STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/settings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/json_utils.cpp
 )
 target_include_directories(neko_utils PRIVATE
     ${PROJECT_SOURCE_DIR}/json/single_include

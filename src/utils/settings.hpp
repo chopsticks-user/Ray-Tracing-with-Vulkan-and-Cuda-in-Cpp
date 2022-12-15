@@ -2,7 +2,6 @@
 #define NEKO_UTILS_SETTINGS_HPP
 
 #include "defines.hpp"
-#include "json_utils.hpp"
 
 namespace neko {
 
