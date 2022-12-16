@@ -5,33 +5,35 @@
 
 namespace neko {
 
-Engine::Engine() {
+void Engine::initRenderer() {
+  mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+}
+
+Engine::Engine(const std::string &settingsFilePath) {
   TIMER_START(settingsTimer);
-  mpSettings = std::make_unique<Settings>();
+  if (settingsFilePath.length() == 0) {
+    mpSettings = std::make_unique<Settings>();
+  } else {
+    mpSettings = std::make_unique<Settings>(settingsFilePath);
+  }
   TIMER_INVOKE(settingsTimer, "Settings' load time");
 
   TIMER_START(threadPoolTimer);
   mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
   TIMER_INVOKE(threadPoolTimer, "Thread pool's creation time");
 
-  printf("%ld\n", mpThreadPool->threadCount());
-
-  TIMER_START(rendererTimer);
-  bool rendererReady;
-  mpThreadPool->submitJob(
-      [&] {
-        mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
-      },
-      rendererReady);
-  TIMER_INVOKE(rendererTimer, "Renderer's creation time");
-
-  waitTillReady(rendererReady);
+  auto rendererReady = mpThreadPool->submitJob([&] {
+    mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+  });
+  rendererReady->wait();
 };
 
 Engine::~Engine() = default;
 
 void Engine::start() {
   mpThreadPool->submitJob([&] { mpRenderer->start(); });
+  // auto rendererStop = mpThreadPool->submitJob([&] { mpRenderer->start(); });
+  // rendererStop->wait();
 }
 
 void Engine::stop() { mpThreadPool->release(); }

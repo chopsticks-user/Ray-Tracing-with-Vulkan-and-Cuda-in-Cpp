@@ -11,7 +11,7 @@ public:
 
   Context(const Context &) = delete;
 
-  Context(Context &&) { moveCreateContext(); }
+  Context(Context &&) noexcept { moveCreateContext(); }
 
   Context &operator=(const Context &) = delete;
 

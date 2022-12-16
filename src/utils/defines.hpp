@@ -6,6 +6,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -25,7 +26,6 @@ typedef int64_t i64;
 
 typedef float f32;
 typedef double f64;
-typedef long double f128;
 
 typedef char b8;
 typedef int32_t b32;
@@ -42,7 +42,6 @@ static_assert(sizeof(i64) == 8, "sizeof(i8) != 8 bytes");
 
 static_assert(sizeof(f32) == 4, "sizeof(f32) != 4 bytes");
 static_assert(sizeof(f64) == 8, "sizeof(f64) != 8 bytes");
-static_assert(sizeof(f128) == 16, "sizeof(f128) != 16 bytes");
 
 static_assert(sizeof(b8) == 1, "sizeof(u16) != 1 byte");
 static_assert(sizeof(b32) == 4, "sizeof(b32) != 4 bytes");
@@ -57,6 +56,28 @@ inline constexpr bool debugMode = true;
 #else
 inline constexpr bool debugMode = false;
 #endif /* NDEBUG */
+
+enum SupportedOS { linuxk, win64, win32 };
+
+#ifdef __linux__
+inline constexpr SupportedOS currentOS = linuxk;
+#elif defined(_WIN64)
+inline constexpr SupportedOS currentOS = win64;
+#elif defined(_WIN32)
+inline constexpr SupportedOS currentOS = win32;
+#else
+#error "Operating system not supported"
+#endif /* current os */
+
+enum CppVersion { std17 = 17, std20 = 20 };
+
+#if __cplusplus > 201703L
+inline constexpr CppVersion cppVersion = std20;
+#elif __cplusplus > 201402L
+inline constexpr CppVersion cppVersion = std17;
+#else
+#error "At least C++17 is required"
+#endif /* C++ version */
 
 } /* namespace neko */
 
