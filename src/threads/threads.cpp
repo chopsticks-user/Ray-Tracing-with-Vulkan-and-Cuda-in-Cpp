@@ -2,26 +2,18 @@
 
 namespace neko {
 
-void ThreadPool::submitJob(const Job_T &job, volatile bool &readyFlag) {
+std::shared_ptr<JobPromise> ThreadPool::submitJob(const Job_T &job) {
+  std::shared_ptr<JobPromise> jobReady;
   {
     MutexLock_T lock{mQueueMutex};
-    readyFlag = false;
-    mJobs.push([&] {
+    jobReady = std::make_shared<JobPromise>();
+    mJobs.push([=] {
       job();
-      readyFlag = true;
+      jobReady->setFlag();
     });
-    ++mTotalSubmittedJob;
   }
   mMutexCondition.notify_one();
-}
-
-void ThreadPool::submitJob(const Job_T &job) {
-  {
-    MutexLock_T lock{mQueueMutex};
-    mJobs.push(job);
-    ++mTotalSubmittedJob;
-  }
-  mMutexCondition.notify_one();
+  return jobReady;
 }
 
 bool ThreadPool::busy() {
@@ -63,7 +55,6 @@ void ThreadPool::initializePool(CPUThreadUsage usageMode) {
   for (auto &thread : mThreads) {
     thread = std::thread{ThreadPool::threadLoop, this};
   }
-  mTotalSubmittedJob = 0;
 }
 
 void ThreadPool::threadLoop(ThreadPool *pool) {
@@ -79,28 +70,8 @@ void ThreadPool::threadLoop(ThreadPool *pool) {
       }
       job = pool->mJobs.front();
       pool->mJobs.pop();
-      ++pool->mJobStatus[std::this_thread::get_id()];
     }
     job();
-  }
-}
-
-void waitTillReady(
-    const std::vector<std::reference_wrapper<volatile bool>> &readyFlags) {
-  bool stopFlag = false;
-  u64 flagCount = readyFlags.size();
-  while (!stopFlag) {
-    for (u64 iFlag = 0; iFlag < flagCount; ++iFlag) {
-      if (readyFlags[iFlag] == false) {
-        iFlag = 0;
-      }
-    }
-    stopFlag = true;
-  }
-}
-
-void waitTillReady(volatile bool &readyFlag) {
-  while (!readyFlag) {
   }
 }
 

@@ -3,9 +3,6 @@
 #include "renderer.hpp"
 #include "threads.hpp"
 
-#include <iostream>
-#include <typeinfo>
-
 namespace neko {
 
 void Engine::initRenderer() {
@@ -25,19 +22,18 @@ Engine::Engine(const std::string &settingsFilePath) {
   mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
   TIMER_INVOKE(threadPoolTimer, "Thread pool's creation time");
 
-  volatile bool rendererReady;
-  mpThreadPool->submitJob(
-      [&] {
-        mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
-      },
-      rendererReady);
-  waitTillReady(rendererReady);
+  auto rendererReady = mpThreadPool->submitJob([&] {
+    mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+  });
+  rendererReady->wait();
 };
 
 Engine::~Engine() = default;
 
 void Engine::start() {
   mpThreadPool->submitJob([&] { mpRenderer->start(); });
+  // auto rendererStop = mpThreadPool->submitJob([&] { mpRenderer->start(); });
+  // rendererStop->wait();
 }
 
 void Engine::stop() { mpThreadPool->release(); }

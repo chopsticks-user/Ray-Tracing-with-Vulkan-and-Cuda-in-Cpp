@@ -6,6 +6,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -56,17 +57,27 @@ inline constexpr bool debugMode = true;
 inline constexpr bool debugMode = false;
 #endif /* NDEBUG */
 
-enum SupportedOS {
-  ulinux,
-  windows,
-};
+enum SupportedOS { linuxk, win64, win32 };
 
 #ifdef __linux__
-inline constexpr SupportedOS currentOS = ulinux;
+inline constexpr SupportedOS currentOS = linuxk;
+#elif defined(_WIN64)
+inline constexpr SupportedOS currentOS = win64;
 #elif defined(_WIN32)
-inline constexpr SupportedOS currentOS = windows;
+inline constexpr SupportedOS currentOS = win32;
 #else
+#error "Operating system not supported"
 #endif /* current os */
+
+enum CppVersion { std17 = 17, std20 = 20 };
+
+#if __cplusplus > 201703L
+inline constexpr CppVersion cppVersion = std20;
+#elif __cplusplus > 201402L
+inline constexpr CppVersion cppVersion = std17;
+#else
+#error "At least C++17 is required"
+#endif /* C++ version */
 
 } /* namespace neko */
 

@@ -5,7 +5,7 @@
 
 #include <condition_variable>
 #include <functional>
-#include <map>
+#include <future>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -13,6 +13,26 @@
 namespace neko {
 
 class Engine;
+class ThreadPool;
+
+class JobPromise {
+public:
+  friend class ThreadPool;
+
+  bool wait() {
+    if (!mFinished) {
+      mFinished = mFuture.get();
+    }
+    return mFinished;
+  }
+
+private:
+  std::promise<bool> mPromise;
+  std::future<bool> mFuture = mPromise.get_future();
+  bool mFinished = false;
+
+  void setFlag() { mPromise.set_value(true); }
+};
 
 class ThreadPool {
   typedef std::function<void()> Job_T;
@@ -33,30 +53,15 @@ public:
 
   /**
    * @brief
-   * ! The caller must ensure that both {job} and {readyFlag} are alive
-   * ! until the worker thread finishes using them.
-   *
-   * @param job
-   * @param readyFlag
-   */
-  void submitJob(const Job_T &job, volatile bool &readyFlag);
-
-  /**
-   * @brief
    * ! The caller must ensure that {job} is alive until the worker thread
    * ! finishes using it.
    *
    * @param job
+   * @return std::shared_ptr<JobPromise>
    */
-  void submitJob(const Job_T &job);
+  std::shared_ptr<JobPromise> submitJob(const Job_T &job);
 
   bool busy();
-
-  const std::map<std::thread::id, u64> &jobStatus() const noexcept {
-    return mJobStatus;
-  }
-
-  u64 totalSubmittedJob() const noexcept { return mTotalSubmittedJob; }
 
   void force_release();
 
@@ -68,18 +73,11 @@ private:
   std::mutex mQueueMutex;
   std::condition_variable mMutexCondition;
   bool mShouldTerminate;
-  std::map<std::thread::id, u64> mJobStatus;
-  u64 mTotalSubmittedJob;
 
   void initializePool(CPUThreadUsage usageMode = medium);
 
   static void threadLoop(ThreadPool *pool);
 };
-
-void waitTillReady(
-    const std::vector<std::reference_wrapper<volatile bool>> &readyFlags);
-
-void waitTillReady(volatile bool &readyFlag);
 
 } /* namespace neko */
 
