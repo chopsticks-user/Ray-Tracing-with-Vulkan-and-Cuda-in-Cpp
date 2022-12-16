@@ -9,7 +9,7 @@ target_include_directories(neko_utils
 )
 target_link_libraries(neko_utils
     PUBLIC compiler_flags
-    PUBLIC glfw
+    PUBLIC glfw3
     PUBLIC vulkan
 )
 

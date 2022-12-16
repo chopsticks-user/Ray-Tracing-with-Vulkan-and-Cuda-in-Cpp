@@ -60,7 +60,11 @@ Instance::Instance(const Settings &settings) {
   applicationInfo.engineVersion = settings.general.engineVersion;
   applicationInfo.apiVersion = apiVersion;
 
-  std::vector<const char *> layers = {"VK_LAYER_MANGOHUD_overlay"};
+  std::vector<const char *> layers{};
+#ifdef __linux__
+  layers.emplace_back("VK_LAYER_MANGOHUD_overlay");
+#endif // __linux__
+
   auto extensions = getRequiredExtensions();
 
   VkDebugUtilsMessengerCreateInfoEXT *pDebugMessengerInfo = nullptr;

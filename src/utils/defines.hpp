@@ -25,7 +25,6 @@ typedef int64_t i64;
 
 typedef float f32;
 typedef double f64;
-typedef long double f128;
 
 typedef char b8;
 typedef int32_t b32;
@@ -42,7 +41,6 @@ static_assert(sizeof(i64) == 8, "sizeof(i8) != 8 bytes");
 
 static_assert(sizeof(f32) == 4, "sizeof(f32) != 4 bytes");
 static_assert(sizeof(f64) == 8, "sizeof(f64) != 8 bytes");
-static_assert(sizeof(f128) == 16, "sizeof(f128) != 16 bytes");
 
 static_assert(sizeof(b8) == 1, "sizeof(u16) != 1 byte");
 static_assert(sizeof(b32) == 4, "sizeof(b32) != 4 bytes");

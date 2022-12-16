@@ -10,7 +10,7 @@ namespace neko {
 static Version getVersion(const std::string &versionStr) {
   u32 versionParts[3] = {0, 0, 0};
   u64 versionStrLength = versionStr.length();
-  u64 currentIndex;
+  u64 currentIndex = 0;
   for (u64 i = 0; i < 3; ++i) {
     std::string numStr = "0";
     for (; currentIndex < versionStrLength; ++currentIndex) {

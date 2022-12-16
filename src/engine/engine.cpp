@@ -7,7 +7,7 @@ namespace neko {
 
 Engine::Engine() {
   TIMER_START(settingsTimer);
-  mpSettings = std::make_unique<Settings>("data/configs/settings.json");
+  mpSettings = std::make_unique<Settings>();
   TIMER_INVOKE(settingsTimer, "Settings' load time");
 
   TIMER_START(threadPoolTimer);
@@ -17,15 +17,10 @@ Engine::Engine() {
   printf("%ld\n", mpThreadPool->threadCount());
 
   TIMER_START(rendererTimer);
-  bool rendererReady;
-  mpThreadPool->submitJob(
-      [&] {
-        mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
-      },
-      rendererReady);
+  mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
   TIMER_INVOKE(rendererTimer, "Renderer's creation time");
 
-  waitTillReady(rendererReady);
+  // waitTillReady(rendererReady);
 };
 
 Engine::~Engine() = default;
