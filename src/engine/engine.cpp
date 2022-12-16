@@ -7,7 +7,7 @@ namespace neko {
 
 Engine::Engine() {
   TIMER_START(settingsTimer);
-  mpSettings = std::make_unique<Settings>("data/configs/settings.json");
+  mpSettings = std::make_unique<Settings>();
   TIMER_INVOKE(settingsTimer, "Settings' load time");
 
   TIMER_START(threadPoolTimer);
