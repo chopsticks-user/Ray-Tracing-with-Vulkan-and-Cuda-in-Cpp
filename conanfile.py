@@ -9,8 +9,9 @@ class NekoEngineConan(ConanFile):
         pass
     
     def build(self):
-        prebuild.setup_monitoring_config()
+        prebuild.setup_monitoring_config("data/configs/MangoHud.conf")
         cmake = CMake(self)
         cmake.definitions["BUILD_SHARED_LIBS"] = "OFF"
         cmake.configure()
         cmake.build()
+        

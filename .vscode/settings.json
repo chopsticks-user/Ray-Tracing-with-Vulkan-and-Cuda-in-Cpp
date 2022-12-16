@@ -93,6 +93,7 @@
         "__node_handle": "cpp",
         "__tuple": "cpp",
         "queue": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "*.in": "cpp"
     }
 }

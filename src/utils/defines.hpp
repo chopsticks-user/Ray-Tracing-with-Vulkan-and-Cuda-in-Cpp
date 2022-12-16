@@ -1,6 +1,8 @@
 #ifndef NEKO_UTILS_DEFINES_HPP
 #define NEKO_UTILS_DEFINES_HPP
 
+#include "configs.hpp"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -21,9 +23,9 @@ typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
 
-typedef _Float32 f32;
-typedef _Float64 f64;
-typedef _Float128 f128;
+typedef float f32;
+typedef double f64;
+typedef long double f128;
 
 typedef char b8;
 typedef int32_t b32;

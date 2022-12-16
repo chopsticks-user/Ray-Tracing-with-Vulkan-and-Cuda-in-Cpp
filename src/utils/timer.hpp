@@ -7,7 +7,7 @@
 #define TIMER_START(timer_name)                                                \
   auto timer_name = neko::ScopedTimer { neko::TimeUnit::milliseconds }
 
-#define TIMER_STOP(timer_name, note)                                           \
+#define TIMER_INVOKE(timer_name, note)                                         \
   timer_name.invoke([](float x) { printf("%s: %f ms\n", note, x); })
 
 namespace neko {

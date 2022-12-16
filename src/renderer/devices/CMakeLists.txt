@@ -7,4 +7,7 @@ add_library(neko_renderer_devices
 target_include_directories(neko_renderer_devices PRIVATE
     ${PROJECT_SOURCE_DIR}/src/renderer/basic
 )
-target_link_libraries(neko_renderer_devices PRIVATE neko_utils)
+target_link_libraries(neko_renderer_devices
+    PUBLIC compiler_flags
+    PRIVATE neko_utils
+)

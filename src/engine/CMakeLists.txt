@@ -5,7 +5,8 @@ add_library(neko_engine
 target_include_directories(neko_engine PRIVATE
     ${PROJECT_SOURCE_DIR}/src/renderer
 )
-target_link_libraries(neko_engine PRIVATE
-    neko_utils
-    neko_threads
+target_link_libraries(neko_engine
+    PUBLIC compiler_flags
+    PRIVATE neko_utils
+    PRIVATE neko_threads
 )
