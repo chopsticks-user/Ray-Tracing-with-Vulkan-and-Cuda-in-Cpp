@@ -64,7 +64,6 @@ Instance::Instance(const Settings &settings) {
 #ifdef __linux__
   layers.emplace_back("VK_LAYER_MANGOHUD_overlay");
 #endif // __linux__
-
   auto extensions = getRequiredExtensions();
 
   VkDebugUtilsMessengerCreateInfoEXT *pDebugMessengerInfo = nullptr;

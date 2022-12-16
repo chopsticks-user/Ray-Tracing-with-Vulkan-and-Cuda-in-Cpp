@@ -17,10 +17,15 @@ Engine::Engine() {
   printf("%ld\n", mpThreadPool->threadCount());
 
   TIMER_START(rendererTimer);
-  mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+  bool rendererReady;
+  mpThreadPool->submitJob(
+      [&] {
+        mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+      },
+      rendererReady);
   TIMER_INVOKE(rendererTimer, "Renderer's creation time");
 
-  // waitTillReady(rendererReady);
+  waitTillReady(rendererReady);
 };
 
 Engine::~Engine() = default;
