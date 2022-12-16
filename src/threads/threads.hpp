@@ -12,6 +12,8 @@
 
 namespace neko {
 
+class Engine;
+
 class ThreadPool {
   typedef std::function<void()> Job_T;
   typedef std::unique_lock<std::mutex> MutexLock_T;
@@ -31,14 +33,21 @@ public:
 
   /**
    * @brief
-   * ! {neko::waitTillReady} must be called in the same scope where {readyFlag}
-   * ! lives
+   * ! The caller must ensure that both {job} and {readyFlag} are alive
+   * ! until the worker thread finishes using them.
    *
    * @param job
    * @param readyFlag
    */
-  void submitJob(const Job_T &job, bool &readyFlag);
+  void submitJob(const Job_T &job, volatile bool &readyFlag);
 
+  /**
+   * @brief
+   * ! The caller must ensure that {job} is alive until the worker thread
+   * ! finishes using it.
+   *
+   * @param job
+   */
   void submitJob(const Job_T &job);
 
   bool busy();
@@ -67,9 +76,10 @@ private:
   static void threadLoop(ThreadPool *pool);
 };
 
-void waitTillReady(const std::vector<std::reference_wrapper<bool>> &readyFlags);
+void waitTillReady(
+    const std::vector<std::reference_wrapper<volatile bool>> &readyFlags);
 
-void waitTillReady(bool &readyFlag);
+void waitTillReady(volatile bool &readyFlag);
 
 } /* namespace neko */
 

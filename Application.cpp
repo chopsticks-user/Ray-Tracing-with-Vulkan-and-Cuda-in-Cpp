@@ -1,9 +1,14 @@
+#include <filesystem>
 #include <iostream>
 #include <neko.hpp>
 
-int protected_main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
+static const std::string settingsFilePath =
+    std::filesystem::current_path().string() + "/data/configs/settings.json";
+
+static int protected_main([[maybe_unused]] int argc,
+                          [[maybe_unused]] char **argv) {
   TIMER_START(t1);
-  auto engine = std::make_unique<neko::Engine>();
+  auto engine = std::make_unique<neko::Engine>(settingsFilePath);
   TIMER_INVOKE(t1, "Engine's load time");
   engine->start();
   return EXIT_SUCCESS;

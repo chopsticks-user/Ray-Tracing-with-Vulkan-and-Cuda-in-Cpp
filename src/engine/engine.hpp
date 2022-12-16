@@ -5,6 +5,8 @@
 
 #include <memory>
 
+#include <functional>
+
 namespace neko {
 
 class Renderer;
@@ -17,7 +19,7 @@ public:
   Engine &operator=(const Engine &) = delete;
   Engine &operator=(Engine &&) = default;
 
-  Engine();
+  Engine(const std::string &settingsFilePath = "");
 
   ~Engine();
 
@@ -26,6 +28,7 @@ public:
   void stop();
 
 private:
+  std::string projectDirectory;
   std::unique_ptr<Settings> mpSettings;
   std::unique_ptr<Renderer> mpRenderer;
 
@@ -36,6 +39,8 @@ private:
    * !any thread from unexpectedly being released or using destroyed resources.
    */
   std::unique_ptr<ThreadPool> mpThreadPool;
+
+  void initRenderer();
 };
 
 } /* namespace neko */

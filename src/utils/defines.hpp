@@ -56,6 +56,18 @@ inline constexpr bool debugMode = true;
 inline constexpr bool debugMode = false;
 #endif /* NDEBUG */
 
+enum SupportedOS {
+  ulinux,
+  windows,
+};
+
+#ifdef __linux__
+inline constexpr SupportedOS currentOS = ulinux;
+#elif defined(_WIN32)
+inline constexpr SupportedOS currentOS = windows;
+#else
+#endif /* current os */
+
 } /* namespace neko */
 
 #endif /* NEKO_UTILS_DEFINES_HPP */

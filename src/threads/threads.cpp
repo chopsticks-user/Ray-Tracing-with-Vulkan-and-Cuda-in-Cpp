@@ -2,7 +2,7 @@
 
 namespace neko {
 
-void ThreadPool::submitJob(const Job_T &job, bool &readyFlag) {
+void ThreadPool::submitJob(const Job_T &job, volatile bool &readyFlag) {
   {
     MutexLock_T lock{mQueueMutex};
     readyFlag = false;
@@ -57,7 +57,9 @@ void ThreadPool::initializePool(CPUThreadUsage usageMode) {
     throw std::runtime_error("std::thread::hardware_concurrency() < 4");
   }
   mShouldTerminate = false;
-  mThreads.resize(std::thread::hardware_concurrency() / usageMode);
+  u64 threadCount = std::thread::hardware_concurrency() / usageMode;
+  threadCount = threadCount > 2 ? threadCount : 2;
+  mThreads.resize(threadCount);
   for (auto &thread : mThreads) {
     thread = std::thread{ThreadPool::threadLoop, this};
   }
@@ -84,7 +86,7 @@ void ThreadPool::threadLoop(ThreadPool *pool) {
 }
 
 void waitTillReady(
-    const std::vector<std::reference_wrapper<bool>> &readyFlags) {
+    const std::vector<std::reference_wrapper<volatile bool>> &readyFlags) {
   bool stopFlag = false;
   u64 flagCount = readyFlags.size();
   while (!stopFlag) {
@@ -97,7 +99,7 @@ void waitTillReady(
   }
 }
 
-void waitTillReady(bool &readyFlag) {
+void waitTillReady(volatile bool &readyFlag) {
   while (!readyFlag) {
   }
 }
