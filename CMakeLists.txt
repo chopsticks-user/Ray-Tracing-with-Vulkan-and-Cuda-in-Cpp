@@ -15,6 +15,5 @@ target_link_libraries(Application
     PUBLIC compiler_flags
     PRIVATE neko
 )
-message(${CMAKE_BUILD_TYPE})
 
 # include(${PROJECT_SOURCE_DIR}/tools/cmake/Install.cmake)
