@@ -95,5 +95,8 @@
         "queue": "cpp",
         "stack": "cpp",
         "*.in": "cpp"
-    }
+    },
+    "lldb.showDisassembly": "auto",
+    "lldb.dereferencePointers": true,
+    "lldb.consoleMode": "commands"
 }

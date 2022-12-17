@@ -7,11 +7,14 @@ static const std::string settingsFilePath =
 
 static int protected_main([[maybe_unused]] int argc,
                           [[maybe_unused]] char **argv) {
+  if constexpr (neko::debugMode) {
+    std::cout << "Debug\n";
+  }
+  std::cout << neko::cppVersion << '\n';
   TIMER_START(t1);
-  auto engine = std::make_unique<neko::Engine>(settingsFilePath);
+  auto engine = std::make_unique<neko::Engine>();
   TIMER_INVOKE(t1, "Engine's load time");
   engine->start();
-  std::cout << neko::cppVersion << '\n';
   return EXIT_SUCCESS;
 }
 

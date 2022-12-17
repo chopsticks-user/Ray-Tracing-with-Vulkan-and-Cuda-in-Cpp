@@ -32,8 +32,6 @@ Engine::~Engine() = default;
 
 void Engine::start() {
   mpThreadPool->submitJob([&] { mpRenderer->start(); });
-  // auto rendererStop = mpThreadPool->submitJob([&] { mpRenderer->start(); });
-  // rendererStop->wait();
 }
 
 void Engine::stop() { mpThreadPool->release(); }

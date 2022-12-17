@@ -4,6 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/platforms/indep/include",
+                "${workspaceFolder}/src/platforms/linux/include",
+                "${workspaceFolder}/src/platforms/windows/include",
                 "${workspaceFolder}/src/utils",
                 "${workspaceFolder}/src/renderer",
                 "${workspaceFolder}/src/threads",
@@ -12,6 +16,19 @@
             "defines": [],
             "compilerPath": "/usr/bin/clang",
             "intelliSenseMode": "linux-clang-x64"
+        },
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/utils",
+                "${workspaceFolder}/src/renderer",
+                "${workspaceFolder}/src/threads",
+                "${workspaceFolder}/src/renderer/basic"
+            ],
+            "defines": [],
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "intelliSenseMode": "windows-gcc-x64"
         }
     ],
     "version": 4
