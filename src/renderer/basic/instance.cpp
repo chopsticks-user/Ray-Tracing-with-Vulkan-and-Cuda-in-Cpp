@@ -63,7 +63,7 @@ Instance::Instance(const Settings &settings) {
   std::vector<const char *> layers{};
 
   // ! MangoHud on
-  if constexpr (currentOS == linuxk) {
+  if constexpr (platform == linuxk) {
     layers.emplace_back("VK_LAYER_MANGOHUD_overlay");
   }
 

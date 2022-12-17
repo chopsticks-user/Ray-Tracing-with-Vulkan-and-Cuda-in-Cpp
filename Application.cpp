@@ -11,7 +11,6 @@ static int protected_main([[maybe_unused]] int argc,
   auto engine = std::make_unique<neko::Engine>(settingsFilePath);
   TIMER_INVOKE(t1, "Engine's load time");
   engine->start();
-  std::cout << neko::cppVersion << '\n';
   return EXIT_SUCCESS;
 }
 

@@ -2,6 +2,7 @@
 #define NEKO_UTILS_HPP
 
 #include "defines.hpp"
+#include "platform.hpp"
 #include "settings.hpp"
 #include "timer.hpp"
 
