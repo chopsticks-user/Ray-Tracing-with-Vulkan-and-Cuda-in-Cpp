@@ -11,6 +11,7 @@ namespace neko {
 
 class Renderer;
 class ThreadPool;
+class JobPromise;
 
 class Engine {
 public:
@@ -31,6 +32,7 @@ private:
   std::string projectDirectory;
   std::unique_ptr<Settings> mpSettings;
   std::unique_ptr<Renderer> mpRenderer;
+  std::shared_ptr<JobPromise> mpRendererReady;
 
   /**
    * @brief
@@ -39,8 +41,6 @@ private:
    * !any thread from unexpectedly being released or using destroyed resources.
    */
   std::unique_ptr<ThreadPool> mpThreadPool;
-
-  void initRenderer();
 };
 
 } /* namespace neko */

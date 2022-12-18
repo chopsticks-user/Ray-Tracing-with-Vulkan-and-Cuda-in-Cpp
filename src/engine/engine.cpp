@@ -5,10 +5,6 @@
 
 namespace neko {
 
-void Engine::initRenderer() {
-  mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
-}
-
 Engine::Engine(const std::string &settingsFilePath) {
   TIMER_START(settingsTimer);
   if (settingsFilePath.length() == 0) {
@@ -22,16 +18,18 @@ Engine::Engine(const std::string &settingsFilePath) {
   mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
   TIMER_INVOKE(threadPoolTimer, "Thread pool's creation time");
 
-  auto rendererReady = mpThreadPool->submitJob([&] {
+  mpRendererReady = mpThreadPool->submitJob([&] {
     mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
   });
-  rendererReady->wait();
+  // rendererReady->wait();
 };
 
 Engine::~Engine() = default;
 
 void Engine::start() {
-  mpThreadPool->submitJob([&] { mpRenderer->start(); });
+  mpRendererReady->wait();
+  auto rendererStopped = mpThreadPool->submitJob([&] { mpRenderer->start(); });
+  rendererStopped->wait();
 }
 
 void Engine::stop() { mpThreadPool->release(); }

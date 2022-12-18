@@ -16,19 +16,22 @@ public:
 
   Surface(const Surface &) = delete;
 
-  Surface(Surface &&) = default;
+  Surface(Surface &&) noexcept;
 
   Surface &operator=(const Surface &) = delete;
 
-  Surface &operator=(Surface &&) = default;
+  Surface &operator=(Surface &&) noexcept;
 
-  ~Surface();
+  ~Surface() noexcept { release(); }
 
   const VkSurfaceKHR &operator*() const noexcept { return mSurface; }
 
+  void release() noexcept;
+
 private:
-  const Instance &mcrInstance;
-  VkSurfaceKHR mSurface;
+  const Instance *mpcInstance = nullptr;
+  VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+  bool mIsOwner = false;
 };
 
 } /* namespace neko */

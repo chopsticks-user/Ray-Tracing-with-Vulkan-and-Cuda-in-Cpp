@@ -94,6 +94,9 @@
         "__tuple": "cpp",
         "queue": "cpp",
         "stack": "cpp",
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "*.ipp": "cpp",
+        "locale": "cpp",
+        "__functional_base": "cpp"
     }
 }

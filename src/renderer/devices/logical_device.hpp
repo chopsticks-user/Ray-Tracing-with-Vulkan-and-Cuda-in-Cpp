@@ -28,29 +28,30 @@ struct UniversalQueue {
 class Device {
 public:
   Device() = default;
+  Device(const Device &) = delete;
+  Device &operator=(const Device &) = delete;
 
   Device(const Instance &crInstance, const Surface &crSurface);
 
-  Device(const Device &) = delete;
+  Device(Device &&) noexcept;
 
-  Device(Device &&) = default;
+  Device &operator=(Device &&) noexcept;
 
-  Device &operator=(const Device &) = delete;
-
-  Device &operator=(Device &&) = default;
-
-  ~Device();
+  ~Device() noexcept { release(); }
 
   const VkDevice &operator*() const noexcept { return mLogicalDevice; }
+
+  void release() noexcept;
 
   const VkPhysicalDevice &physical() const noexcept { return mPhysicalDevice; }
 
   const UniversalQueue &queue() const noexcept { return mQueue; }
 
 private:
-  VkDevice mLogicalDevice;
-  VkPhysicalDevice mPhysicalDevice;
-  UniversalQueue mQueue;
+  VkDevice mLogicalDevice = nullptr;
+  VkPhysicalDevice mPhysicalDevice = nullptr;
+  UniversalQueue mQueue = {};
+  bool mIsOwner = false;
 
   uint32_t selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
                                       VkSurfaceKHR surface);

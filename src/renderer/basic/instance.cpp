@@ -109,7 +109,7 @@ Instance::Instance(Instance &&rhs) noexcept
                                                            rhs.mIsOwner,
                                                            false)} {}
 
-Instance &Instance::operator=(Instance &&rhs) {
+Instance &Instance::operator=(Instance &&rhs) noexcept {
   release();
   mContext = std::move(rhs.mContext);
   mInstance = std::move(rhs.mInstance);

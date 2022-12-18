@@ -6,8 +6,8 @@ namespace neko {
 
 Renderer::Renderer(const Settings &settings, ThreadPool &threadPool)
     : mpSettings{&settings}, mpThreadPool{&threadPool}, mInstance{*mpSettings},
-      mWindow{*mpSettings}, mSurface{mInstance, mWindow}, mDevice{mInstance,
-                                                                  mSurface} {}
+      mWindow{*mpSettings}, mSurface{mInstance, mWindow},
+      mDevice{mInstance, mSurface}, mCommandPool{mDevice} {}
 
 Renderer::~Renderer() = default;
 

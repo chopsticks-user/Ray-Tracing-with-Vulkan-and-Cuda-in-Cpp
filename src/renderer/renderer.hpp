@@ -37,6 +37,7 @@ private:
   Window mWindow;
   Surface mSurface;
   Device mDevice;
+  CommandPool mCommandPool;
 };
 
 } /* namespace neko */

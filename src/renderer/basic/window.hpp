@@ -10,27 +10,28 @@ class Window {
 
 public:
   Window() = default;
+  Window(const Window &) = delete;
+  Window &operator=(const Window &) = delete;
 
   explicit Window(const Settings &settings);
 
-  Window(const Window &) = delete;
+  Window(Window &&) noexcept;
 
-  Window(Window &&) = default;
+  Window &operator=(Window &&) noexcept;
 
-  Window &operator=(const Window &) = delete;
-
-  Window &operator=(Window &&) = default;
-
-  ~Window();
+  ~Window() noexcept { release(); };
 
   const GLWindow &operator*() const noexcept { return mWindow; }
+
+  void release() noexcept;
 
   void open();
 
 private:
-  GLWindow mWindow;
-  u32 mWidth;
-  u32 mHeight;
+  GLWindow mWindow = nullptr;
+  u32 mWidth = 0;
+  u32 mHeight = 0;
+  bool mIsOwner = false;
 };
 
 } /* namespace neko */

@@ -12,23 +12,27 @@ class Context;
 class Instance {
 public:
   Instance() = default;
-  explicit Instance(const Settings &settings);
   Instance(const Instance &) = delete;
-  Instance(Instance &&rhs) noexcept;
   Instance &operator=(const Instance &) = delete;
-  Instance &operator=(Instance &&rhs);
-  ~Instance() { release(); }
+
+  explicit Instance(const Settings &settings);
+
+  Instance(Instance &&rhs) noexcept;
+
+  Instance &operator=(Instance &&rhs) noexcept;
+
+  ~Instance() noexcept { release(); }
 
   const VkInstance &operator*() const noexcept { return mInstance; }
 
-  std::vector<const char *> getRequiredExtensions();
-
   void release() noexcept;
+
+  std::vector<const char *> getRequiredExtensions();
 
 private:
   Context mContext = {};
-  VkInstance mInstance = nullptr;
-  VkDebugUtilsMessengerEXT mDebugMessenger = nullptr;
+  VkInstance mInstance = VK_NULL_HANDLE;
+  VkDebugUtilsMessengerEXT mDebugMessenger = VK_NULL_HANDLE;
   bool mIsOwner = false;
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
