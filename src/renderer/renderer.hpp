@@ -12,6 +12,10 @@
 #include "devices/logical_device.hpp"
 #include "devices/physical_device.hpp"
 #include "devices/queues.hpp"
+#include "resources/buffer.hpp"
+#include "resources/depth_buffer.hpp"
+#include "resources/image.hpp"
+#include "resources/uniform_buffer.hpp"
 
 namespace neko {
 
@@ -41,6 +45,7 @@ private:
   Device mDevice;
   CommandPool mCommandPool;
   Swapchain mSwapchain;
+  DepthBuffer mDepthBuffer;
 };
 
 } /* namespace neko */

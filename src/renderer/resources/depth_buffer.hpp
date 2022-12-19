@@ -3,14 +3,21 @@
 
 #include "core.hpp"
 
+#include "image.hpp"
+
 namespace neko {
 
-class DepthBuffer {
+class Image;
+class Swapchain;
+
+class DepthBuffer : public Image {
 public:
+  using Image::Image;
+
+  DepthBuffer(const Settings &crSettings, const Device &crDevice,
+              const Swapchain &crSwapchain);
+
 private:
-  VkImage mDepthImage = VK_NULL_HANDLE;
-  VkImageView mDepthImageView = VK_NULL_HANDLE;
-  bool mIsOwner = false;
 };
 
 } /* namespace neko */

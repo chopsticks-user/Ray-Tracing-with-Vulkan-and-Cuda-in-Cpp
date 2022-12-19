@@ -11,9 +11,10 @@ bool hasDepthStencilComponent(VkFormat format) {
          format == VK_FORMAT_D32_SFLOAT_S8_UINT;
 }
 
-VkFormat findDepthStencilSupportedFormat(
-    VkPhysicalDevice physicalDevice, const std::vector<VkFormat> &candidates,
-    VkImageTiling tiling, VkFormatFeatureFlags features) {
+VkFormat findSupportedFormat(VkPhysicalDevice physicalDevice,
+                             const std::vector<VkFormat> &candidates,
+                             VkImageTiling tiling,
+                             VkFormatFeatureFlags features) {
   for (auto format : candidates) {
     VkFormatProperties properties;
     vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &properties);
@@ -224,6 +225,20 @@ void generateMipMaps(const CommandPool &commandPool,
   commandPool.endBuffer(commandBuffer);
   commandPool.submit(commandBuffer);
   commandPool.free(commandBuffer);
+}
+
+u32 findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
+                   VkMemoryPropertyFlags propFlags) {
+  VkPhysicalDeviceMemoryProperties memoryProperties;
+  vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+  for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
+    if (typeFilter & (1 << i) &&
+        (memoryProperties.memoryTypes[i].propertyFlags & propFlags) ==
+            propFlags) {
+      return i;
+    }
+  }
+  throw std::runtime_error("Failed to find suitable memory type.");
 }
 
 } /* namespace detail */

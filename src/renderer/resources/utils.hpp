@@ -11,9 +11,10 @@ namespace detail {
 
 bool hasDepthStencilComponent(VkFormat format);
 
-VkFormat findDepthStencilSupportedFormat(
-    VkPhysicalDevice physicalDevice, const std::vector<VkFormat> &candidates,
-    VkImageTiling tiling, VkFormatFeatureFlags features);
+VkFormat findSupportedFormat(VkPhysicalDevice physicalDevice,
+                             const std::vector<VkFormat> &candidates,
+                             VkImageTiling tiling,
+                             VkFormatFeatureFlags features);
 
 void transitImageLayout(const CommandPool &commandPool, VkImage image,
                         VkFormat format, VkImageLayout oldLayout,
@@ -27,6 +28,9 @@ VkSampleCountFlagBits maxSampleCount(VkPhysicalDevice physicalDevice);
 void generateMipMaps(const CommandPool &commandPool,
                      VkPhysicalDevice physicalDevice, VkImage image,
                      VkFormat format, i32 width, i32 height, u32 mipLevels);
+
+u32 findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
+                   VkMemoryPropertyFlags propFlags);
 
 } /* namespace detail */
 } /* namespace neko */
