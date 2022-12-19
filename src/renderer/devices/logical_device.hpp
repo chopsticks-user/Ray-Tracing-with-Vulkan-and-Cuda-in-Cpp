@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERER_DEVICES_LOGICAL_DEVICE_HPP
 #define NEKO_RENDERER_DEVICES_LOGICAL_DEVICE_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 namespace neko {
 

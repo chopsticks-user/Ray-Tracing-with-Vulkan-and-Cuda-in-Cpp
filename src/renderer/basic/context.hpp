@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERER_BASIC_CONTEXT_HPP
 #define NEKO_RENDERER_BASIC_CONTEXT_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 namespace neko {
 

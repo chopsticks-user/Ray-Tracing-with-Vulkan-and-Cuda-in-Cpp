@@ -1,10 +1,12 @@
 #ifndef NEKO_RENDERER_HPP
 #define NEKO_RENDERER_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
+#include "basic/context.hpp"
 #include "basic/instance.hpp"
 #include "basic/surface.hpp"
+#include "basic/swapchain.hpp"
 #include "basic/window.hpp"
 #include "commands/commands.hpp"
 #include "devices/logical_device.hpp"
@@ -38,6 +40,7 @@ private:
   Surface mSurface;
   Device mDevice;
   CommandPool mCommandPool;
+  Swapchain mSwapchain;
 };
 
 } /* namespace neko */

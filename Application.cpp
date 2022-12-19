@@ -7,9 +7,7 @@ static const std::string settingsFilePath =
 
 static int protected_main([[maybe_unused]] int argc,
                           [[maybe_unused]] char **argv) {
-  TIMER_START(t1);
   auto engine = std::make_unique<neko::Engine>(settingsFilePath);
-  TIMER_INVOKE(t1, "Engine's load time");
   engine->start();
   return EXIT_SUCCESS;
 }

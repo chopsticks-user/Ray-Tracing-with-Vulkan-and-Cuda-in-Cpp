@@ -7,5 +7,5 @@ target_include_directories(neko_renderer_commands PRIVATE
 )
 target_link_libraries(neko_renderer_commands
     PUBLIC compiler_flags
-    PRIVATE neko_utils
+    PRIVATE neko_core
 )

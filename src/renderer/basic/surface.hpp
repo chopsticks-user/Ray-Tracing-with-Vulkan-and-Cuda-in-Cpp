@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERER_BASIC_SURFACE_HPP
 #define NEKO_RENDERER_BASIC_SURFACE_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 namespace neko {
 

@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERDER_BASIC_INSTANCE_HPP
 #define NEKO_RENDERDER_BASIC_INSTANCE_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 #include "context.hpp"
 

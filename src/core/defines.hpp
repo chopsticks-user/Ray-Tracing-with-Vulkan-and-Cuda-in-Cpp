@@ -1,5 +1,5 @@
-#ifndef NEKO_UTILS_DEFINES_HPP
-#define NEKO_UTILS_DEFINES_HPP
+#ifndef NEKO_CORE_DEFINES_HPP
+#define NEKO_CORE_DEFINES_HPP
 
 #include "configs.hpp"
 
@@ -68,4 +68,4 @@ inline constexpr CppVersion cppVersion = std17;
 
 } /* namespace neko */
 
-#endif /* NEKO_UTILS_DEFINES_HPP */
+#endif /* NEKO_CORE_DEFINES_HPP */

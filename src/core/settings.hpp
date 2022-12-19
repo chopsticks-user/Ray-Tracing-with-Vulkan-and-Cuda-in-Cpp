@@ -1,9 +1,14 @@
-#ifndef NEKO_UTILS_SETTINGS_HPP
-#define NEKO_UTILS_SETTINGS_HPP
+#ifndef NEKO_CORE_SETTINGS_HPP
+#define NEKO_CORE_SETTINGS_HPP
 
 #include "defines.hpp"
 
 namespace neko {
+struct Version {
+  u32 major;
+  u32 minor;
+  u32 patch;
+};
 
 enum CPUThreadUsage {
   low = 3,
@@ -11,10 +16,11 @@ enum CPUThreadUsage {
   high = 1,
 };
 
-struct Version {
-  u32 major;
-  u32 minor;
-  u32 patch;
+enum PresentMode {
+  immediate = VK_PRESENT_MODE_IMMEDIATE_KHR,
+  mailbox = VK_PRESENT_MODE_MAILBOX_KHR,
+  fifo = VK_PRESENT_MODE_FIFO_KHR,
+  fifoRelaxed = VK_PRESENT_MODE_FIFO_RELAXED_KHR,
 };
 
 struct Settings {
@@ -29,6 +35,7 @@ struct Settings {
   struct {
     u32 screenWidth = 800;
     u32 screenHeight = 600;
+    PresentMode presentMode = fifo;
 
   } graphics;
 
@@ -42,4 +49,4 @@ struct Settings {
 
 } /* namespace neko */
 
-#endif /* NEKO_UTILS_SETTINGS_HPP */
+#endif /* NEKO_CORE_SETTINGS_HPP */

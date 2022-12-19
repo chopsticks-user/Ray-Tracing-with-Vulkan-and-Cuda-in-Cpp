@@ -4,5 +4,5 @@ add_library(neko_renderer_pipelines
 )
 target_link_libraries(neko_renderer_pipelines
     PUBLIC compiler_flags
-    PRIVATE neko_utils
+    PRIVATE neko_core
 )

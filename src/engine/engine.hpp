@@ -1,7 +1,7 @@
 #ifndef NEKO_ENGINE_HPP
 #define NEKO_ENGINE_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 #include <memory>
 

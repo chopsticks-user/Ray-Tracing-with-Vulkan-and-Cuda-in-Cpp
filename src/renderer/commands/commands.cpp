@@ -49,7 +49,7 @@ const VkQueue &CommandPool::queue() const noexcept {
   return mpcDevice->queue().mQueue;
 }
 
-VkCommandBuffer CommandPool::alloc(BufferLevel level) {
+VkCommandBuffer CommandPool::alloc(BufferLevel level) const {
   auto allocInfo = makeAllocInfo(1, level);
   VkCommandBuffer commandBuffer;
   if (vkAllocateCommandBuffers(**mpcDevice, &allocInfo, &commandBuffer) !=
@@ -59,7 +59,8 @@ VkCommandBuffer CommandPool::alloc(BufferLevel level) {
   return commandBuffer;
 }
 
-std::vector<VkCommandBuffer> CommandPool::alloc(u32 count, BufferLevel level) {
+std::vector<VkCommandBuffer> CommandPool::alloc(u32 count,
+                                                BufferLevel level) const {
   auto allocInfo = makeAllocInfo(count, level);
   std::vector<VkCommandBuffer> commandBuffers{count};
   if (vkAllocateCommandBuffers(**mpcDevice, &allocInfo,
@@ -70,7 +71,7 @@ std::vector<VkCommandBuffer> CommandPool::alloc(u32 count, BufferLevel level) {
 }
 
 void CommandPool::beginBuffer(VkCommandBuffer commandBuffer,
-                              BufferUsage usageFlags) {
+                              BufferUsage usageFlags) const {
   VkCommandBufferBeginInfo beginInfo{};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.pNext = nullptr;
@@ -83,7 +84,7 @@ void CommandPool::beginBuffer(VkCommandBuffer commandBuffer,
 }
 
 void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
-                               BufferLevel level, VkFence fence) {
+                               BufferLevel level, VkFence fence) const {
   auto commandBuffer = alloc(level);
   beginBuffer(commandBuffer);
   recordFunc(commandBuffer);
@@ -94,7 +95,7 @@ void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
 
 void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
                                const VkSubmitInfo *pcSubmitInfo,
-                               BufferLevel level, VkFence fence) {
+                               BufferLevel level, VkFence fence) const {
   auto commandBuffer = alloc(level);
   beginBuffer(commandBuffer);
   recordFunc(commandBuffer);
@@ -103,13 +104,14 @@ void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
   free(commandBuffer);
 }
 
-void CommandPool::endBuffer(VkCommandBuffer commandBuffer) {
+void CommandPool::endBuffer(VkCommandBuffer commandBuffer) const {
   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
     throw std::runtime_error("Failed to end recording a command buffer.");
   }
 }
 
-void CommandPool::submit(const VkSubmitInfo *pcSubmitInfo, VkFence fence) {
+void CommandPool::submit(const VkSubmitInfo *pcSubmitInfo,
+                         VkFence fence) const {
   auto queueHandle = queue();
   if (vkQueueSubmit(queueHandle, 1, pcSubmitInfo, fence) != VK_SUCCESS) {
     throw std::runtime_error("Failed to submit a command to queue.");
@@ -120,7 +122,7 @@ void CommandPool::submit(const VkSubmitInfo *pcSubmitInfo, VkFence fence) {
   }
 }
 
-void CommandPool::submit(VkCommandBuffer commandBuffer, VkFence fence) {
+void CommandPool::submit(VkCommandBuffer commandBuffer, VkFence fence) const {
   VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
   submitInfo.commandBufferCount = 1;
@@ -136,11 +138,12 @@ void CommandPool::submit(VkCommandBuffer commandBuffer, VkFence fence) {
   }
 }
 
-void CommandPool::free(VkCommandBuffer commandBuffer) noexcept {
+void CommandPool::free(VkCommandBuffer commandBuffer) const noexcept {
   vkFreeCommandBuffers(**mpcDevice, mCommandPool, 1, &commandBuffer);
 }
 
-void CommandPool::free(std::vector<VkCommandBuffer> commandBuffers) noexcept {
+void CommandPool::free(
+    std::vector<VkCommandBuffer> commandBuffers) const noexcept {
   vkFreeCommandBuffers(**mpcDevice, mCommandPool, vku32(commandBuffers.size()),
                        commandBuffers.data());
 }

@@ -9,5 +9,5 @@ target_include_directories(neko_renderer_devices PRIVATE
 )
 target_link_libraries(neko_renderer_devices
     PUBLIC compiler_flags
-    PRIVATE neko_utils
+    PRIVATE neko_core
 )

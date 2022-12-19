@@ -19,7 +19,8 @@
         "render-window": {
             "width": 800,
             "height": 600
-        }
+        },
+        "present-mode": "immediate"
     },
     "system": {
         "cpu-thread-usage": "high"

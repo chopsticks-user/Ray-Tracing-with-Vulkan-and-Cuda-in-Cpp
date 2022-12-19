@@ -26,9 +26,13 @@ Device::Device(const Instance &crInstance, const Surface &crSurface) {
   queueInfo.queueCount = 1;
   queueInfo.pQueuePriorities = &queuePriority;
 
+  //! Requested device's features
   VkPhysicalDeviceFeatures deviceFeatures{};
   //   deviceFeatures.samplerAnisotropy = VK_TRUE;
   //   deviceFeatures.sampleRateShading = VK_TRUE;
+
+  //! Requested device's extensions
+  std::vector<const char *> deviceExtensions{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
   /* Populate the logical device's creation info */
   VkDeviceCreateInfo deviceInfo{};
@@ -36,6 +40,8 @@ Device::Device(const Instance &crInstance, const Surface &crSurface) {
   deviceInfo.queueCreateInfoCount = 1;
   deviceInfo.pQueueCreateInfos = &queueInfo;
   deviceInfo.pEnabledFeatures = &deviceFeatures;
+  deviceInfo.enabledExtensionCount = vku32(deviceExtensions.size());
+  deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
   /* Create a logical device */
   if (vkCreateDevice(selectedPhysicalDevice, &deviceInfo, nullptr,

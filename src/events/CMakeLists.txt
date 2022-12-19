@@ -4,5 +4,5 @@ add_library(neko_events
 )
 target_link_libraries(neko_events
     PUBLIC compiler_flags
-    PRIVATE neko_utils
+    PRIVATE neko_core
 )

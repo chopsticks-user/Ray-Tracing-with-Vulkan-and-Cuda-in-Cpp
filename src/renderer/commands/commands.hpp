@@ -1,7 +1,7 @@
 #ifndef NEKO_RENDERER_COMMANDS_HPP
 #define NEKO_RENDERER_COMMANDS_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 namespace neko {
 
@@ -42,31 +42,34 @@ public:
 
   const VkQueue &queue() const noexcept;
 
-  VkCommandBuffer alloc(BufferLevel level = primary);
+  VkCommandBuffer alloc(BufferLevel level = primary) const;
 
-  std::vector<VkCommandBuffer> alloc(u32 count, BufferLevel level = primary);
+  std::vector<VkCommandBuffer> alloc(u32 count,
+                                     BufferLevel level = primary) const;
 
   void beginBuffer(VkCommandBuffer commandBuffer,
-                   BufferUsage usageFlags = oneTimeSubmit);
+                   BufferUsage usageFlags = oneTimeSubmit) const;
 
   void recordBuffer(void (*recordFunc)(VkCommandBuffer),
                     BufferLevel level = primary,
-                    VkFence fence = VK_NULL_HANDLE);
+                    VkFence fence = VK_NULL_HANDLE) const;
 
   void recordBuffer(void (*recordFunc)(VkCommandBuffer),
                     const VkSubmitInfo *pcSubmitInfo,
                     BufferLevel level = primary,
-                    VkFence fence = VK_NULL_HANDLE);
+                    VkFence fence = VK_NULL_HANDLE) const;
 
-  void endBuffer(VkCommandBuffer commandBuffer);
+  void endBuffer(VkCommandBuffer commandBuffer) const;
 
-  void submit(const VkSubmitInfo *pcSubmitInfo, VkFence fence = VK_NULL_HANDLE);
+  void submit(const VkSubmitInfo *pcSubmitInfo,
+              VkFence fence = VK_NULL_HANDLE) const;
 
-  void submit(VkCommandBuffer commandBuffer, VkFence fence = VK_NULL_HANDLE);
+  void submit(VkCommandBuffer commandBuffer,
+              VkFence fence = VK_NULL_HANDLE) const;
 
-  void free(VkCommandBuffer commandBuffer) noexcept;
+  void free(VkCommandBuffer commandBuffer) const noexcept;
 
-  void free(std::vector<VkCommandBuffer> commandBuffers) noexcept;
+  void free(std::vector<VkCommandBuffer> commandBuffers) const noexcept;
 
 private:
   const Device *mpcDevice = nullptr;

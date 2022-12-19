@@ -1,5 +1,5 @@
-#ifndef NEKO_UTILS_TIMER_HPP
-#define NEKO_UTILS_TIMER_HPP
+#ifndef NEKO_CORE_TIMER_HPP
+#define NEKO_CORE_TIMER_HPP
 
 #include "defines.hpp"
 #include <chrono>
@@ -68,4 +68,4 @@ private:
 
 } /* namespace neko */
 
-#endif /* NEKO_UTILS_TIMER_HPP */
+#endif /* NEKO_CORE_TIMER_HPP */

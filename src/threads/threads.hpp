@@ -1,7 +1,7 @@
 #ifndef NEKO_THREADS_HPP
 #define NEKO_THREADS_HPP
 
-#include "utils.hpp"
+#include "core.hpp"
 
 #include <condition_variable>
 #include <functional>

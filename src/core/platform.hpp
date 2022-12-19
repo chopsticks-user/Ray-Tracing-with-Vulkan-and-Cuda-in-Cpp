@@ -1,5 +1,5 @@
-#ifndef UTILS_PLATFORM_HPP
-#define UTILS_PLATFORM_HPP
+#ifndef NEKO_CORE_PLATFORM_HPP
+#define NEKO_CORE_PLATFORM_HPP
 
 #include "defines.hpp"
 
@@ -17,4 +17,4 @@ inline constexpr Platform platform = windows;
 
 } /* namespace neko */
 
-#endif /* UTILS_PLATFORM_HPP */
+#endif /* NEKO_CORE_PLATFORM_HPP */

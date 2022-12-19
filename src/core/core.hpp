@@ -1,5 +1,5 @@
-#ifndef NEKO_UTILS_HPP
-#define NEKO_UTILS_HPP
+#ifndef NEKO_CORE_HPP
+#define NEKO_CORE_HPP
 
 #include "defines.hpp"
 #include "platform.hpp"
@@ -8,4 +8,4 @@
 
 namespace neko {} /* namespace neko */
 
-#endif /* NEKO_UTILS_HPP */
+#endif /* NEKO_CORE_HPP */

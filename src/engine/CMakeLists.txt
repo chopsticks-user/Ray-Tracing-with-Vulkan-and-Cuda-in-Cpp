@@ -7,6 +7,6 @@ target_include_directories(neko_engine PRIVATE
 )
 target_link_libraries(neko_engine
     PUBLIC compiler_flags
-    PRIVATE neko_utils
+    PRIVATE neko_core
     PRIVATE neko_threads
 )
