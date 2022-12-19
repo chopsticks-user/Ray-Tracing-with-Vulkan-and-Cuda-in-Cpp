@@ -145,29 +145,26 @@ Swapchain::Swapchain(const Settings &crSettings, const Surface &crSurface,
   mpcDevice = &crDevice;
   mFormat = swapchainInfo.imageFormat;
   mExtent = swapchainInfo.imageExtent;
-  mIsOwner = true;
 }
 
 Swapchain::Swapchain(Swapchain &&rhs) noexcept
-    : mpcDevice{std::move(rhs.mpcDevice)},
-      mSwapchain{std::move(rhs.mSwapchain)}, mFormat{std::move(rhs.mFormat)},
-      mExtent{std::move(rhs.mExtent)}, mIsOwner{std::exchange(rhs.mIsOwner,
-                                                              false)} {}
+    : mpcDevice{std::move(rhs.mpcDevice)}, mSwapchain{std::exchange(
+                                               rhs.mSwapchain, VK_NULL_HANDLE)},
+      mFormat{std::move(rhs.mFormat)}, mExtent{std::move(rhs.mExtent)} {}
 
 Swapchain &Swapchain::operator=(Swapchain &&rhs) noexcept {
   release();
   mpcDevice = std::move(rhs.mpcDevice);
-  mSwapchain = std::move(rhs.mSwapchain);
+  mSwapchain = std::exchange(rhs.mSwapchain, VK_NULL_HANDLE);
   mFormat = std::move(rhs.mFormat);
   mExtent = std::move(rhs.mExtent);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
   return *this;
 }
 
 void Swapchain::release() noexcept {
-  if (mIsOwner) {
+  if (mSwapchain != VK_NULL_HANDLE) {
     vkDestroySwapchainKHR(**mpcDevice, mSwapchain, nullptr);
-    mIsOwner = false;
+    mSwapchain = VK_NULL_HANDLE;
   }
 }
 

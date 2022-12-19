@@ -6,29 +6,28 @@
 namespace neko {
 
 class Device;
-
-class Image {
+class ImageObject {
 public:
-  Image() = default;
-  Image(const Image &) = delete;
-  Image &operator=(const Image &) = delete;
+  ImageObject() = default;
+  ImageObject(const ImageObject &) = delete;
+  ImageObject &operator=(const ImageObject &) = delete;
 
-  Image(const Device &crDevice, const VkImageCreateInfo *pcImageInfo,
-        const VkImageViewCreateInfo *pcImageViewInfo = nullptr,
-        const VkMemoryAllocateInfo *pcAllocInfo = nullptr,
-        VkDeviceSize memoryOffset = 0);
+  ImageObject(const Device &crDevice, const VkImageCreateInfo *pcImageInfo,
+              const VkImageViewCreateInfo *pcImageViewInfo = nullptr,
+              const VkMemoryAllocateInfo *pcAllocInfo = nullptr,
+              VkDeviceSize memoryOffset = 0);
 
-  Image(Image &&rhs) noexcept;
+  ImageObject(ImageObject &&rhs) noexcept;
 
-  Image &operator=(Image &&rhs) noexcept;
+  ImageObject &operator=(ImageObject &&rhs) noexcept;
 
-  virtual ~Image() noexcept { release(); }
+  virtual ~ImageObject() noexcept { release(); }
 
   const VkImage &operator*() const noexcept { return mImage; }
 
-  void release() noexcept;
-
   const VkImageView &view() const noexcept { return mImageView; }
+
+  void release() noexcept;
 
 protected:
   const Device *mpcDevice = nullptr;
@@ -36,7 +35,6 @@ protected:
   VkDeviceMemory mDeviceMemory = VK_NULL_HANDLE;
   VkDeviceSize mOffset = 0;
   VkImageView mImageView = VK_NULL_HANDLE;
-  bool mIsOwner = false;
 
   void createImage(const VkImageCreateInfo *pcImageInfo);
 

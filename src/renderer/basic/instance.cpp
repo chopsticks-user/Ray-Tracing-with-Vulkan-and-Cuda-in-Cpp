@@ -29,6 +29,7 @@ void Instance::populateDebugMessengerInfo(
   debugMessengerInfo.messageType =
       VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
       VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT |
       VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
   debugMessengerInfo.pfnUserCallback = debugMessengerCallback;
   debugMessengerInfo.pUserData = nullptr;
@@ -99,32 +100,27 @@ Instance::Instance(const Settings &settings) {
       throw std::runtime_error("Failed to create debug messenger");
     }
   }
-
-  mIsOwner = true;
 }
 
 Instance::Instance(Instance &&rhs) noexcept
     : mContext{std::move(rhs.mContext)}, mInstance{std::move(rhs.mInstance)},
-      mDebugMessenger{std::move(rhs.mDebugMessenger)}, mIsOwner{std::exchange(
-                                                           rhs.mIsOwner,
-                                                           false)} {}
+      mDebugMessenger{std::move(rhs.mDebugMessenger)} {}
 
 Instance &Instance::operator=(Instance &&rhs) noexcept {
   release();
   mContext = std::move(rhs.mContext);
-  mInstance = std::move(rhs.mInstance);
-  mDebugMessenger = std::move(rhs.mDebugMessenger);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
+  mInstance = std::exchange(rhs.mInstance, VK_NULL_HANDLE);
+  mDebugMessenger = std::exchange(rhs.mDebugMessenger, VK_NULL_HANDLE);
   return *this;
 }
 
 void Instance::release() noexcept {
-  if (mIsOwner) {
+  if (mInstance != VK_NULL_HANDLE) {
     if constexpr (neko::debugMode) {
       mContext.destroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
     }
     vkDestroyInstance(mInstance, nullptr);
-    mIsOwner = false;
+    mInstance = VK_NULL_HANDLE;
   }
 }
 

@@ -36,7 +36,6 @@ private:
   VkSwapchainKHR mSwapchain = VK_NULL_HANDLE;
   VkFormat mFormat = {};
   VkExtent2D mExtent = {};
-  bool mIsOwner = false;
 };
 
 } /* namespace neko */

@@ -14,23 +14,22 @@ Window::Window(const Settings &settings)
 }
 
 Window::Window(Window &&rhs) noexcept
-    : mWindow{std::move(rhs.mWindow)}, mWidth{std::exchange(rhs.mWidth, 0)},
-      mHeight{std::exchange(rhs.mHeight, 0)}, mIsOwner{std::exchange(
-                                                  rhs.mIsOwner, false)} {}
+    : mWindow{std::exchange(rhs.mWindow, nullptr)},
+      mWidth{std::exchange(rhs.mWidth, 0)}, mHeight{std::exchange(rhs.mHeight,
+                                                                  0)} {}
 
 Window &Window::operator=(Window &&rhs) noexcept {
   release();
-  mWindow = std::move(rhs.mWindow);
+  mWindow = std::exchange(rhs.mWindow, nullptr);
   mWidth = std::exchange(rhs.mWidth, 0);
   mHeight = std::exchange(rhs.mHeight, 0);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
   return *this;
 }
 
 void Window::release() noexcept {
-  if (mIsOwner) {
+  if (mWindow != nullptr) {
     glfwDestroyWindow(mWindow);
-    mIsOwner = false;
+    mWindow = nullptr;
   }
 }
 

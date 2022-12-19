@@ -31,7 +31,6 @@ public:
 private:
   const Instance *mpcInstance = nullptr;
   VkSurfaceKHR mSurface = VK_NULL_HANDLE;
-  bool mIsOwner = false;
 };
 
 } /* namespace neko */

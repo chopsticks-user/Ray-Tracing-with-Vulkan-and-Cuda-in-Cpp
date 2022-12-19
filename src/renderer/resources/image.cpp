@@ -4,53 +4,58 @@
 
 namespace neko {
 
-Image::Image(const Device &crDevice, const VkImageCreateInfo *pcImageInfo,
-             const VkImageViewCreateInfo *pcImageViewInfo,
-             const VkMemoryAllocateInfo *pcAllocInfo,
-             VkDeviceSize memoryOffset) {
+ImageObject::ImageObject(const Device &crDevice,
+                         const VkImageCreateInfo *pcImageInfo,
+                         const VkImageViewCreateInfo *pcImageViewInfo,
+                         const VkMemoryAllocateInfo *pcAllocInfo,
+                         VkDeviceSize memoryOffset) {
   mpcDevice = &crDevice;
   createImage(pcImageInfo);
   createImageMemory(pcAllocInfo, memoryOffset);
   createImageView(pcImageViewInfo);
   mOffset = memoryOffset;
-  mIsOwner = true;
 }
 
-Image::Image(Image &&rhs) noexcept
-    : mpcDevice{std::move(rhs.mpcDevice)}, mImage{std::move(rhs.mImage)},
-      mDeviceMemory{std::move(rhs.mDeviceMemory)}, mOffset{std::exchange(
-                                                       rhs.mOffset, false)},
-      mImageView{std::move(rhs.mImageView)}, mIsOwner{std::exchange(
-                                                 rhs.mIsOwner, false)} {}
+ImageObject::ImageObject(ImageObject &&rhs) noexcept
+    : mpcDevice{std::move(rhs.mpcDevice)}, mImage{std::exchange(
+                                               rhs.mImage, VK_NULL_HANDLE)},
+      mDeviceMemory{std::exchange(rhs.mDeviceMemory, VK_NULL_HANDLE)},
+      mOffset{std::exchange(rhs.mOffset, false)},
+      mImageView{std::exchange(rhs.mImageView, VK_NULL_HANDLE)} {}
 
-Image &Image::operator=(Image &&rhs) noexcept {
+ImageObject &ImageObject::operator=(ImageObject &&rhs) noexcept {
   release();
   mpcDevice = std::move(rhs.mpcDevice);
-  mImage = std::move(rhs.mImage);
-  mDeviceMemory = std::move(rhs.mDeviceMemory);
-  mOffset = std::exchange(rhs.mOffset, false);
-  mImageView = std::move(rhs.mImageView);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
+  mImage = std::exchange(rhs.mImage, VK_NULL_HANDLE);
+  mDeviceMemory = std::exchange(rhs.mDeviceMemory, VK_NULL_HANDLE);
+  mOffset = std::exchange(rhs.mOffset, 0);
+  mImageView = std::exchange(rhs.mImageView, VK_NULL_HANDLE);
   return *this;
 }
 
-void Image::release() noexcept {
-  if (mIsOwner) {
-    vkDestroyImageView(**mpcDevice, mImageView, nullptr);
-    vkFreeMemory(**mpcDevice, mDeviceMemory, nullptr);
+void ImageObject::release() noexcept {
+  if (mImage != VK_NULL_HANDLE) {
+    if (mImageView != VK_NULL_HANDLE) {
+      vkDestroyImageView(**mpcDevice, mImageView, nullptr);
+      mImageView = VK_NULL_HANDLE;
+    }
+    if (mDeviceMemory != VK_NULL_HANDLE) {
+      vkFreeMemory(**mpcDevice, mDeviceMemory, nullptr);
+      mDeviceMemory = VK_NULL_HANDLE;
+    }
     vkDestroyImage(**mpcDevice, mImage, nullptr);
-    mIsOwner = false;
+    mImage = VK_NULL_HANDLE;
   }
 }
 
-void Image::createImage(const VkImageCreateInfo *pcImageInfo) {
+void ImageObject::createImage(const VkImageCreateInfo *pcImageInfo) {
   if (vkCreateImage(**mpcDevice, pcImageInfo, nullptr, &mImage) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create image");
   }
 }
 
-void Image::createImageMemory(const VkMemoryAllocateInfo *pcAllocInfo,
-                              VkDeviceSize memoryOffset) {
+void ImageObject::createImageMemory(const VkMemoryAllocateInfo *pcAllocInfo,
+                                    VkDeviceSize memoryOffset) {
   if (pcAllocInfo != nullptr) {
     if (vkAllocateMemory(**mpcDevice, pcAllocInfo, nullptr, &mDeviceMemory) !=
         VK_SUCCESS) {
@@ -63,7 +68,8 @@ void Image::createImageMemory(const VkMemoryAllocateInfo *pcAllocInfo,
   }
 }
 
-void Image::createImageView(const VkImageViewCreateInfo *pcImageViewInfo) {
+void ImageObject::createImageView(
+    const VkImageViewCreateInfo *pcImageViewInfo) {
   if (pcImageViewInfo != nullptr &&
       vkCreateImageView(**mpcDevice, pcImageViewInfo, nullptr, &mImageView) !=
           VK_SUCCESS) {

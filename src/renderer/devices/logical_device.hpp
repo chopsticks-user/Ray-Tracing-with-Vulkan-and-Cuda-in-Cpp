@@ -51,7 +51,6 @@ private:
   VkDevice mLogicalDevice = nullptr;
   VkPhysicalDevice mPhysicalDevice = nullptr;
   UniversalQueue mQueue = {};
-  bool mIsOwner = false;
 
   uint32_t selectUniversalQueueFamily(VkPhysicalDevice physicalDevice,
                                       VkSurfaceKHR surface);

@@ -11,26 +11,24 @@ Surface::Surface(const Instance &crInstance, const Window &crWindow)
       VK_SUCCESS) {
     throw std::runtime_error("Failed to create window surface.");
   }
-  mIsOwner = true;
 }
 
 Surface::Surface(Surface &&rhs) noexcept
-    : mpcInstance{std::move(rhs.mpcInstance)},
-      mSurface{std::move(rhs.mSurface)}, mIsOwner{std::exchange(rhs.mIsOwner,
-                                                                false)} {}
+    : mpcInstance{std::move(rhs.mpcInstance)}, mSurface{std::exchange(
+                                                   rhs.mSurface,
+                                                   VK_NULL_HANDLE)} {}
 
 Surface &Surface::operator=(Surface &&rhs) noexcept {
   release();
   mpcInstance = std::move(rhs.mpcInstance);
-  mSurface = std::move(rhs.mSurface);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
+  mSurface = std::exchange(rhs.mSurface, VK_NULL_HANDLE);
   return *this;
 }
 
 void Surface::release() noexcept {
-  if (mIsOwner) {
+  if (mSurface != VK_NULL_HANDLE) {
     vkDestroySurfaceKHR(**mpcInstance, mSurface, nullptr);
-    mIsOwner = false;
+    mSurface = VK_NULL_HANDLE;
   }
 }
 

@@ -74,7 +74,6 @@ public:
 private:
   const Device *mpcDevice = nullptr;
   VkCommandPool mCommandPool = VK_NULL_HANDLE;
-  bool mIsOwner = false;
 
   VkCommandBufferAllocateInfo makeAllocInfo(u32 count = 1,
                                             BufferLevel level = primary) const;

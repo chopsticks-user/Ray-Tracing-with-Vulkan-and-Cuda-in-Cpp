@@ -7,12 +7,11 @@
 
 namespace neko {
 
-class Image;
 class Swapchain;
 
-class DepthBuffer : public Image {
+class DepthBuffer : public ImageObject {
 public:
-  using Image::Image;
+  using ImageObject::ImageObject;
 
   DepthBuffer(const Settings &crSettings, const Device &crDevice,
               const Swapchain &crSwapchain);

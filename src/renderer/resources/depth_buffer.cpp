@@ -76,7 +76,6 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Settings &crSettings,
   createImageView(&imageViewInfo);
 
   mOffset = 0;
-  mIsOwner = true;
 }
 
 } /* namespace neko */

@@ -31,7 +31,6 @@ private:
   GLWindow mWindow = nullptr;
   u32 mWidth = 0;
   u32 mHeight = 0;
-  bool mIsOwner = false;
 };
 
 } /* namespace neko */

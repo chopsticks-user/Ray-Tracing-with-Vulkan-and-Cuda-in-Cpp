@@ -33,7 +33,6 @@ private:
   Context mContext = {};
   VkInstance mInstance = VK_NULL_HANDLE;
   VkDebugUtilsMessengerEXT mDebugMessenger = VK_NULL_HANDLE;
-  bool mIsOwner = false;
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
       VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

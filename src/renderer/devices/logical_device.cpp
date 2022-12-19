@@ -56,27 +56,25 @@ Device::Device(const Instance &crInstance, const Surface &crSurface) {
   vkGetDeviceQueue(mLogicalDevice, selectedQueueFamilyIndex, selectedQueueIndex,
                    &queueHandle);
   mQueue = {selectedQueueFamilyIndex, selectedQueueIndex, queueHandle};
-  mIsOwner = true;
 }
 
 Device::Device(Device &&rhs) noexcept
-    : mLogicalDevice{std::move(rhs.mLogicalDevice)}, mPhysicalDevice{std::move(
-                                                         mPhysicalDevice)},
-      mQueue{std::move(rhs.mQueue)}, mIsOwner{
-                                         std::exchange(rhs.mIsOwner, false)} {}
+    : mLogicalDevice{std::exchange(rhs.mLogicalDevice, VK_NULL_HANDLE)},
+      mPhysicalDevice{std::move(mPhysicalDevice)}, mQueue{
+                                                       std::move(rhs.mQueue)} {}
 
 Device &Device::operator=(Device &&rhs) noexcept {
   release();
-  mLogicalDevice = std::move(rhs.mLogicalDevice);
+  mLogicalDevice = std::exchange(rhs.mLogicalDevice, VK_NULL_HANDLE);
   mPhysicalDevice = std::move(rhs.mPhysicalDevice);
   mQueue = std::move(rhs.mQueue);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
   return *this;
 }
 
 void Device::release() noexcept {
-  if (mIsOwner) {
+  if (mLogicalDevice != VK_NULL_HANDLE) {
     vkDestroyDevice(mLogicalDevice, nullptr);
+    mLogicalDevice = VK_NULL_HANDLE;
   }
 }
 

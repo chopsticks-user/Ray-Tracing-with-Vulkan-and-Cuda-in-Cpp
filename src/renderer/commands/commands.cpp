@@ -18,26 +18,23 @@ CommandPool::CommandPool(const Device &crDevice,
     throw std::runtime_error("Failed to create command pool.");
   }
   mpcDevice = &crDevice;
-  mIsOwner = true;
 }
 
 CommandPool::CommandPool(CommandPool &&rhs) noexcept
     : mpcDevice{std::move(rhs.mpcDevice)},
-      mCommandPool{std::move(rhs.mCommandPool)}, mIsOwner{std::exchange(
-                                                     rhs.mIsOwner, false)} {}
+      mCommandPool{std::exchange(rhs.mCommandPool, VK_NULL_HANDLE)} {}
 
 CommandPool &CommandPool::operator=(CommandPool &&rhs) noexcept {
   release();
   mpcDevice = std::move(rhs.mpcDevice);
-  mCommandPool = std::move(rhs.mCommandPool);
-  mIsOwner = std::exchange(rhs.mIsOwner, false);
+  mCommandPool = std::exchange(rhs.mCommandPool, VK_NULL_HANDLE);
   return *this;
 }
 
 void CommandPool::release() noexcept {
-  if (mIsOwner) {
+  if (mCommandPool != VK_NULL_HANDLE) {
     vkDestroyCommandPool(**mpcDevice, mCommandPool, nullptr);
-    mIsOwner = false;
+    mCommandPool = VK_NULL_HANDLE;
   }
 }
 
