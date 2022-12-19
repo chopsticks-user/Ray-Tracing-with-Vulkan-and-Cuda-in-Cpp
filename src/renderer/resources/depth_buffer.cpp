@@ -6,7 +6,7 @@
 
 namespace neko {
 
-DepthBuffer::DepthBuffer([[maybe_unused]] const Settings &crSettings,
+DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
                          const Device &crDevice, const Swapchain &crSwapchain) {
   mpcDevice = &crDevice;
 

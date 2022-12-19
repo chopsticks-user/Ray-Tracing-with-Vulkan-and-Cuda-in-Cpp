@@ -40,7 +40,7 @@ class ThreadPool {
 
 public:
   ThreadPool() { initializePool(); }
-  ThreadPool(const Settings &settings) {
+  ThreadPool(const Configs &settings) {
     initializePool(settings.system.cpuThreadUsage);
   }
   ThreadPool(const ThreadPool &) = delete;
@@ -74,7 +74,7 @@ private:
   std::condition_variable mMutexCondition;
   bool mShouldTerminate;
 
-  void initializePool(CPUThreadUsage usageMode = medium);
+  void initializePool(CPUThreadUsage usageMode = CPUThreadUsage::medium);
 
   static void threadLoop(ThreadPool *pool);
 };

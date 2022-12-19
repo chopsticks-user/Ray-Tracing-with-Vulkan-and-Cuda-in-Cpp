@@ -3,6 +3,7 @@
 #include "instance.hpp"
 #include "surface.hpp"
 
+#include <cstring>
 #include <map>
 #include <optional>
 
@@ -69,6 +70,18 @@ Device &Device::operator=(Device &&rhs) noexcept {
   mPhysicalDevice = std::move(rhs.mPhysicalDevice);
   mQueue = std::move(rhs.mQueue);
   return *this;
+}
+
+void Device::copyFromHost(void *pHostData, VkDeviceMemory memory,
+                          VkDeviceSize size, VkDeviceSize offset,
+                          VkMemoryMapFlags flags) const {
+  void *data;
+  if (vkMapMemory(mLogicalDevice, memory, offset, size, flags, &data) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to map device memory");
+  }
+  std::memcpy(data, pHostData, size);
+  vkUnmapMemory(mLogicalDevice, memory);
 }
 
 void Device::release() noexcept {

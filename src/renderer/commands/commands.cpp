@@ -80,7 +80,7 @@ void CommandPool::beginBuffer(VkCommandBuffer commandBuffer,
   }
 }
 
-void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
+void CommandPool::recordBuffer(std::function<void(VkCommandBuffer)> recordFunc,
                                BufferLevel level, VkFence fence) const {
   auto commandBuffer = alloc(level);
   beginBuffer(commandBuffer);
@@ -90,7 +90,7 @@ void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
   free(commandBuffer);
 }
 
-void CommandPool::recordBuffer(void (*recordFunc)(VkCommandBuffer),
+void CommandPool::recordBuffer(std::function<void(VkCommandBuffer)> recordFunc,
                                const VkSubmitInfo *pcSubmitInfo,
                                BufferLevel level, VkFence fence) const {
   auto commandBuffer = alloc(level);

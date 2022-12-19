@@ -14,7 +14,7 @@ public:
   Swapchain(const Swapchain &) = delete;
   Swapchain &operator=(const Swapchain &) = delete;
 
-  Swapchain(const Settings &crSettings, const Surface &crSurface,
+  Swapchain(const Configs &crSettings, const Surface &crSurface,
             const Device &crDevice);
 
   Swapchain(Swapchain &&rhs) noexcept;

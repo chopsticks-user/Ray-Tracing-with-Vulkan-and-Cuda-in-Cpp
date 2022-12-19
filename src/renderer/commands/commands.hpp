@@ -3,6 +3,8 @@
 
 #include "core.hpp"
 
+#include <functional>
+
 namespace neko {
 
 class Device;
@@ -50,11 +52,11 @@ public:
   void beginBuffer(VkCommandBuffer commandBuffer,
                    BufferUsage usageFlags = oneTimeSubmit) const;
 
-  void recordBuffer(void (*recordFunc)(VkCommandBuffer),
+  void recordBuffer(std::function<void(VkCommandBuffer)> recordFunc,
                     BufferLevel level = primary,
                     VkFence fence = VK_NULL_HANDLE) const;
 
-  void recordBuffer(void (*recordFunc)(VkCommandBuffer),
+  void recordBuffer(std::function<void(VkCommandBuffer)> recordFunc,
                     const VkSubmitInfo *pcSubmitInfo,
                     BufferLevel level = primary,
                     VkFence fence = VK_NULL_HANDLE) const;

@@ -3,9 +3,16 @@
 
 #include "core.hpp"
 
+#include "buffer.hpp"
+
 namespace neko {
 
-class UniformBuffer {};
+class UniformBuffer : public BufferObject {
+public:
+  using BufferObject::BufferObject;
+
+private:
+};
 
 } /* namespace neko */
 

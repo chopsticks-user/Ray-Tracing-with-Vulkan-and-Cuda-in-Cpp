@@ -30,7 +30,7 @@ public:
 
 private:
   std::string projectDirectory;
-  std::unique_ptr<Settings> mpSettings;
+  std::unique_ptr<Configs> mpSettings;
   std::unique_ptr<Renderer> mpRenderer;
   std::shared_ptr<JobPromise> mpRendererReady;
 

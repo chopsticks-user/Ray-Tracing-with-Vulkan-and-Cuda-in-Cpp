@@ -29,14 +29,14 @@ public:
   Renderer &operator=(const Renderer &) = delete;
   Renderer &operator=(Renderer &&) = default;
 
-  Renderer(const Settings &settings, ThreadPool &threadPool);
+  Renderer(const Configs &settings, ThreadPool &threadPool);
 
   ~Renderer();
 
   void start();
 
 private:
-  const Settings *mpSettings;
+  const Configs *mpSettings;
   ThreadPool *mpThreadPool;
 
   Instance mInstance;

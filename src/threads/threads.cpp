@@ -49,7 +49,8 @@ void ThreadPool::initializePool(CPUThreadUsage usageMode) {
     throw std::runtime_error("std::thread::hardware_concurrency() < 4");
   }
   mShouldTerminate = false;
-  u64 threadCount = std::thread::hardware_concurrency() / usageMode;
+  u64 threadCount =
+      std::thread::hardware_concurrency() / static_cast<u64>(usageMode);
   threadCount = threadCount > 2 ? threadCount : 2;
   mThreads.resize(threadCount);
   for (auto &thread : mThreads) {

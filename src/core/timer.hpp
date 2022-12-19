@@ -2,6 +2,7 @@
 #define NEKO_CORE_TIMER_HPP
 
 #include "defines.hpp"
+
 #include <chrono>
 
 #define TIMER_START(timer_name)                                                \

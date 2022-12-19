@@ -15,7 +15,7 @@ public:
   Instance(const Instance &) = delete;
   Instance &operator=(const Instance &) = delete;
 
-  explicit Instance(const Settings &settings);
+  explicit Instance(const Configs &settings);
 
   Instance(Instance &&rhs) noexcept;
 

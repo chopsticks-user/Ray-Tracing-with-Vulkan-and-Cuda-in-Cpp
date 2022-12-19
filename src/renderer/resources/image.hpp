@@ -6,6 +6,25 @@
 namespace neko {
 
 class Device;
+
+class Image {
+public:
+  Image() = default;
+  Image(const Image &) = delete;
+  Image &operator=(const Image &) = delete;
+
+private:
+};
+
+class ImageView {
+public:
+  ImageView() = default;
+  ImageView(const ImageView &) = delete;
+  ImageView &operator=(const ImageView &) = delete;
+
+private:
+};
+
 class ImageObject {
 public:
   ImageObject() = default;
@@ -23,7 +42,7 @@ public:
 
   virtual ~ImageObject() noexcept { release(); }
 
-  const VkImage &operator*() const noexcept { return mImage; }
+  const VkImage &image() const noexcept { return mImage; }
 
   const VkImageView &view() const noexcept { return mImageView; }
 

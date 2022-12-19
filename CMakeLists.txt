@@ -5,7 +5,7 @@ project(NekoEngine VERSION 1.0.0 LANGUAGES CXX)
 include(tools/cmake/CompilerFlags.cmake)
 
 configure_file(${PROJECT_SOURCE_DIR}/tools/cmake/NekoEngine.h.in
-    ${PROJECT_SOURCE_DIR}/src/utils/configs.hpp
+    ${PROJECT_SOURCE_DIR}/src/core/cmake_configs.hpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)

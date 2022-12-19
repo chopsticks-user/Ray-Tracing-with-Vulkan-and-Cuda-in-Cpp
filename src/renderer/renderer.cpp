@@ -4,12 +4,12 @@
 
 namespace neko {
 
-Renderer::Renderer(const Settings &settings, ThreadPool &threadPool)
+Renderer::Renderer(const Configs &settings, ThreadPool &threadPool)
     : mpSettings{&settings}, mpThreadPool{&threadPool}, mInstance{*mpSettings},
       mWindow{*mpSettings}, mSurface{mInstance, mWindow}, mDevice{mInstance,
                                                                   mSurface},
       mCommandPool{mDevice}, mSwapchain{settings, mSurface, mDevice},
-      mDepthBuffer{settings, mDevice,mSwapchain} {}
+      mDepthBuffer{settings, mDevice, mSwapchain} {}
 
 Renderer::~Renderer() = default;
 

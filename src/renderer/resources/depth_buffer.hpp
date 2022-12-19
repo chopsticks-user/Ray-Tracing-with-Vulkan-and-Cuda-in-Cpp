@@ -13,7 +13,7 @@ class DepthBuffer : public ImageObject {
 public:
   using ImageObject::ImageObject;
 
-  DepthBuffer(const Settings &crSettings, const Device &crDevice,
+  DepthBuffer(const Configs &crSettings, const Device &crDevice,
               const Swapchain &crSwapchain);
 
 private:

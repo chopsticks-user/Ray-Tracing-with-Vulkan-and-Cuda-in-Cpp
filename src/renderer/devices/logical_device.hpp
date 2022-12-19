@@ -39,13 +39,16 @@ public:
 
   ~Device() noexcept { release(); }
 
-  const VkDevice &operator*() const noexcept { return mLogicalDevice; }
-
-  void release() noexcept;
+  VkDevice operator*() const noexcept { return mLogicalDevice; }
 
   const VkPhysicalDevice &physical() const noexcept { return mPhysicalDevice; }
 
   const UniversalQueue &queue() const noexcept { return mQueue; }
+
+  void copyFromHost(void *pHostData, VkDeviceMemory memory, VkDeviceSize size,
+                    VkDeviceSize offset = 0, VkMemoryMapFlags flags = 0) const;
+
+  void release() noexcept;
 
 private:
   VkDevice mLogicalDevice = nullptr;

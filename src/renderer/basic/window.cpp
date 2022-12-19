@@ -4,7 +4,7 @@
 
 namespace neko {
 
-Window::Window(const Settings &settings)
+Window::Window(const Configs &settings)
     : mWidth{settings.graphics.screenWidth},
       mHeight{settings.graphics.screenHeight} {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

@@ -13,7 +13,7 @@ public:
   Window(const Window &) = delete;
   Window &operator=(const Window &) = delete;
 
-  explicit Window(const Settings &settings);
+  explicit Window(const Configs &settings);
 
   Window(Window &&) noexcept;
 

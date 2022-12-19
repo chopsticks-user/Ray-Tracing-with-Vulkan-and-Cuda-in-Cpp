@@ -1,7 +1,7 @@
 #ifndef NEKO_CORE_DEFINES_HPP
 #define NEKO_CORE_DEFINES_HPP
 
-#include "configs.hpp"
+#include "cmake_configs.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>

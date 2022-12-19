@@ -1,7 +1,7 @@
 
 add_library(neko_core
-    ${CMAKE_CURRENT_SOURCE_DIR}/core.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/settings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/configs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/templates.cpp
 )
 target_include_directories(neko_core
     PRIVATE ${PROJECT_SOURCE_DIR}/modules/json/single_include

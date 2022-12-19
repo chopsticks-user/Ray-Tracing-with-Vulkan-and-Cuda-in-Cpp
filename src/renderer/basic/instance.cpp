@@ -49,7 +49,7 @@ std::vector<const char *> Instance::getRequiredExtensions() {
   return requiredExtensions;
 }
 
-Instance::Instance(const Settings &settings) {
+Instance::Instance(const Configs &settings) {
   uint32_t apiVersion;
   vkEnumerateInstanceVersion(&apiVersion);
 

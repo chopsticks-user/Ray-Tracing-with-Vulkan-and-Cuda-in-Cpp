@@ -6,7 +6,7 @@
 namespace neko {
 
 Engine::Engine(const std::string &settingsFilePath) {
-  mpSettings = std::make_unique<Settings>(settingsFilePath);
+  mpSettings = std::make_unique<Configs>(settingsFilePath);
 
   mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
 

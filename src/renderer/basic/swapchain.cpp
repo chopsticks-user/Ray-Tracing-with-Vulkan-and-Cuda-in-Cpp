@@ -5,7 +5,7 @@
 
 namespace neko {
 
-Swapchain::Swapchain(const Settings &crSettings, const Surface &crSurface,
+Swapchain::Swapchain(const Configs &crSettings, const Surface &crSurface,
                      const Device &crDevice) {
   /* Vulkan 1.3.231 - A Specification, pg 2235 */
 

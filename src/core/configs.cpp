@@ -1,4 +1,4 @@
-#include "settings.hpp"
+#include "configs.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -37,37 +37,37 @@ static u32 getVkVersion(const std::string &versionStr) {
 
 static CPUThreadUsage getCPUThreadUsage(const std::string &usageModeStr) {
   if (usageModeStr == "high") {
-    return high;
+    return CPUThreadUsage::high;
   }
   if (usageModeStr == "medium") {
-    return medium;
+    return CPUThreadUsage::medium;
   }
   if (usageModeStr == "low") {
-    return low;
+    return CPUThreadUsage::low;
   }
   throw std::runtime_error("Unknown CPU thread usage mode.");
 }
 
 static PresentMode getPresentMode(const std::string &presentModeStr) {
   if (presentModeStr == "immediate") {
-    return immediate;
+    return PresentMode::immediate;
   }
   if (presentModeStr == "mailbox") {
-    return mailbox;
+    return PresentMode::mailbox;
   }
   if (presentModeStr == "fifo") {
-    return fifo;
+    return PresentMode::fifo;
   }
   if (presentModeStr == "fifo-relaxed") {
-    return fifoRelaxed;
+    return PresentMode::fifoRelaxed;
   }
   throw std::runtime_error("Unknown presentation mode.");
 }
 
-Settings::Settings(const std::string &settingsFilePath) {
-  std::fstream fs(settingsFilePath);
+Configs::Configs(const std::string &configsFilePath) {
+  std::fstream fs(configsFilePath);
   if (!fs.is_open()) {
-    *this = Settings{};
+    *this = Configs{};
     std::cout << "Failed to find a settings file, using default settings\n";
     return;
   }
