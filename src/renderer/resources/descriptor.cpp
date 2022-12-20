@@ -90,7 +90,7 @@ DescriptorPool &DescriptorPool::operator=(DescriptorPool &&rhs) noexcept {
   return *this;
 }
 
-std::vector<VkDescriptorSet> DescriptorPool::alloc(
+DescriptorSets DescriptorPool::alloc(
     const std::vector<VkDescriptorSetLayout> &dsLayouts) const {
   uint32_t dSetCount = static_cast<uint32_t>(dsLayouts.size());
   const VkDescriptorSetLayout *pSetLayouts = nullptr;
@@ -105,7 +105,7 @@ std::vector<VkDescriptorSet> DescriptorPool::alloc(
   allocInfo.descriptorSetCount = dSetCount;
   allocInfo.pSetLayouts = pSetLayouts;
 
-  std::vector<VkDescriptorSet> descriptorSets{stdu64(dSetCount)};
+  DescriptorSets descriptorSets{stdu64(dSetCount)};
   if (vkAllocateDescriptorSets(**mpcDevice, &allocInfo,
                                descriptorSets.data()) != VK_SUCCESS) {
     throw std::runtime_error("Failed to allocate descriptor sets");
@@ -114,7 +114,28 @@ std::vector<VkDescriptorSet> DescriptorPool::alloc(
   return descriptorSets;
 }
 
-void DescriptorPool::free(const std::vector<VkDescriptorSet> dSets) const {
+void DescriptorPool::update(u32 dWriteCount,
+                            const VkWriteDescriptorSet *pDWrites,
+                            u32 dCopyCount,
+                            const VkCopyDescriptorSet *pDCopies) const {
+  vkUpdateDescriptorSets(**mpcDevice, dWriteCount, pDWrites, dCopyCount,
+                         pDCopies);
+}
+
+void DescriptorPool::update(
+    const std::vector<VkWriteDescriptorSet> &dWrites,
+    const std::vector<VkCopyDescriptorSet> &dCopies) const {
+  vkUpdateDescriptorSets(**mpcDevice, vku32(dWrites.size()), dWrites.data(),
+                         vku32(dCopies.size()), dCopies.data());
+}
+
+void DescriptorPool::reset(VkDescriptorPoolResetFlags resetFlags) const {
+  if (vkResetDescriptorPool(**mpcDevice, mDPool, resetFlags) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to reset descriptor pool");
+  }
+}
+
+void DescriptorPool::free(const DescriptorSets &dSets) const {
   if (vkFreeDescriptorSets(**mpcDevice, mDPool, vku32(dSets.size()),
                            dSets.data()) != VK_SUCCESS) {
     throw std::runtime_error("Failed to free descriptor sets");

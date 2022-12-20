@@ -7,6 +7,8 @@ namespace neko {
 
 class Device;
 
+typedef std::vector<VkDescriptorSet> DescriptorSets;
+
 class DescriptorSetLayout {
 public:
   DescriptorSetLayout() = default;
@@ -47,10 +49,18 @@ public:
 
   const VkDescriptorPool &operator*() const noexcept { return mDPool; }
 
-  std::vector<VkDescriptorSet>
+  DescriptorSets
   alloc(const std::vector<VkDescriptorSetLayout> &dsLayouts) const;
 
-  void free(const std::vector<VkDescriptorSet> dSets) const;
+  void update(u32 dWriteCount, const VkWriteDescriptorSet *pDWrites,
+              u32 dCopyCount, const VkCopyDescriptorSet *pDCopies) const;
+
+  void update(const std::vector<VkWriteDescriptorSet> &dWrites,
+              const std::vector<VkCopyDescriptorSet> &dCopies) const;
+
+  void reset(VkDescriptorPoolResetFlags resetFlags) const;
+
+  void free(const DescriptorSets &dSets) const;
 
   void free(u32 dSetCount, const VkDescriptorSet *pDSets) const;
 
