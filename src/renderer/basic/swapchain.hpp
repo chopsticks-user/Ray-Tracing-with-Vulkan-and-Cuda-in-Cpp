@@ -25,11 +25,15 @@ public:
 
   const VkSwapchainKHR &operator*() const noexcept { return mSwapchain; }
 
-  void release() noexcept;
-
   const VkFormat &format() const noexcept { return mFormat; }
 
   const VkExtent2D &extent() const noexcept { return mExtent; }
+
+  std::vector<VkImage> getImages() const;
+
+  std::vector<VkImageView> getImageViews() const;
+
+  void release() noexcept;
 
 private:
   const Device *mpcDevice = nullptr;

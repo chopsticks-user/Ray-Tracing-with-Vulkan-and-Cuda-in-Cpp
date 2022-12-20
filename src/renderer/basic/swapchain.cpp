@@ -161,6 +161,59 @@ Swapchain &Swapchain::operator=(Swapchain &&rhs) noexcept {
   return *this;
 }
 
+std::vector<VkImage> Swapchain::getImages() const {
+  u32 imageCount;
+  if (vkGetSwapchainImagesKHR(**mpcDevice, mSwapchain, &imageCount, nullptr) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("Failed to get swapchain images' count");
+  }
+  std::vector<VkImage> images{imageCount};
+  if (vkGetSwapchainImagesKHR(**mpcDevice, mSwapchain, &imageCount,
+                              images.data()) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to get swapchain images");
+  }
+  return images;
+}
+
+std::vector<VkImageView> Swapchain::getImageViews() const {
+  VkImageViewCreateInfo imageViewInfo{};
+  imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  imageViewInfo.pNext = nullptr;
+
+  /* treat images as 2D textures */
+  imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+
+  imageViewInfo.format = mFormat;
+
+  /* default mapping */
+  imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+  imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+  imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+  imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+  /* color aspect */
+  imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+  /* In stereographic 3D applications, create a swapchain with multiple
+  layers before creating multiple image views for each images representing
+  the views for the left and right eyes by accessing different layers */
+  imageViewInfo.subresourceRange.baseMipLevel = 0;
+  imageViewInfo.subresourceRange.levelCount = 1;
+  imageViewInfo.subresourceRange.baseArrayLayer = 0;
+  imageViewInfo.subresourceRange.layerCount = 1;
+
+  auto images = this->getImages();
+  std::vector<VkImageView> imageViews{images.size()};
+  for (u64 iImage = 0; iImage < images.size(); ++iImage) {
+    imageViewInfo.image = images[iImage];
+    if (vkCreateImageView(**mpcDevice, &imageViewInfo, nullptr,
+                          &imageViews[iImage]) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create swapchain image views");
+    }
+  }
+  return imageViews;
+}
+
 void Swapchain::release() noexcept {
   if (mSwapchain != VK_NULL_HANDLE) {
     vkDestroySwapchainKHR(**mpcDevice, mSwapchain, nullptr);
