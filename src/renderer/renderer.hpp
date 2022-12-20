@@ -13,9 +13,8 @@
 #include "devices/physical_device.hpp"
 #include "devices/queues.hpp"
 #include "resources/buffer.hpp"
-#include "resources/depth_buffer.hpp"
 #include "resources/image.hpp"
-#include "resources/uniform_buffer.hpp"
+#include "resources/usage_specific.hpp"
 
 namespace neko {
 

@@ -7,6 +7,7 @@ namespace neko {
 
 class CommandPool;
 class BufferObject;
+class Device;
 
 namespace detail {
 
@@ -31,7 +32,7 @@ void generateMipMaps(const CommandPool &commandPool,
                      VkFormat format, i32 width, i32 height, u32 mipLevels);
 
 u32 findMemoryType(VkPhysicalDevice physicalDevice, u32 typeFilter,
-                   VkMemoryPropertyFlags propFlags);
+                   VkMemoryPropertyFlags propertyFlags);
 
 } /* namespace detail */
 } /* namespace neko */

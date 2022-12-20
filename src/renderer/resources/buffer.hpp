@@ -37,6 +37,10 @@ public:
                const VkMemoryAllocateInfo *pcAllocInfo = nullptr,
                VkDeviceSize memoryOffset = 0);
 
+  BufferObject(const Device &crDevice, VkDeviceSize size,
+               VkBufferUsageFlags usage, VkMemoryPropertyFlags propertyFlags,
+               VkDeviceSize memoryOffset = 0);
+
   BufferObject(BufferObject &&rhs) noexcept;
 
   BufferObject &operator=(BufferObject &&rhs) noexcept;
@@ -64,7 +68,7 @@ protected:
   void createBuffer(const VkBufferCreateInfo *pcBufferInfo);
 
   void createBufferMemory(const VkMemoryAllocateInfo *pcAllocInfo,
-                          VkDeviceSize memoryOffset);
+                          VkDeviceSize memoryOffset = 0);
 
   void createBufferView(const VkBufferViewCreateInfo *pcBufferViewInfo);
 };

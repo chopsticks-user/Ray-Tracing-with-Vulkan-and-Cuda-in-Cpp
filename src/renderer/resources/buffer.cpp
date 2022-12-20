@@ -2,6 +2,7 @@
 
 #include "commands.hpp"
 #include "logical_device.hpp"
+#include "utils.hpp"
 
 namespace neko {
 
@@ -9,12 +10,35 @@ BufferObject::BufferObject(const Device &crDevice,
                            const VkBufferCreateInfo *pcBufferInfo,
                            const VkBufferViewCreateInfo *pcBufferViewInfo,
                            const VkMemoryAllocateInfo *pcAllocInfo,
-                           VkDeviceSize memoryOffset) {
-  mpcDevice = &crDevice;
+                           VkDeviceSize memoryOffset)
+    : mpcDevice{&crDevice}, mOffset{memoryOffset} {
   createBuffer(pcBufferInfo);
   createBufferMemory(pcAllocInfo, memoryOffset);
   createBufferView(pcBufferViewInfo);
-  mOffset = memoryOffset;
+}
+
+BufferObject::BufferObject(const Device &crDevice, VkDeviceSize size,
+                           VkBufferUsageFlags usage,
+                           VkMemoryPropertyFlags propertyFlags,
+                           VkDeviceSize memoryOffset)
+    : mpcDevice{&crDevice}, mOffset{memoryOffset} {
+  VkBufferCreateInfo bufferInfo{};
+  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferInfo.size = size;
+  bufferInfo.usage = usage;
+  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+  createBuffer(&bufferInfo);
+
+  VkMemoryRequirements memoryRequirements;
+  vkGetBufferMemoryRequirements(*crDevice, mBuffer, &memoryRequirements);
+
+  VkMemoryAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memoryRequirements.size;
+  allocInfo.memoryTypeIndex = detail::findMemoryType(
+      crDevice.physical(), memoryRequirements.memoryTypeBits, propertyFlags);
+  createBufferMemory(&allocInfo, memoryOffset);
 }
 
 BufferObject::BufferObject(BufferObject &&rhs) noexcept

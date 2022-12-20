@@ -58,7 +58,7 @@ protected:
   void createImage(const VkImageCreateInfo *pcImageInfo);
 
   void createImageMemory(const VkMemoryAllocateInfo *pcAllocInfo,
-                         VkDeviceSize memoryOffset);
+                         VkDeviceSize memoryOffset = 0);
 
   void createImageView(const VkImageViewCreateInfo *pcImageViewInfo);
 };

@@ -1,6 +1,7 @@
 #include "utils.hpp"
 
 #include "commands.hpp"
+#include "logical_device.hpp"
 
 namespace neko {
 namespace detail {
@@ -228,13 +229,13 @@ void generateMipMaps(const CommandPool &commandPool,
 }
 
 u32 findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
-                   VkMemoryPropertyFlags propFlags) {
+                   VkMemoryPropertyFlags propertyFlags) {
   VkPhysicalDeviceMemoryProperties memoryProperties;
   vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
   for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
     if (typeFilter & (1 << i) &&
-        (memoryProperties.memoryTypes[i].propertyFlags & propFlags) ==
-            propFlags) {
+        (memoryProperties.memoryTypes[i].propertyFlags & propertyFlags) ==
+            propertyFlags) {
       return i;
     }
   }

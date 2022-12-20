@@ -2,8 +2,7 @@
 add_library(neko_renderer_resources
     ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/depth_buffer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/uniform_buffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/usage_specific.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
 )
 target_include_directories(neko_renderer_resources

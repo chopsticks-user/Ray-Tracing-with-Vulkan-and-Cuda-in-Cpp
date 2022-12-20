@@ -1,4 +1,4 @@
-#include "depth_buffer.hpp"
+#include "usage_specific.hpp"
 
 #include "logical_device.hpp"
 #include "swapchain.hpp"
@@ -9,6 +9,7 @@ namespace neko {
 DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
                          const Device &crDevice, const Swapchain &crSwapchain) {
   mpcDevice = &crDevice;
+  mOffset = 0;
 
   static const u32 mipLevels = 1;
   static const VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
@@ -44,7 +45,7 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
   allocInfo.memoryTypeIndex = detail::findMemoryType(
       mpcDevice->physical(), memoryRequirements.memoryTypeBits,
       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-  createImageMemory(&allocInfo, 0);
+  createImageMemory(&allocInfo);
 
   VkImageViewCreateInfo imageViewInfo{};
   imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -74,8 +75,43 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
   imageViewInfo.subresourceRange.layerCount = 1;
 
   createImageView(&imageViewInfo);
+}
 
-  mOffset = 0;
+UniformBuffer::UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize)
+    : BufferObject{crDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT} {}
+
+StagingBuffer::StagingBuffer(const Device &crDevice, void *pHostData,
+                             VkDeviceSize bufferSize)
+    : BufferObject{crDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT} {
+  this->copy(pHostData, bufferSize);
+}
+
+VertexBuffer::VertexBuffer(const Device &crDevice,
+                           const CommandPool &crCommandPool, void *pHostData,
+                           VkDeviceSize bufferSize)
+    : BufferObject{crDevice, bufferSize,
+                   VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                       VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT} {
+  StagingBuffer stagingBuffer{crDevice, pHostData, bufferSize};
+  this->copy(crCommandPool, static_cast<BufferObject>(std::move(stagingBuffer)),
+             bufferSize);
+}
+
+IndexBuffer::IndexBuffer(const Device &crDevice,
+                         const CommandPool &crCommandPool, void *pHostData,
+                         VkDeviceSize bufferSize)
+    : BufferObject{crDevice, bufferSize,
+                   VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                       VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT} {
+  StagingBuffer stagingBuffer{crDevice, pHostData, bufferSize};
+  this->copy(crCommandPool, static_cast<BufferObject>(std::move(stagingBuffer)),
+             bufferSize);
 }
 
 } /* namespace neko */
