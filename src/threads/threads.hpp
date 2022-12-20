@@ -63,7 +63,7 @@ public:
 
   bool busy();
 
-  void force_release();
+  void forceRelease();
 
   void release();
 

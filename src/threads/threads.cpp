@@ -25,7 +25,7 @@ bool ThreadPool::busy() {
   return poolbusy;
 }
 
-void ThreadPool::force_release() {
+void ThreadPool::forceRelease() {
   {
     MutexLock_T lock{mQueueMutex};
     mShouldTerminate = true;
@@ -40,7 +40,7 @@ void ThreadPool::force_release() {
 void ThreadPool::release() {
   while (!busy()) {
   }
-  force_release();
+  forceRelease();
 }
 
 void ThreadPool::initializePool(CPUThreadUsage usageMode) {
