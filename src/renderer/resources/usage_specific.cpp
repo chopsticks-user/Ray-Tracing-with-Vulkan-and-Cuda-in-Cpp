@@ -77,26 +77,29 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
   createImageView(&imageViewInfo);
 }
 
-UniformBuffer::UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize)
+UniformBuffer::UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize,
+                             VkDeviceSize memoryOffset)
     : BufferObject{crDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT} {}
+                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                   memoryOffset} {}
 
 StagingBuffer::StagingBuffer(const Device &crDevice, void *pHostData,
-                             VkDeviceSize bufferSize)
+                             VkDeviceSize bufferSize, VkDeviceSize memoryOffset)
     : BufferObject{crDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT} {
+                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                   memoryOffset} {
   this->copy(pHostData, bufferSize);
 }
 
 VertexBuffer::VertexBuffer(const Device &crDevice,
                            const CommandPool &crCommandPool, void *pHostData,
-                           VkDeviceSize bufferSize)
+                           VkDeviceSize bufferSize, VkDeviceSize memoryOffset)
     : BufferObject{crDevice, bufferSize,
                    VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT} {
+                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memoryOffset} {
   StagingBuffer stagingBuffer{crDevice, pHostData, bufferSize};
   this->copy(crCommandPool, static_cast<BufferObject>(std::move(stagingBuffer)),
              bufferSize);
@@ -104,11 +107,11 @@ VertexBuffer::VertexBuffer(const Device &crDevice,
 
 IndexBuffer::IndexBuffer(const Device &crDevice,
                          const CommandPool &crCommandPool, void *pHostData,
-                         VkDeviceSize bufferSize)
+                         VkDeviceSize bufferSize, VkDeviceSize memoryOffset)
     : BufferObject{crDevice, bufferSize,
                    VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                        VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT} {
+                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memoryOffset} {
   StagingBuffer stagingBuffer{crDevice, pHostData, bufferSize};
   this->copy(crCommandPool, static_cast<BufferObject>(std::move(stagingBuffer)),
              bufferSize);

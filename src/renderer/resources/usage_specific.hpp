@@ -25,7 +25,8 @@ class UniformBuffer : public BufferObject {
 public:
   using BufferObject::BufferObject;
 
-  UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize);
+  UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize,
+                VkDeviceSize memoryOffset = 0);
 
 private:
 };
@@ -35,7 +36,7 @@ public:
   using BufferObject::BufferObject;
 
   StagingBuffer(const Device &crDevice, void *pHostData,
-                VkDeviceSize bufferSize);
+                VkDeviceSize bufferSize, VkDeviceSize memoryOffset = 0);
 
 private:
 };
@@ -45,7 +46,8 @@ public:
   using BufferObject::BufferObject;
 
   VertexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
-               void *pHostData, VkDeviceSize bufferSize);
+               void *pHostData, VkDeviceSize bufferSize,
+               VkDeviceSize memoryOffset = 0);
 
 private:
 };
@@ -55,7 +57,8 @@ public:
   using BufferObject::BufferObject;
 
   IndexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
-              void *pHostData, VkDeviceSize bufferSize);
+              void *pHostData, VkDeviceSize bufferSize,
+              VkDeviceSize memoryOffset = 0);
 
 private:
 };
