@@ -14,7 +14,7 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
   static const u32 mipLevels = 1;
   static const VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 
-  VkFormat depthFormat = detail::findSupportedFormat(
+  mFormat = detail::findSupportedFormat(
       crDevice.physical(),
       {VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
       VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
@@ -27,7 +27,7 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
   imageInfo.extent.depth = 1;
   imageInfo.mipLevels = mipLevels;
   imageInfo.arrayLayers = 1;
-  imageInfo.format = depthFormat;
+  imageInfo.format = mFormat;
   imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -55,7 +55,7 @@ DepthBuffer::DepthBuffer([[maybe_unused]] const Configs &crSettings,
   /* treat images as 2D textures */
   imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 
-  imageViewInfo.format = depthFormat;
+  imageViewInfo.format = mFormat;
 
   /* default mapping */
   imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;

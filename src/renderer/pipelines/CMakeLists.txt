@@ -11,6 +11,7 @@ add_library(neko_renderer_pipelines
 target_include_directories(neko_renderer_pipelines
     PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/devices
     PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/resources
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/basic
 )
 target_link_libraries(neko_renderer_pipelines
     PUBLIC compiler_flags

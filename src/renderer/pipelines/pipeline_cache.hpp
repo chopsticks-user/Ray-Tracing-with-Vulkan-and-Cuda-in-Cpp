@@ -24,6 +24,8 @@ public:
 
   const VkPipelineCache &operator*() const noexcept { return mPCache; }
 
+  constexpr bool empty() const noexcept { return mPCache == VK_NULL_HANDLE; }
+
   void release() noexcept;
 
 private:

@@ -7,6 +7,12 @@ namespace neko {
 
 class Device;
 
+enum class ShaderStage {
+  vertex = VK_SHADER_STAGE_VERTEX_BIT,
+  fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
+  compute = VK_SHADER_STAGE_COMPUTE_BIT,
+};
+
 class ShaderModule {
 public:
   ShaderModule() = default;

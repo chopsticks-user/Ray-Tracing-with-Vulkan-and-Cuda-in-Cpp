@@ -37,13 +37,20 @@ Framebuffers::Framebuffers(const Device &crDevice, const Swapchain &crSwapchain,
 }
 
 Framebuffers::Framebuffers(Framebuffers &&rhs) noexcept
-    : mpcDevice{std::move(rhs.mpcDevice)}, mFramebuffers{std::exchange(
-                                               rhs.mFramebuffers, {})} {}
+    : mpcDevice{std::move(rhs.mpcDevice)}, mFramebuffers{
+                                               std::move(rhs.mFramebuffers)} {
+  if (!rhs.mFramebuffers.empty()) {
+    rhs.mFramebuffers.clear();
+  }
+}
 
 Framebuffers &Framebuffers::operator=(Framebuffers &&rhs) noexcept {
   release();
   mpcDevice = std::move(rhs.mpcDevice);
-  mFramebuffers = std::exchange(rhs.mFramebuffers, {});
+  mFramebuffers = std::move(rhs.mFramebuffers);
+  if (!rhs.mFramebuffers.empty()) {
+    rhs.mFramebuffers.clear();
+  }
   return *this;
 }
 

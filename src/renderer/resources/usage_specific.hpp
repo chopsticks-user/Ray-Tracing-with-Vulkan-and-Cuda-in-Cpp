@@ -15,10 +15,23 @@ class DepthBuffer : public ImageObject {
 public:
   using ImageObject::ImageObject;
 
+  DepthBuffer(DepthBuffer &&rhs)
+      : ImageObject{static_cast<ImageObject>(std::move(rhs))},
+        mFormat{std::move(rhs.mFormat)} {}
+
+  DepthBuffer &operator=(DepthBuffer &&rhs) {
+    ImageObject::operator=(static_cast<ImageObject>(std::move(rhs)));
+    mFormat = std::move(rhs.mFormat);
+    return *this;
+  }
+
   DepthBuffer(const Configs &crSettings, const Device &crDevice,
               const Swapchain &crSwapchain);
 
+  const VkFormat &format() const noexcept { return mFormat; }
+
 private:
+  VkFormat mFormat = {};
 };
 
 class UniformBuffer : public BufferObject {
