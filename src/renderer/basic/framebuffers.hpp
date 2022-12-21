@@ -30,6 +30,10 @@ public:
     return mFramebuffers;
   }
 
+  const VkFramebuffer &operator[](u64 index) const {
+    return mFramebuffers.at(index);
+  }
+
   auto size() const noexcept { return mFramebuffers.size(); }
 
   void release() noexcept;

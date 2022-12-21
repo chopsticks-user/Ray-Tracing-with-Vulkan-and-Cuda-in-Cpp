@@ -3,6 +3,8 @@
 
 #include "core.hpp"
 
+#include <functional>
+
 namespace neko {
 
 class Window {
@@ -24,8 +26,6 @@ public:
   const GLWindow &operator*() const noexcept { return mWindow; }
 
   void release() noexcept;
-
-  void open();
 
 private:
   GLWindow mWindow = nullptr;

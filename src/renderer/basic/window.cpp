@@ -1,7 +1,5 @@
 #include "window.hpp"
 
-#include <iostream>
-
 namespace neko {
 
 Window::Window(const Configs &settings)
@@ -30,12 +28,6 @@ void Window::release() noexcept {
   if (mWindow != nullptr) {
     glfwDestroyWindow(mWindow);
     mWindow = nullptr;
-  }
-}
-
-void Window::open() {
-  while (!glfwWindowShouldClose(mWindow)) {
-    glfwPollEvents();
   }
 }
 

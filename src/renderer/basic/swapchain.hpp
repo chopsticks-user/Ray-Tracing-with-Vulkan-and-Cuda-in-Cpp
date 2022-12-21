@@ -31,7 +31,9 @@ public:
 
   std::vector<VkImage> getImages() const;
 
-  std::vector<VkImageView> getImageViews() const;
+  const std::vector<VkImageView> &getImageViews() const noexcept {
+    return mImageViews;
+  }
 
   void release() noexcept;
 
@@ -40,6 +42,9 @@ private:
   VkSwapchainKHR mSwapchain = VK_NULL_HANDLE;
   VkFormat mFormat = {};
   VkExtent2D mExtent = {};
+  std::vector<VkImageView> mImageViews = {};
+
+  void initializeImageViews();
 };
 
 } /* namespace neko */

@@ -5,6 +5,13 @@
 static const std::string settingsFilePath =
     std::filesystem::current_path().string() + "/data/configs/settings.json";
 
+static const std::string vertexShaderPath =
+    std::filesystem::current_path().string() +
+    "/data/resources/shaders/basic.vert.spv";
+static const std::string fragmentShaderPath =
+    std::filesystem::current_path().string() +
+    "/data/resources/shaders/basic.frag.spv";
+
 static int protected_main([[maybe_unused]] int argc,
                           [[maybe_unused]] char **argv) {
   TIMER_START(t);

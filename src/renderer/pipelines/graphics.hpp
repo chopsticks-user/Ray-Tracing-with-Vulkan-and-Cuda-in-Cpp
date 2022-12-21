@@ -3,17 +3,16 @@
 
 #include "core.hpp"
 
-#include "pipeline_cache.hpp"
 #include "pipeline_layout.hpp"
-#include "render_pass.hpp"
-#include "shader_module.hpp"
 
 namespace neko {
 
 class Device;
 class Swapchain;
 class DescriptorSetLayout;
-class DepthBuffer;
+class PipelineCache;
+class RenderPass;
+enum class ShaderStage;
 
 class GraphicsPipeline {
 public:
@@ -23,10 +22,9 @@ public:
 
   GraphicsPipeline(
       const Configs &crConfigs, const Device &crDevice,
-      const Swapchain &crSwapchain, const DescriptorSetLayout &crDSLayout,
-      const DepthBuffer &depthBuffer,
-      const std::vector<std::pair<ShaderStage, std::string>> &pairShaderPaths,
-      const PipelineCache &crCache = {});
+      const Swapchain &crSwapchain, const RenderPass &crRenderPass,
+      const DescriptorSetLayout &crDSLayout,
+      const std::vector<std::pair<ShaderStage, std::string>> &pairShaderPaths);
 
   GraphicsPipeline(GraphicsPipeline &&rhs) noexcept;
 
@@ -40,10 +38,9 @@ public:
 
 private:
   const Device *mpcDevice = nullptr;
-  const PipelineCache *mpcCache = nullptr;
-  VkPipeline mGPipeline = VK_NULL_HANDLE;
+  const RenderPass *mpcRenderPass = nullptr;
   PipelineLayout mLayout = {};
-  RenderPass mRenderPass = {};
+  VkPipeline mGPipeline = VK_NULL_HANDLE;
 };
 
 } /* namespace neko */

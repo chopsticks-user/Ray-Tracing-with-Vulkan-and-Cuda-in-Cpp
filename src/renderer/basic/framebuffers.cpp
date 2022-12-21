@@ -14,7 +14,7 @@ Framebuffers::Framebuffers(const Device &crDevice, const Swapchain &crSwapchain,
                            const DepthBuffer &crDepthBuffer)
     : mpcDevice{&crDevice} {
   auto swapchainImageViews = crSwapchain.getImageViews();
-  std::array<VkImageView, 2> attachments{crDepthBuffer.view(), {}};
+  std::array<VkImageView, 2> attachments{VkImageView{}, crDepthBuffer.view()};
   auto swapchainExtent = crSwapchain.extent();
 
   VkFramebufferCreateInfo framebufferInfo{};
@@ -25,15 +25,21 @@ Framebuffers::Framebuffers(const Device &crDevice, const Swapchain &crSwapchain,
   framebufferInfo.height = swapchainExtent.height;
   framebufferInfo.layers = 1;
 
+  mFramebuffers.resize(swapchainImageViews.size());
   for (u64 iImageView = 0; iImageView < swapchainImageViews.size();
        ++iImageView) {
-    attachments[1] = swapchainImageViews[iImageView];
+    attachments[0] = swapchainImageViews[iImageView];
     framebufferInfo.pAttachments = attachments.data();
     if (vkCreateFramebuffer(*crDevice, &framebufferInfo, nullptr,
                             &mFramebuffers[iImageView]) != VK_SUCCESS) {
       throw std::runtime_error("Failed to create framebuffers");
     }
   }
+
+  // TODO: keep imageViews alive till {Framebuffers} is destroyed
+  // for (const auto &imageView : swapchainImageViews) {
+  //   vkDestroyImageView(*crDevice, imageView, nullptr);
+  // }
 }
 
 Framebuffers::Framebuffers(Framebuffers &&rhs) noexcept

@@ -145,12 +145,14 @@ Swapchain::Swapchain(const Configs &crSettings, const Surface &crSurface,
   mpcDevice = &crDevice;
   mFormat = swapchainInfo.imageFormat;
   mExtent = swapchainInfo.imageExtent;
+  initializeImageViews();
 }
 
 Swapchain::Swapchain(Swapchain &&rhs) noexcept
     : mpcDevice{std::move(rhs.mpcDevice)}, mSwapchain{std::exchange(
                                                rhs.mSwapchain, VK_NULL_HANDLE)},
-      mFormat{std::move(rhs.mFormat)}, mExtent{std::move(rhs.mExtent)} {}
+      mFormat{std::move(rhs.mFormat)}, mExtent{std::move(rhs.mExtent)},
+      mImageViews{std::move(rhs.mImageViews)} {}
 
 Swapchain &Swapchain::operator=(Swapchain &&rhs) noexcept {
   release();
@@ -158,6 +160,7 @@ Swapchain &Swapchain::operator=(Swapchain &&rhs) noexcept {
   mSwapchain = std::exchange(rhs.mSwapchain, VK_NULL_HANDLE);
   mFormat = std::move(rhs.mFormat);
   mExtent = std::move(rhs.mExtent);
+  mImageViews = std::move(rhs.mImageViews);
   return *this;
 }
 
@@ -175,7 +178,7 @@ std::vector<VkImage> Swapchain::getImages() const {
   return images;
 }
 
-std::vector<VkImageView> Swapchain::getImageViews() const {
+void Swapchain::initializeImageViews() {
   VkImageViewCreateInfo imageViewInfo{};
   imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   imageViewInfo.pNext = nullptr;
@@ -203,19 +206,21 @@ std::vector<VkImageView> Swapchain::getImageViews() const {
   imageViewInfo.subresourceRange.layerCount = 1;
 
   auto images = this->getImages();
-  std::vector<VkImageView> imageViews{images.size()};
+  mImageViews.resize(images.size());
   for (u64 iImage = 0; iImage < images.size(); ++iImage) {
     imageViewInfo.image = images[iImage];
     if (vkCreateImageView(**mpcDevice, &imageViewInfo, nullptr,
-                          &imageViews[iImage]) != VK_SUCCESS) {
+                          &mImageViews[iImage]) != VK_SUCCESS) {
       throw std::runtime_error("Failed to create swapchain image views");
     }
   }
-  return imageViews;
 }
 
 void Swapchain::release() noexcept {
   if (mSwapchain != VK_NULL_HANDLE) {
+    for (auto &imageView : mImageViews) {
+      vkDestroyImageView(**mpcDevice, imageView, nullptr);
+    }
     vkDestroySwapchainKHR(**mpcDevice, mSwapchain, nullptr);
     mSwapchain = VK_NULL_HANDLE;
   }

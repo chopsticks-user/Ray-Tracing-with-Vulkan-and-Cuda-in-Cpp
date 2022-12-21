@@ -6,6 +6,8 @@
 namespace neko {
 
 class Device;
+class Swapchain;
+class DepthBuffer;
 
 class RenderPass {
 public:
@@ -15,6 +17,9 @@ public:
 
   RenderPass(const Device &crDevice,
              const VkRenderPassCreateInfo &crRenderPassInfo);
+
+  RenderPass(const Device &crDevice, const Swapchain &crSwapchain,
+             const DepthBuffer &crDepthBuffer);
 
   RenderPass(RenderPass &&rhs) noexcept;
 

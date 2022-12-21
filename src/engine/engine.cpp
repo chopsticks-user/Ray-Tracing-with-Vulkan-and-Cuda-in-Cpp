@@ -6,14 +6,14 @@
 namespace neko {
 
 Engine::Engine(const std::string &settingsFilePath) {
-  mpSettings = std::make_unique<Configs>(settingsFilePath);
+  mpConfigs = std::make_unique<Configs>(settingsFilePath);
 
-  mpThreadPool = std::make_unique<ThreadPool>(*mpSettings);
+  mpThreadPool = std::make_unique<ThreadPool>(*mpConfigs);
 
-  // mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+  // mpRenderer = std::make_unique<Renderer>(*mpConfigs, *mpThreadPool);
 
   auto rendererReady = mpThreadPool->submitJob([&] {
-    mpRenderer = std::make_unique<Renderer>(*mpSettings, *mpThreadPool);
+    mpRenderer = std::make_unique<Renderer>(*mpConfigs, *mpThreadPool);
   });
   rendererReady->wait();
 };

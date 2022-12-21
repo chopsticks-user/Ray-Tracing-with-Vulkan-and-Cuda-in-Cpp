@@ -7,6 +7,7 @@ add_library(neko_renderer_basic
     ${CMAKE_CURRENT_SOURCE_DIR}/swapchain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/framebuffers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync.cpp
 )
 target_include_directories(neko_renderer_basic
     PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/devices
