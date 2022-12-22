@@ -10,8 +10,6 @@ Engine::Engine(const std::string &settingsFilePath) {
 
   mpThreadPool = std::make_unique<ThreadPool>(*mpConfigs);
 
-  // mpRenderer = std::make_unique<Renderer>(*mpConfigs, *mpThreadPool);
-
   auto rendererReady = mpThreadPool->submitJob([&] {
     mpRenderer = std::make_unique<Renderer>(*mpConfigs, *mpThreadPool);
   });
@@ -21,7 +19,6 @@ Engine::Engine(const std::string &settingsFilePath) {
 Engine::~Engine() = default;
 
 void Engine::start() {
-  // mpRenderer->start();
   auto rendererStopped = mpThreadPool->submitJob([&] { mpRenderer->start(); });
   rendererStopped->wait();
 }

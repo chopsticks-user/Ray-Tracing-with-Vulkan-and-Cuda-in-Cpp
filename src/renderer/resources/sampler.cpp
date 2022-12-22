@@ -5,7 +5,7 @@
 namespace neko {
 
 Sampler::Sampler([[maybe_unused]] const Configs &crConfig,
-                 const Device &crDevice)
+                 const Device &crDevice, u32 mipLevels)
     : mpcDevice{&crDevice} {
   [[maybe_unused]] VkPhysicalDeviceProperties properties{};
   vkGetPhysicalDeviceProperties(crDevice.physical(), &properties);
@@ -25,8 +25,8 @@ Sampler::Sampler([[maybe_unused]] const Configs &crConfig,
   samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
   samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
   samplerInfo.mipLodBias = 0.0f;
+  samplerInfo.maxLod = static_cast<float>(mipLevels);
   samplerInfo.minLod = 0;
-  //   samplerInfo.maxLod = static_cast<float>(mipLevels);
   if (vkCreateSampler(*crDevice, &samplerInfo, nullptr, &mSampler) !=
       VK_SUCCESS) {
     throw std::runtime_error("Failed to create sampler");

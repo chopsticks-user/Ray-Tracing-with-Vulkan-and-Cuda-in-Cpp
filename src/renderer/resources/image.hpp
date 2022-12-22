@@ -40,6 +40,8 @@ public:
 
   ImageObject &operator=(ImageObject &&rhs) noexcept;
 
+  const VkImage &operator*() const noexcept { return mImage; }
+
   virtual ~ImageObject() noexcept { release(); }
 
   const VkImage &image() const noexcept { return mImage; }

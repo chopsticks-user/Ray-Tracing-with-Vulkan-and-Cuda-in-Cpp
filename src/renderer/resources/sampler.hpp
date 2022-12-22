@@ -13,7 +13,7 @@ public:
   Sampler(const Sampler &) = delete;
   Sampler &operator=(const Sampler &) = delete;
 
-  Sampler(const Configs &crConfig, const Device &crDevice);
+  Sampler(const Configs &crConfig, const Device &crDevice, u32 mipLevels = 1);
 
   Sampler(Sampler &&rhs) noexcept;
 

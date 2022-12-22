@@ -25,6 +25,8 @@ public:
 
   const VkSwapchainKHR &operator*() const noexcept { return mSwapchain; }
 
+  operator VkSwapchainKHR() const noexcept { return mSwapchain; }
+
   const VkFormat &format() const noexcept { return mFormat; }
 
   const VkExtent2D &extent() const noexcept { return mExtent; }

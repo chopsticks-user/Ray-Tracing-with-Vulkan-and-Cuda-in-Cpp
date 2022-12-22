@@ -45,13 +45,14 @@ public:
 
   BufferObject &operator=(BufferObject &&rhs) noexcept;
 
-  virtual ~BufferObject() noexcept { release(); }
+  const VkBuffer &operator*() const noexcept { return mBuffer; }
 
-  const VkBuffer &buffer() const noexcept { return mBuffer; }
+  virtual ~BufferObject() noexcept { release(); }
 
   const VkBufferView &view() const noexcept { return mBufferView; }
 
-  void copy(void *pHostData, VkDeviceSize size, VkMemoryMapFlags flags = 0);
+  void copy(const void *pHostData, VkDeviceSize size,
+            VkMemoryMapFlags flags = 0);
 
   void copy(const CommandPool &commandPool, const BufferObject &deviceData,
             VkDeviceSize size);

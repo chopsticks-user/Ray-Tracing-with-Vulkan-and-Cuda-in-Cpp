@@ -48,11 +48,31 @@ public:
   void start();
 
 private:
-  const u64 maxFrameInFlights = 2;
+  const u64 maxFramesInFlight = 2;
+  bool resized = false;
+
+  std::vector<shader_object::Vertex> vertices = {
+      {{-0.9f, -0.9f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+      {{0.9f, -0.9f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+      {{0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-0.9f, 0.9f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+
+  };
+  std::vector<shader_object::Index> indices{0, 1, 2, 2, 3, 0};
+
+  void updateDesciptorSets();
+
+  shader_object::Uniform getUniformBuffer(float elapsedTime);
+
+  void updateFrame(u32 currentFrame);
 
   void recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
 
   void renderProcess();
+
+  static void resizeCallback(GLFWwindow *window, i32 width, i32 height);
+
+  void recreateSwapchain();
 
 private:
   const Configs *mpConfigs;
@@ -69,6 +89,9 @@ private:
 
   DepthBuffer mDepthBuffer;
   std::vector<UniformBuffer> mUniformBuffers;
+  VertexBuffer mVertexBuffer;
+  IndexBuffer mIndexBuffer;
+  TextureImage mTextureImage;
   Sampler mSampler;
 
   DescriptorSetLayout mDescriptorSetLayout;
@@ -77,6 +100,7 @@ private:
 
   RenderPass mRenderPass;
   Framebuffers mFramebuffers;
+  PipelineLayout mPipelineLayout;
   GraphicsPipeline mGraphicsPipeline;
 };
 

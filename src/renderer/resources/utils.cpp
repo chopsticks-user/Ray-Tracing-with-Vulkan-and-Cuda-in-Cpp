@@ -243,4 +243,13 @@ u32 findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
 }
 
 } /* namespace detail */
+
+namespace tmpl {
+
+// VkImage makeImage() {}
+
+// VkImageView makeImageView() {}
+
+} /* namespace tmpl */
+
 } /* namespace neko */

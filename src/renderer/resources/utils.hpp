@@ -35,6 +35,15 @@ u32 findMemoryType(VkPhysicalDevice physicalDevice, u32 typeFilter,
                    VkMemoryPropertyFlags propertyFlags);
 
 } /* namespace detail */
+
+namespace tmpl {
+
+VkImage makeImage();
+
+VkImageView makeImageView();
+
+} /* namespace tmpl */
+
 } /* namespace neko */
 
 #endif /* NEKO_RENDERER_RESOURCES_UTILS_HPP */

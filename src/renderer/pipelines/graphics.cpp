@@ -3,6 +3,7 @@
 #include "descriptor.hpp"
 #include "logical_device.hpp"
 #include "pipeline_cache.hpp"
+#include "pipeline_layout.hpp"
 #include "render_pass.hpp"
 #include "shader_module.hpp"
 #include "shader_objects.hpp"
@@ -14,9 +15,10 @@ namespace neko {
 GraphicsPipeline::GraphicsPipeline(
     [[maybe_unused]] const Configs &crConfigs, const Device &crDevice,
     const Swapchain &crSwapchain, const RenderPass &crRenderPass,
-    const DescriptorSetLayout &crDSLayout,
+    const PipelineLayout &crPipelineLayout,
     const std::vector<std::pair<ShaderStage, std::string>> &pairShaderPaths)
-    : mpcDevice{&crDevice}, mpcRenderPass{&crRenderPass} {
+    : mpcDevice{&crDevice}, mpcRenderPass{&crRenderPass},
+      mpcPipelineLayout{&crPipelineLayout} {
   /* Shader stage */
   VkPipelineShaderStageCreateInfo shaderStageInfo{};
   shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -160,9 +162,6 @@ GraphicsPipeline::GraphicsPipeline(
   //   static_cast<uint32_t>(dynamicStates.size()); dynamicInfo.pDynamicStates =
   //   dynamicStates.data();
 
-  /* Pipeline layout */
-  mLayout = {crDevice, {*crDSLayout}};
-
   /* Graphics pipeline */
   VkGraphicsPipelineCreateInfo pipelineInfo{};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -177,7 +176,7 @@ GraphicsPipeline::GraphicsPipeline(
   pipelineInfo.pDepthStencilState = &depthStencilInfo;
   pipelineInfo.pColorBlendState = &colorBlendState;
   pipelineInfo.pDynamicState = nullptr;
-  pipelineInfo.layout = *mLayout;
+  pipelineInfo.layout = **mpcPipelineLayout;
   pipelineInfo.renderPass = *crRenderPass;
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -190,22 +189,21 @@ GraphicsPipeline::GraphicsPipeline(
 
 GraphicsPipeline::GraphicsPipeline(GraphicsPipeline &&rhs) noexcept
     : mpcDevice{std::move(rhs.mpcDevice)},
-      mpcRenderPass{std::move(rhs.mpcRenderPass)}, mLayout{std::move(
-                                                       rhs.mLayout)},
+      mpcRenderPass{std::move(rhs.mpcRenderPass)}, mpcPipelineLayout{std::move(
+                                                       rhs.mpcPipelineLayout)},
       mGPipeline{std::exchange(rhs.mGPipeline, VK_NULL_HANDLE)} {}
 
 GraphicsPipeline &GraphicsPipeline::operator=(GraphicsPipeline &&rhs) noexcept {
   release();
   mpcDevice = std::move(rhs.mpcDevice);
   mpcRenderPass = std::move(rhs.mpcRenderPass);
-  mLayout = std::move(rhs.mLayout);
+  mpcPipelineLayout = std::move(rhs.mpcPipelineLayout);
   mGPipeline = std::exchange(rhs.mGPipeline, VK_NULL_HANDLE);
   return *this;
 }
 
 void GraphicsPipeline::release() noexcept {
   if (mGPipeline != VK_NULL_HANDLE) {
-    mLayout.release();
     vkDestroyPipeline(**mpcDevice, mGPipeline, nullptr);
     mGPipeline = VK_NULL_HANDLE;
   }

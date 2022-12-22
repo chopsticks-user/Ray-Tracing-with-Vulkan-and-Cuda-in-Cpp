@@ -72,7 +72,7 @@ Device &Device::operator=(Device &&rhs) noexcept {
   return *this;
 }
 
-void Device::copyFromHost(void *pHostData, VkDeviceMemory memory,
+void Device::copyFromHost(const void *pHostData, VkDeviceMemory memory,
                           VkDeviceSize size, VkDeviceSize offset,
                           VkMemoryMapFlags flags) const {
   void *data;

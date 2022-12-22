@@ -115,7 +115,6 @@ void CommandPool::submit(const VkSubmitInfo *pcSubmitInfo,
   }
   if (fence == VK_NULL_HANDLE) {
     vkQueueWaitIdle(queueHandle);
-  } else {
   }
 }
 

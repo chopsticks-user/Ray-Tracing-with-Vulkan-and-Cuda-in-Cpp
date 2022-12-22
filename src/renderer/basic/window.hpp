@@ -11,11 +11,13 @@ class Window {
   typedef GLFWwindow *GLWindow;
 
 public:
+  static constexpr bool resizeable = true;
+
   Window() = default;
   Window(const Window &) = delete;
   Window &operator=(const Window &) = delete;
 
-  explicit Window(const Configs &settings);
+  explicit Window(const Configs &settings, bool windowResizeable = false);
 
   Window(Window &&) noexcept;
 
@@ -24,6 +26,10 @@ public:
   ~Window() noexcept { release(); };
 
   const GLWindow &operator*() const noexcept { return mWindow; }
+
+  operator GLFWwindow *() const noexcept { return mWindow; }
+
+  void whileMinimize() noexcept;
 
   void release() noexcept;
 

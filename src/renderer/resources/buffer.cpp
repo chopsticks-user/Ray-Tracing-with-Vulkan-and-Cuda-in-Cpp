@@ -73,7 +73,7 @@ void BufferObject::release() noexcept {
   }
 }
 
-void BufferObject::copy(void *pHostData, VkDeviceSize size,
+void BufferObject::copy(const void *pHostData, VkDeviceSize size,
                         VkMemoryMapFlags flags) {
   mpcDevice->copyFromHost(pHostData, mDeviceMemory, size, mOffset, flags);
 }
@@ -85,8 +85,7 @@ void BufferObject::copy(const CommandPool &commandPool,
     copyRegion.srcOffset = deviceData.mOffset;
     copyRegion.dstOffset = mOffset;
     copyRegion.size = size;
-    vkCmdCopyBuffer(commandBuffer, deviceData.buffer(), mBuffer, 1,
-                    &copyRegion);
+    vkCmdCopyBuffer(commandBuffer, *deviceData, mBuffer, 1, &copyRegion);
   });
 }
 

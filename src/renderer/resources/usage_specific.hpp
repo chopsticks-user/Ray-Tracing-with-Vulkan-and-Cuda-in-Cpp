@@ -48,7 +48,7 @@ class StagingBuffer : public BufferObject {
 public:
   using BufferObject::BufferObject;
 
-  StagingBuffer(const Device &crDevice, void *pHostData,
+  StagingBuffer(const Device &crDevice, const void *pHostData,
                 VkDeviceSize bufferSize, VkDeviceSize memoryOffset = 0);
 
 private:
@@ -59,7 +59,7 @@ public:
   using BufferObject::BufferObject;
 
   VertexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
-               void *pHostData, VkDeviceSize bufferSize,
+               const void *pHostData, VkDeviceSize bufferSize,
                VkDeviceSize memoryOffset = 0);
 
 private:
@@ -70,8 +70,19 @@ public:
   using BufferObject::BufferObject;
 
   IndexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
-              void *pHostData, VkDeviceSize bufferSize,
+              const void *pHostData, VkDeviceSize bufferSize,
               VkDeviceSize memoryOffset = 0);
+
+private:
+};
+
+class TextureImage : public ImageObject {
+public:
+  using ImageObject::ImageObject;
+
+  TextureImage(std::string textureImagePath, const Device &crDevice,
+               const Swapchain &crSwapchain, const CommandPool &crCommandPool,
+               VkDeviceSize memoryOffset = 0);
 
 private:
 };

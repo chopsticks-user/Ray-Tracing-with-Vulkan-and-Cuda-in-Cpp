@@ -3,6 +3,7 @@
 
 #include "configs.hpp"
 #include "defines.hpp"
+#include "image.hpp"
 #include "platform.hpp"
 #include "templates.hpp"
 #include "timer.hpp"

@@ -3,9 +3,14 @@
 
 #include "core.hpp"
 
+#ifndef GLM_FORCE_RADIANS
+#define GLM_FORCE_RADIANS
+#endif /* GLM_FORCE_RADIANS */
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #ifndef GLM_ENABLE_EXPERIMENTAL
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 #endif /* GLM_ENABLE_EXPERIMENTAL */
 
@@ -13,6 +18,8 @@
 
 namespace neko {
 namespace shader_object {
+
+typedef u32 Index;
 
 struct Vertex {
   glm::vec3 position;
