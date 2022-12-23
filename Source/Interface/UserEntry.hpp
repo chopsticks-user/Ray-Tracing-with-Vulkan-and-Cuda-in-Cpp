@@ -1,10 +1,10 @@
-#include <Neko.hpp>
+#ifndef NEKO_INTERFACE_USER_ENTRY_HPP
+#define NEKO_INTERFACE_USER_ENTRY_HPP
 
 #include <filesystem>
-#include <iosfwd>
 #include <iostream>
 
-static const std::string settingsFilePath =
+static const std::string configFilePath =
     std::filesystem::current_path().string() + "/Data/Configs/settings.json";
 
 static const std::string vertexShaderPath =
@@ -14,12 +14,13 @@ static const std::string fragmentShaderPath =
     std::filesystem::current_path().string() +
     "/Data/Resources/Shaders/Basic.frag.spv";
 
+extern neko::Engine *initializeEngine(const std::string &configFilePath);
+
 static int protected_main([[maybe_unused]] int argc,
                           [[maybe_unused]] char **argv) {
-  TIMER_START(t);
-  auto engine = std::make_unique<neko::Engine>(settingsFilePath);
-  TIMER_INVOKE(t, "Engine load time");
+  auto engine = neko::initializeEngine(configFilePath);
   engine->start();
+  delete engine;
   return EXIT_SUCCESS;
 }
 
@@ -33,3 +34,5 @@ int main(int argc, char **argv) {
   }
   return EXIT_FAILURE;
 }
+
+#endif /* NEKO_INTERFACE_USER_ENTRY_HPP */

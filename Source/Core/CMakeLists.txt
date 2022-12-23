@@ -1,3 +1,4 @@
+
 add_library(NekoCore
     ${CMAKE_CURRENT_SOURCE_DIR}/EngineConfigs.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/VKTemplates.cpp

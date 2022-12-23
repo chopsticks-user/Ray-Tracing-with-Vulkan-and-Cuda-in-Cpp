@@ -4,6 +4,7 @@
 #include "Core/CoreNeko.hpp"
 #include "Engine/Engine.hpp"
 #include "Events/Events.hpp"
+#include "Interface/Interface.hpp"
 #include "Renderer/Renderer.hpp"
 
 #endif /* NEKO_HPP */

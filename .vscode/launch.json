@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Launch",
-            "program": "${workspaceFolder}/build/Application",
+            "program": "${workspaceFolder}/Build/Application",
             "args": [],
             "cwd": "${workspaceFolder}"
         },
@@ -17,7 +17,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Application",
+            "program": "${workspaceFolder}/Build/Application",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

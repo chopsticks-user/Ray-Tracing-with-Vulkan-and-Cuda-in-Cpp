@@ -10,10 +10,4 @@ configure_file(${PROJECT_SOURCE_DIR}/Tools/CMake/NekoEngine.h.in
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/Source)
 
-add_executable(Application ${PROJECT_SOURCE_DIR}/Application.cpp)
-target_link_libraries(Application
-    PUBLIC CompilerFlags
-    PRIVATE Neko
-)
-
-# include(${PROJECT_SOURCE_DIR}/tools/cmake/Install.cmake)
+include(${PROJECT_SOURCE_DIR}/Tools/CMake/Install.cmake)

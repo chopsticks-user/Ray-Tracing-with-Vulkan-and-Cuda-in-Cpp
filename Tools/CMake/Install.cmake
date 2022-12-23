@@ -1,40 +1,16 @@
 
-set(installable_libs neko compiler_flags)
+set(InstallableLibs "Neko;CompilerFlags")
 
-install(TARGETS
-    neko_engine
-    neko_events
-    neko_renderer
-    neko_threads
-    neko_utils
-    DESTINATION ${PROJECT_SOURCE_DIR}/install/lib
-)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Libraries)
 
-install(FILES
-    ${PROJECT_SOURCE_DIR}/src/neko.hpp
-    DESTINATION ${PROJECT_SOURCE_DIR}/install/include
-)
+option(CMAKE_SKIP_RPATH ON)
 
-install(FILES
-    ${PROJECT_SOURCE_DIR}/src/engine/engine.hpp
-    ${PROJECT_SOURCE_DIR}/src/events/events.hpp
-    ${PROJECT_SOURCE_DIR}/src/renderer/renderer.hpp
-    ${PROJECT_SOURCE_DIR}/src/threads/threads.hpp
-    ${PROJECT_SOURCE_DIR}/src/utils/utils.hpp
-    DESTINATION ${PROJECT_SOURCE_DIR}/install/include/neko
-)
+install(
+    FILES
+    ${NekoEngineDirectory}/Build/Source/Core/libNekoCore.so
+    ${NekoEngineDirectory}/Build/Source/Engine/libNekoEngine.so
+    ${NekoEngineDirectory}/Build/Source/Events/libNekoEvents.so
+    ${NekoEngineDirectory}/Build/Source/Renderer/libNekoRenderer.so
 
-install(TARGETS
-    Application
-    DESTINATION ${PROJECT_SOURCE_DIR}/install/bin
-)
-
-install(FILES
-    ${PROJECT_SOURCE_DIR}/data/configs/MangoHud.conf
-    DESTINATION ${PROJECT_SOURCE_DIR}/install/bin
-)
-
-install(FILES
-    ${PROJECT_SOURCE_DIR}/data/configs/settings.json
-    DESTINATION ${PROJECT_SOURCE_DIR}/install/bin/data/configs
+    DESTINATION ${PROJECT_SOURCE_DIR}/Libraries
 )

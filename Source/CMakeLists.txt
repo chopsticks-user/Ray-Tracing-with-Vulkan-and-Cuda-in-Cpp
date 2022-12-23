@@ -3,6 +3,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Core)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Events)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Renderer)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 add_library(Neko INTERFACE)
 target_include_directories(Neko INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -12,4 +13,5 @@ target_link_libraries(Neko INTERFACE
     NekoEngine
     NekoEvents
     NekoRenderer
+    NekoInterface
 )
