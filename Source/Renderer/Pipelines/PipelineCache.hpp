@@ -3,36 +3,38 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Device;
+    class Device;
 
-class PipelineCache {
-public:
-  PipelineCache() = default;
-  PipelineCache(const PipelineCache &) = delete;
-  PipelineCache &operator=(const PipelineCache &) = delete;
+    class PipelineCache
+    {
+    public:
+        PipelineCache() = default;
+        PipelineCache(const PipelineCache &) = delete;
+        PipelineCache &operator=(const PipelineCache &) = delete;
 
-  PipelineCache(const Device &crDevice, u64 initialDataSize,
-                const void *pcInititalData, VkPipelineCacheCreateFlags flags);
+        PipelineCache(const Device &crDevice, u64 initialDataSize,
+                      const void *pcInititalData, VkPipelineCacheCreateFlags flags);
 
-  PipelineCache(PipelineCache &&rhs) noexcept;
+        PipelineCache(PipelineCache &&rhs) noexcept;
 
-  PipelineCache &operator=(PipelineCache &&rhs) noexcept;
+        PipelineCache &operator=(PipelineCache &&rhs) noexcept;
 
-  ~PipelineCache() noexcept { release(); }
+        ~PipelineCache() noexcept { release(); }
 
-  const VkPipelineCache &operator*() const noexcept { return mPCache; }
+        const VkPipelineCache &operator*() const noexcept { return mPCache; }
 
-  constexpr bool empty() const noexcept { return mPCache == VK_NULL_HANDLE; }
+        constexpr bool empty() const noexcept { return mPCache == VK_NULL_HANDLE; }
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  const Device *mpcDevice = nullptr;
-  VkPipelineCache mPCache = VK_NULL_HANDLE;
-};
+    private:
+        const Device *mpcDevice = nullptr;
+        VkPipelineCache mPCache = VK_NULL_HANDLE;
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_PIPELINES_CACHE_HPP */

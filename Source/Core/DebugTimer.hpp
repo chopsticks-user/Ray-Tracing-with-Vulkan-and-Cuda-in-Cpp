@@ -6,12 +6,12 @@
 #include <chrono>
 
 #define TIMER_START(timer_name)                                                \
-  auto timer_name = neko::ScopedTimer { neko::TimeUnit::milliseconds }
+  auto timer_name = Neko::ScopedTimer { Neko::TimeUnit::milliseconds }
 
 #define TIMER_INVOKE(timer_name, note)                                         \
   timer_name.invoke([](float x) { printf("%s: %f ms\n", note, x); })
 
-namespace neko {
+namespace Neko {
 
 enum TimeUnit {
   microseconds = 1'000'000,
@@ -67,6 +67,6 @@ private:
   }
 };
 
-} /* namespace neko */
+} /* namespace Neko */
 
 #endif /* NEKO_CORE_DEBUG_TIMER_HPP */

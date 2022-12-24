@@ -3,7 +3,7 @@
 
 #include "CoreDefines.hpp"
 
-namespace neko::base_object {
+namespace Neko::SuperClass {
 
 template <typename TAllocatedMember, TAllocatedMember tDefaultStateValue,
           typename TDependenceWrapper>
@@ -48,7 +48,7 @@ protected:
   TAllocatedMember mValue = tDefaultStateValue;
 };
 
-} // namespace neko::base_object
+} // namespace Neko::SuperClass
 
 #define NEKO_INHERIT_MOVE_ONLY_SPECIAL_METHODS(derivedClass)                   \
   derivedClass() = default;                                                    \

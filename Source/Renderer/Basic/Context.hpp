@@ -3,7 +3,7 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko {
 
 class Context {
 public:
@@ -38,6 +38,6 @@ private:
   static void destroyContext();
 };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_BASIC_CONTEXT_HPP */

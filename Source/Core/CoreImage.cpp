@@ -1,9 +1,11 @@
 #include "CoreImage.hpp"
 
+#ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
+#endif /* STB_IMAGE_IMPLEMENTATION */
 #include "stb_image.h"
 
-namespace neko {
+namespace Neko {
 
 namespace detail {
 
@@ -42,4 +44,4 @@ void LoadedImage::release() noexcept {
 
 } /* namespace detail */
 
-} /* namespace neko */
+} /* namespace Neko */

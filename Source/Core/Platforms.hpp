@@ -3,7 +3,7 @@
 
 #include "CoreDefines.hpp"
 
-namespace neko {
+namespace Neko {
 
 enum Platform { linuxk, windows };
 
@@ -15,6 +15,6 @@ inline constexpr Platform platform = windows;
 #error "Operating system not supported"
 #endif /* current OS */
 
-} /* namespace neko */
+} /* namespace Neko */
 
 #endif /* NEKO_CORE_PLATFORM_HPP */

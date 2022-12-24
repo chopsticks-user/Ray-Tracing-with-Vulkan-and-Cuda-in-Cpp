@@ -3,36 +3,38 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Instance;
-class Window;
+    class Instance;
+    class Window;
 
-class Surface {
-public:
-  Surface() = default;
+    class Surface
+    {
+    public:
+        Surface() = default;
 
-  Surface(const Instance &crInstance, const Window &crWindow);
+        Surface(const Instance &crInstance, const Window &crWindow);
 
-  Surface(const Surface &) = delete;
+        Surface(const Surface &) = delete;
 
-  Surface(Surface &&) noexcept;
+        Surface(Surface &&) noexcept;
 
-  Surface &operator=(const Surface &) = delete;
+        Surface &operator=(const Surface &) = delete;
 
-  Surface &operator=(Surface &&) noexcept;
+        Surface &operator=(Surface &&) noexcept;
 
-  ~Surface() noexcept { release(); }
+        ~Surface() noexcept { release(); }
 
-  const VkSurfaceKHR &operator*() const noexcept { return mSurface; }
+        const VkSurfaceKHR &operator*() const noexcept { return mSurface; }
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  const Instance *mpcInstance = nullptr;
-  VkSurfaceKHR mSurface = VK_NULL_HANDLE;
-};
+    private:
+        const Instance *mpcInstance = nullptr;
+        VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_BASIC_SURFACE_HPP */

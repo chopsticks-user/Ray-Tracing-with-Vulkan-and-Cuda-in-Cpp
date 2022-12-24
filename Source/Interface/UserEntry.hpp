@@ -3,34 +3,31 @@
 
 #include <iostream>
 
-namespace neko
-{
-  extern Engine *_nekoUserInitializeEngine();
+namespace Neko {
+  class Engine;
+  extern Engine* _nekoUserInitializeEngine();
   extern void _userEntry();
-}
+  extern void createImGUI();
+} /* namespace Neko */
 
-static int protected_main([[maybe_unused]] int argc,
-                          [[maybe_unused]] char **argv)
-{
-  neko::_userEntry();
-  auto engine = neko::_nekoUserInitializeEngine();
+static int protectedMain(int, char**) {
+  Neko::_userEntry();
+
+  auto engine = Neko::_nekoUserInitializeEngine();
   engine->start();
   delete engine;
+
   return EXIT_SUCCESS;
 }
 
-int main(int argc, char **argv)
-{
-  try
-  {
-    return protected_main(argc, argv);
+int main(int argc, char** argv) {
+  try {
+    return protectedMain(argc, argv);
   }
-  catch (std::exception &e)
-  {
+  catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
-  catch (...)
-  {
+  catch (...) {
     std::cerr << "Uncaught exception" << std::endl;
   }
   return EXIT_FAILURE;

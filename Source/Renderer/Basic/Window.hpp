@@ -5,40 +5,42 @@
 
 #include <functional>
 
-namespace neko {
+namespace Neko
+{
 
-class Window {
-  typedef GLFWwindow *GLWindow;
+    class Window
+    {
+        typedef GLFWwindow *GLWindow;
 
-public:
-  static constexpr bool resizeable = true;
+    public:
+        static constexpr bool resizeable = true;
 
-  Window() = default;
-  Window(const Window &) = delete;
-  Window &operator=(const Window &) = delete;
+        Window() = default;
+        Window(const Window &) = delete;
+        Window &operator=(const Window &) = delete;
 
-  explicit Window(const EngineConfigs &settings, bool windowResizeable = false);
+        explicit Window(const EngineConfigs &settings, bool windowResizeable = false);
 
-  Window(Window &&) noexcept;
+        Window(Window &&) noexcept;
 
-  Window &operator=(Window &&) noexcept;
+        Window &operator=(Window &&) noexcept;
 
-  ~Window() noexcept { release(); };
+        ~Window() noexcept { release(); };
 
-  const GLWindow &operator*() const noexcept { return mWindow; }
+        const GLWindow &operator*() const noexcept { return mWindow; }
 
-  operator GLFWwindow *() const noexcept { return mWindow; }
+        operator GLFWwindow *() const noexcept { return mWindow; }
 
-  void whileMinimize() noexcept;
+        void whileMinimize() noexcept;
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  GLWindow mWindow = nullptr;
-  u32 mWidth = 0;
-  u32 mHeight = 0;
-};
+    private:
+        GLWindow mWindow = nullptr;
+        u32 mWidth = 0;
+        u32 mHeight = 0;
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_BASIC_WINDOW_HPP */

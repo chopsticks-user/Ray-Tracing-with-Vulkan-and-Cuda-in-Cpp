@@ -6,87 +6,95 @@
 #include "Buffers.hpp"
 #include "Images.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Swapchain;
-class Device;
+    class Swapchain;
+    class Device;
 
-class DepthBuffer : public ImageObject {
-public:
-  using ImageObject::ImageObject;
+    class DepthBuffer : public ImageObject
+    {
+    public:
+        using ImageObject::ImageObject;
 
-  DepthBuffer(DepthBuffer &&rhs)
-      : ImageObject{static_cast<ImageObject>(std::move(rhs))},
-        mFormat{std::move(rhs.mFormat)} {}
+        DepthBuffer(DepthBuffer &&rhs)
+            : ImageObject{static_cast<ImageObject>(std::move(rhs))},
+              mFormat{std::move(rhs.mFormat)} {}
 
-  DepthBuffer &operator=(DepthBuffer &&rhs) {
-    ImageObject::operator=(static_cast<ImageObject>(std::move(rhs)));
-    mFormat = std::move(rhs.mFormat);
-    return *this;
-  }
+        DepthBuffer &operator=(DepthBuffer &&rhs)
+        {
+            ImageObject::operator=(static_cast<ImageObject>(std::move(rhs)));
+            mFormat = std::move(rhs.mFormat);
+            return *this;
+        }
 
-  DepthBuffer(const EngineConfigs &crSettings, const Device &crDevice,
-              const Swapchain &crSwapchain);
+        DepthBuffer(const EngineConfigs &crSettings, const Device &crDevice,
+                    const Swapchain &crSwapchain);
 
-  const VkFormat &format() const noexcept { return mFormat; }
+        const VkFormat &format() const noexcept { return mFormat; }
 
-private:
-  VkFormat mFormat = {};
-};
+    private:
+        VkFormat mFormat = {};
+    };
 
-class UniformBuffer : public BufferObject {
-public:
-  using BufferObject::BufferObject;
+    class UniformBuffer : public BufferObject
+    {
+    public:
+        using BufferObject::BufferObject;
 
-  UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize,
-                VkDeviceSize memoryOffset = 0);
+        UniformBuffer(const Device &crDevice, VkDeviceSize bufferSize,
+                      VkDeviceSize memoryOffset = 0);
 
-private:
-};
+    private:
+    };
 
-class StagingBuffer : public BufferObject {
-public:
-  using BufferObject::BufferObject;
+    class StagingBuffer : public BufferObject
+    {
+    public:
+        using BufferObject::BufferObject;
 
-  StagingBuffer(const Device &crDevice, const void *pHostData,
-                VkDeviceSize bufferSize, VkDeviceSize memoryOffset = 0);
+        StagingBuffer(const Device &crDevice, const void *pHostData,
+                      VkDeviceSize bufferSize, VkDeviceSize memoryOffset = 0);
 
-private:
-};
+    private:
+    };
 
-class VertexBuffer : public BufferObject {
-public:
-  using BufferObject::BufferObject;
+    class VertexBuffer : public BufferObject
+    {
+    public:
+        using BufferObject::BufferObject;
 
-  VertexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
-               const void *pHostData, VkDeviceSize bufferSize,
-               VkDeviceSize memoryOffset = 0);
+        VertexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
+                     const void *pHostData, VkDeviceSize bufferSize,
+                     VkDeviceSize memoryOffset = 0);
 
-private:
-};
+    private:
+    };
 
-class IndexBuffer : public BufferObject {
-public:
-  using BufferObject::BufferObject;
+    class IndexBuffer : public BufferObject
+    {
+    public:
+        using BufferObject::BufferObject;
 
-  IndexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
-              const void *pHostData, VkDeviceSize bufferSize,
-              VkDeviceSize memoryOffset = 0);
+        IndexBuffer(const Device &crDevice, const CommandPool &crCommandPool,
+                    const void *pHostData, VkDeviceSize bufferSize,
+                    VkDeviceSize memoryOffset = 0);
 
-private:
-};
+    private:
+    };
 
-class TextureImage : public ImageObject {
-public:
-  using ImageObject::ImageObject;
+    class TextureImage : public ImageObject
+    {
+    public:
+        using ImageObject::ImageObject;
 
-  TextureImage(std::string textureImagePath, const Device &crDevice,
-               const Swapchain &crSwapchain, const CommandPool &crCommandPool,
-               VkDeviceSize memoryOffset = 0);
+        TextureImage(std::string textureImagePath, const Device &crDevice,
+                     const Swapchain &crSwapchain, const CommandPool &crCommandPool,
+                     VkDeviceSize memoryOffset = 0);
 
-private:
-};
+    private:
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_RESOURCES_USAGE_SPECIFIC_HPP */

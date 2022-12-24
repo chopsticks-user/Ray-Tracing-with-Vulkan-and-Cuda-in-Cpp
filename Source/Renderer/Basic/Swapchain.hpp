@@ -3,52 +3,55 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Surface;
-class Device;
+    class Surface;
+    class Device;
 
-class Swapchain {
-public:
-  Swapchain() = default;
-  Swapchain(const Swapchain &) = delete;
-  Swapchain &operator=(const Swapchain &) = delete;
+    class Swapchain
+    {
+    public:
+        Swapchain() = default;
+        Swapchain(const Swapchain &) = delete;
+        Swapchain &operator=(const Swapchain &) = delete;
 
-  Swapchain(const EngineConfigs &crSettings, const Surface &crSurface,
-            const Device &crDevice);
+        Swapchain(const EngineConfigs &crSettings, const Surface &crSurface,
+                  const Device &crDevice);
 
-  Swapchain(Swapchain &&rhs) noexcept;
+        Swapchain(Swapchain &&rhs) noexcept;
 
-  Swapchain &operator=(Swapchain &&rhs) noexcept;
+        Swapchain &operator=(Swapchain &&rhs) noexcept;
 
-  ~Swapchain() noexcept { release(); }
+        ~Swapchain() noexcept { release(); }
 
-  const VkSwapchainKHR &operator*() const noexcept { return mSwapchain; }
+        const VkSwapchainKHR &operator*() const noexcept { return mSwapchain; }
 
-  operator VkSwapchainKHR() const noexcept { return mSwapchain; }
+        operator VkSwapchainKHR() const noexcept { return mSwapchain; }
 
-  const VkFormat &format() const noexcept { return mFormat; }
+        const VkFormat &format() const noexcept { return mFormat; }
 
-  const VkExtent2D &extent() const noexcept { return mExtent; }
+        const VkExtent2D &extent() const noexcept { return mExtent; }
 
-  std::vector<VkImage> getImages() const;
+        std::vector<VkImage> getImages() const;
 
-  const std::vector<VkImageView> &getImageViews() const noexcept {
-    return mImageViews;
-  }
+        const std::vector<VkImageView> &getImageViews() const noexcept
+        {
+            return mImageViews;
+        }
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  const Device *mpcDevice = nullptr;
-  VkSwapchainKHR mSwapchain = VK_NULL_HANDLE;
-  VkFormat mFormat = {};
-  VkExtent2D mExtent = {};
-  std::vector<VkImageView> mImageViews = {};
+    private:
+        const Device *mpcDevice = nullptr;
+        VkSwapchainKHR mSwapchain = VK_NULL_HANDLE;
+        VkFormat mFormat = {};
+        VkExtent2D mExtent = {};
+        std::vector<VkImageView> mImageViews = {};
 
-  void initializeImageViews();
-};
+        void initializeImageViews();
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_BASIC_SWAPCHAIN_HPP */

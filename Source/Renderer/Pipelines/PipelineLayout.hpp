@@ -3,35 +3,37 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Device;
-class DescriptorSetLayout;
+    class Device;
+    class DescriptorSetLayout;
 
-class PipelineLayout {
-public:
-  PipelineLayout() = default;
-  PipelineLayout(const PipelineLayout &) = delete;
-  PipelineLayout &operator=(const PipelineLayout &) = delete;
+    class PipelineLayout
+    {
+    public:
+        PipelineLayout() = default;
+        PipelineLayout(const PipelineLayout &) = delete;
+        PipelineLayout &operator=(const PipelineLayout &) = delete;
 
-  PipelineLayout(const Device &crDevice,
-                 const std::vector<VkDescriptorSetLayout> &crDSLayout);
+        PipelineLayout(const Device &crDevice,
+                       const std::vector<VkDescriptorSetLayout> &crDSLayout);
 
-  PipelineLayout(PipelineLayout &&rhs) noexcept;
+        PipelineLayout(PipelineLayout &&rhs) noexcept;
 
-  PipelineLayout &operator=(PipelineLayout &&rhs) noexcept;
+        PipelineLayout &operator=(PipelineLayout &&rhs) noexcept;
 
-  ~PipelineLayout() noexcept { release(); }
+        ~PipelineLayout() noexcept { release(); }
 
-  const VkPipelineLayout &operator*() const noexcept { return mPLayout; }
+        const VkPipelineLayout &operator*() const noexcept { return mPLayout; }
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  const Device *mpcDevice = nullptr;
-  VkPipelineLayout mPLayout = VK_NULL_HANDLE;
-};
+    private:
+        const Device *mpcDevice = nullptr;
+        VkPipelineLayout mPLayout = VK_NULL_HANDLE;
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_PIPELINES_LAYOUT_HPP */

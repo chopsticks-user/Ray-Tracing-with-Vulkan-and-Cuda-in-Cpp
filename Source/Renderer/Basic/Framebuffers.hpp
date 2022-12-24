@@ -3,46 +3,50 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Device;
-class Swapchain;
-class DepthBuffer;
-class RenderPass;
+    class Device;
+    class Swapchain;
+    class DepthBuffer;
+    class RenderPass;
 
-class Framebuffers {
-public:
-  Framebuffers() = default;
-  Framebuffers(const Framebuffers &) = delete;
-  Framebuffers &operator=(const Framebuffers &) = delete;
+    class Framebuffers
+    {
+    public:
+        Framebuffers() = default;
+        Framebuffers(const Framebuffers &) = delete;
+        Framebuffers &operator=(const Framebuffers &) = delete;
 
-  Framebuffers(const Device &crDevice, const Swapchain &crSwapchain,
-               const RenderPass &crRenderPass,
-               const DepthBuffer &crDepthBuffer);
+        Framebuffers(const Device &crDevice, const Swapchain &crSwapchain,
+                     const RenderPass &crRenderPass,
+                     const DepthBuffer &crDepthBuffer);
 
-  Framebuffers(Framebuffers &&rhs) noexcept;
+        Framebuffers(Framebuffers &&rhs) noexcept;
 
-  Framebuffers &operator=(Framebuffers &&rhs) noexcept;
+        Framebuffers &operator=(Framebuffers &&rhs) noexcept;
 
-  ~Framebuffers() noexcept { release(); }
+        ~Framebuffers() noexcept { release(); }
 
-  const std::vector<VkFramebuffer> &operator*() const noexcept {
-    return mFramebuffers;
-  }
+        const std::vector<VkFramebuffer> &operator*() const noexcept
+        {
+            return mFramebuffers;
+        }
 
-  const VkFramebuffer &operator[](u64 index) const {
-    return mFramebuffers.at(index);
-  }
+        const VkFramebuffer &operator[](u64 index) const
+        {
+            return mFramebuffers.at(index);
+        }
 
-  auto size() const noexcept { return mFramebuffers.size(); }
+        auto size() const noexcept { return mFramebuffers.size(); }
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  const Device *mpcDevice = nullptr;
-  std::vector<VkFramebuffer> mFramebuffers = {};
-};
+    private:
+        const Device *mpcDevice = nullptr;
+        std::vector<VkFramebuffer> mFramebuffers = {};
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_BASIC_FRAMEBUFFERS_HPP */

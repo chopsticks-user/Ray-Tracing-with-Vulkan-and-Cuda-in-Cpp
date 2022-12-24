@@ -1,5 +1,5 @@
-#ifndef NEKO_RENDERER_MODULE_HPP
-#define NEKO_RENDERER_MODULE_HPP
+#ifndef NEKO_RENDERER_MODULES_HPP
+#define NEKO_RENDERER_MODULES_HPP
 
 #include "Basic/Context.hpp"
 #include "Basic/Extensions.hpp"
@@ -27,4 +27,4 @@
 #include "Resources/Sampler.hpp"
 #include "Resources/UsageSpecific.hpp"
 
-#endif /* NEKO_RENDERER_MODULE_HPP */
+#endif /* NEKO_RENDERER_MODULES_HPP */

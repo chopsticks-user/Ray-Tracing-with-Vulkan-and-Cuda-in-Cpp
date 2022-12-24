@@ -48,7 +48,7 @@ static_assert(sizeof(b32) == 4, "sizeof(b32) != 4 bytes");
 #define vku32(x) static_cast<u32>(x)
 #define stdu64(x) static_cast<size_t>(x)
 
-namespace neko {
+namespace Neko {
 
 #ifndef NDEBUG
 inline constexpr bool debugMode = true;
@@ -76,6 +76,6 @@ constexpr const std::string_view abosoluteDirectory = "asd";
 
 } /* namespace internal */
 
-} /* namespace neko */
+} /* namespace Neko */
 
 #endif /* NEKO_CORE_DEFINES_HPP */

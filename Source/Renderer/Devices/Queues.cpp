@@ -1,3 +1,3 @@
 // #include "queues.hpp"
 
-// namespace neko {} /* namespace neko */
+// namespace Neko {} /* namespace Neko */

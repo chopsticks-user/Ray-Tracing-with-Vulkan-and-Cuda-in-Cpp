@@ -10,7 +10,7 @@
 #include <queue>
 #include <thread>
 
-namespace neko {
+namespace Neko {
 
 class EngineConfigs;
 class ThreadPool;
@@ -78,6 +78,6 @@ private:
   static void threadLoop(ThreadPool *pool);
 };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_CORE_THREAD_POOL_HPP */

@@ -1,12 +1,23 @@
 #include "EngineConfigs.hpp"
 
+#ifndef TINYOBJLOADER_IMPLEMENTATION
+#define TINYOBJLOADER_IMPLEMENTATION
+#endif /* TINYOBJLOADER_IMPLEMENTATION */
+#include "tiny_obj_loader.h"
+
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
+
+#define NEKO_LOG_INTERNAL(level, ...) spdlog::get("Neko")->level(__VA_ARGS__)
+#define NEKO_LOG_USER(level, ...) spdlog::get("User")->level(__VA_ARGS__)
+
 #include "nlohmann/json.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <map>
 
-namespace neko {
+namespace Neko {
 
 static Version getVersion(const std::string &versionStr) {
   u32 versionParts[3] = {0, 0, 0};
@@ -93,4 +104,4 @@ EngineConfigs::EngineConfigs(const std::string &configsFilePath) {
   auto advancedSettings = jsonData["advanced"];
 }
 
-} /* namespace neko */
+} /* namespace Neko */

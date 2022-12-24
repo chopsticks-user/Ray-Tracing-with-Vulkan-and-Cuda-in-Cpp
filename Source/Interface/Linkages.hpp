@@ -5,7 +5,7 @@
 
 // #include "Engine/Engine.hpp"
 
-// namespace neko
+// namespace Neko
 // {
 //     Engine *_nekoUserInitializeEngine();
 // }

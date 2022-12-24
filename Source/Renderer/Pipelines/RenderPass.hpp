@@ -3,39 +3,41 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Device;
-class Swapchain;
-class DepthBuffer;
+    class Device;
+    class Swapchain;
+    class DepthBuffer;
 
-class RenderPass {
-public:
-  RenderPass() = default;
-  RenderPass(const RenderPass &) = delete;
-  RenderPass &operator=(const RenderPass &) = delete;
+    class RenderPass
+    {
+    public:
+        RenderPass() = default;
+        RenderPass(const RenderPass &) = delete;
+        RenderPass &operator=(const RenderPass &) = delete;
 
-  RenderPass(const Device &crDevice,
-             const VkRenderPassCreateInfo &crRenderPassInfo);
+        RenderPass(const Device &crDevice,
+                   const VkRenderPassCreateInfo &crRenderPassInfo);
 
-  RenderPass(const Device &crDevice, const Swapchain &crSwapchain,
-             const DepthBuffer &crDepthBuffer);
+        RenderPass(const Device &crDevice, const Swapchain &crSwapchain,
+                   const DepthBuffer &crDepthBuffer);
 
-  RenderPass(RenderPass &&rhs) noexcept;
+        RenderPass(RenderPass &&rhs) noexcept;
 
-  RenderPass &operator=(RenderPass &&rhs) noexcept;
+        RenderPass &operator=(RenderPass &&rhs) noexcept;
 
-  ~RenderPass() noexcept { release(); }
+        ~RenderPass() noexcept { release(); }
 
-  const VkRenderPass &operator*() const noexcept { return mRenderPass; }
+        const VkRenderPass &operator*() const noexcept { return mRenderPass; }
 
-  void release() noexcept;
+        void release() noexcept;
 
-private:
-  const Device *mpcDevice = nullptr;
-  VkRenderPass mRenderPass = VK_NULL_HANDLE;
-};
+    private:
+        const Device *mpcDevice = nullptr;
+        VkRenderPass mRenderPass = VK_NULL_HANDLE;
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_PIPELINES_RENDER_PASS_HPP */

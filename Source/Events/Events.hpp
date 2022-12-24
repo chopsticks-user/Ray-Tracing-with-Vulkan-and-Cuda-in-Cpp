@@ -1,6 +1,6 @@
 #ifndef NEKO_EVENTS_HPP
 #define NEKO_EVENTS_HPP
 
-namespace neko {} /* namespace neko */
+namespace Neko {} // namespace Neko
 
 #endif /* NEKO_EVENTS_HPP */

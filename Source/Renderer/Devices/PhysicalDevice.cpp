@@ -2,7 +2,7 @@
 
 // #include "renderer/basic/instance/instance.hpp"
 
-// namespace neko {
+// namespace Neko {
 
 // PhysicalDevices::PhysicalDevices(const Instance &crInstance) {
 //   uint32_t physicalDeviceCount;
@@ -47,4 +47,4 @@
 //   return propertiesList;
 // }
 
-// } /* namespace neko */
+// } /* namespace Neko */

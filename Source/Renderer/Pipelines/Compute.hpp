@@ -3,6 +3,8 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {} /* namespace neko */
+namespace Neko
+{
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_PIPELINES_COMPUTE_HPP */

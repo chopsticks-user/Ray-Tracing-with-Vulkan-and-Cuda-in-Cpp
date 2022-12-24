@@ -3,47 +3,50 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class CommandPool;
-class BufferObject;
-class Device;
+    class CommandPool;
+    class BufferObject;
+    class Device;
 
-namespace detail {
+    namespace detail
+    {
 
-bool hasDepthStencilComponent(VkFormat format);
+        bool hasDepthStencilComponent(VkFormat format);
 
-VkFormat findSupportedFormat(VkPhysicalDevice physicalDevice,
-                             const std::vector<VkFormat> &candidates,
-                             VkImageTiling tiling,
-                             VkFormatFeatureFlags features);
+        VkFormat findSupportedFormat(VkPhysicalDevice physicalDevice,
+                                     const std::vector<VkFormat> &candidates,
+                                     VkImageTiling tiling,
+                                     VkFormatFeatureFlags features);
 
-void transitImageLayout(const CommandPool &commandPool, VkImage image,
-                        VkFormat format, VkImageLayout oldLayout,
-                        VkImageLayout newLayout, u32 mipLevels = 1);
+        void transitImageLayout(const CommandPool &commandPool, VkImage image,
+                                VkFormat format, VkImageLayout oldLayout,
+                                VkImageLayout newLayout, u32 mipLevels = 1);
 
-void copyBufferToImage(const CommandPool &commandPool, VkBuffer buffer,
-                       VkImage image, u32 width, u32 height);
+        void copyBufferToImage(const CommandPool &commandPool, VkBuffer buffer,
+                               VkImage image, u32 width, u32 height);
 
-VkSampleCountFlagBits maxSampleCount(VkPhysicalDevice physicalDevice);
+        VkSampleCountFlagBits maxSampleCount(VkPhysicalDevice physicalDevice);
 
-void generateMipMaps(const CommandPool &commandPool,
-                     VkPhysicalDevice physicalDevice, VkImage image,
-                     VkFormat format, i32 width, i32 height, u32 mipLevels);
+        void generateMipMaps(const CommandPool &commandPool,
+                             VkPhysicalDevice physicalDevice, VkImage image,
+                             VkFormat format, i32 width, i32 height, u32 mipLevels);
 
-u32 findMemoryType(VkPhysicalDevice physicalDevice, u32 typeFilter,
-                   VkMemoryPropertyFlags propertyFlags);
+        u32 findMemoryType(VkPhysicalDevice physicalDevice, u32 typeFilter,
+                           VkMemoryPropertyFlags propertyFlags);
 
-} /* namespace detail */
+    } /* namespace detail */
 
-namespace tmpl {
+    namespace tmpl
+    {
 
-VkImage makeImage();
+        VkImage makeImage();
 
-VkImageView makeImageView();
+        VkImageView makeImageView();
 
-} /* namespace tmpl */
+    } /* namespace tmpl */
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_RESOURCES_UTILS_HPP */

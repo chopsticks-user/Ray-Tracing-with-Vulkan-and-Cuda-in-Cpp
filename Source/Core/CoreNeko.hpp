@@ -9,6 +9,5 @@
 #include "MacroUtils.hpp"
 #include "Platforms.hpp"
 #include "ThreadPool.hpp"
-#include "VKTemplates.hpp"
 
 #endif /* NEKO_CORE_HPP */

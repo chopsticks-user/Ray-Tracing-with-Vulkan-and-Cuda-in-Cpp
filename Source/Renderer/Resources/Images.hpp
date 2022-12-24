@@ -3,68 +3,72 @@
 
 #include "CoreNeko.hpp"
 
-namespace neko {
+namespace Neko
+{
 
-class Device;
+    class Device;
 
-class Image {
-public:
-  Image() = default;
-  Image(const Image &) = delete;
-  Image &operator=(const Image &) = delete;
+    class Image
+    {
+    public:
+        Image() = default;
+        Image(const Image &) = delete;
+        Image &operator=(const Image &) = delete;
 
-private:
-};
+    private:
+    };
 
-class ImageView {
-public:
-  ImageView() = default;
-  ImageView(const ImageView &) = delete;
-  ImageView &operator=(const ImageView &) = delete;
+    class ImageView
+    {
+    public:
+        ImageView() = default;
+        ImageView(const ImageView &) = delete;
+        ImageView &operator=(const ImageView &) = delete;
 
-private:
-};
+    private:
+    };
 
-class ImageObject {
-public:
-  ImageObject() = default;
-  ImageObject(const ImageObject &) = delete;
-  ImageObject &operator=(const ImageObject &) = delete;
+    class ImageObject
+    {
+    public:
+        ImageObject() = default;
+        ImageObject(const ImageObject &) = delete;
+        ImageObject &operator=(const ImageObject &) = delete;
 
-  ImageObject(const Device &crDevice, const VkImageCreateInfo *pcImageInfo,
-              const VkImageViewCreateInfo *pcImageViewInfo = nullptr,
-              const VkMemoryAllocateInfo *pcAllocInfo = nullptr,
-              VkDeviceSize memoryOffset = 0);
+        ImageObject(const Device &crDevice, const VkImageCreateInfo *pcImageInfo,
+                    const VkImageViewCreateInfo *pcImageViewInfo = nullptr,
+                    const VkMemoryAllocateInfo *pcAllocInfo = nullptr,
+                    VkDeviceSize memoryOffset = 0);
 
-  ImageObject(ImageObject &&rhs) noexcept;
+        ImageObject(ImageObject &&rhs) noexcept;
 
-  ImageObject &operator=(ImageObject &&rhs) noexcept;
+        ImageObject &operator=(ImageObject &&rhs) noexcept;
 
-  const VkImage &operator*() const noexcept { return mImage; }
+        const VkImage &operator*() const noexcept { return mImage; }
 
-  virtual ~ImageObject() noexcept { release(); }
+        virtual ~ImageObject() noexcept { release(); }
 
-  const VkImage &image() const noexcept { return mImage; }
+        const VkImage &image() const noexcept { return mImage; }
 
-  const VkImageView &view() const noexcept { return mImageView; }
+        const VkImageView &view() const noexcept { return mImageView; }
 
-  void release() noexcept;
+        void release() noexcept;
 
-protected:
-  const Device *mpcDevice = nullptr;
-  VkImage mImage = VK_NULL_HANDLE;
-  VkDeviceMemory mDeviceMemory = VK_NULL_HANDLE;
-  VkDeviceSize mOffset = 0;
-  VkImageView mImageView = VK_NULL_HANDLE;
+    protected:
+        const Device *mpcDevice = nullptr;
+        VkImage mImage = VK_NULL_HANDLE;
+        VkDeviceMemory mDeviceMemory = VK_NULL_HANDLE;
+        VkDeviceSize mOffset = 0;
+        VkImageView mImageView = VK_NULL_HANDLE;
 
-  void createImage(const VkImageCreateInfo *pcImageInfo);
+        void createImage(const VkImageCreateInfo *pcImageInfo);
 
-  void createImageMemory(const VkMemoryAllocateInfo *pcAllocInfo,
-                         VkDeviceSize memoryOffset = 0);
+        void createImageMemory(const VkMemoryAllocateInfo *pcAllocInfo,
+                               VkDeviceSize memoryOffset = 0);
 
-  void createImageView(const VkImageViewCreateInfo *pcImageViewInfo);
-};
+        void createImageView(const VkImageViewCreateInfo *pcImageViewInfo);
+    };
 
-} /* namespace neko */
+} // namespace Neko
 
 #endif /* NEKO_RENDERER_RESOURCES_IMAGE_HPP */

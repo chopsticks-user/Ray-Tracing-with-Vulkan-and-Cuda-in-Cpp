@@ -3,7 +3,7 @@
 #include "Commands/Commands.hpp"
 #include "Devices/LogicalDevice.hpp"
 
-namespace neko {
+namespace Neko {
 namespace detail {
 
 bool hasDepthStencilComponent(VkFormat format) {
@@ -252,4 +252,4 @@ namespace tmpl {
 
 } /* namespace tmpl */
 
-} /* namespace neko */
+} // namespace Neko

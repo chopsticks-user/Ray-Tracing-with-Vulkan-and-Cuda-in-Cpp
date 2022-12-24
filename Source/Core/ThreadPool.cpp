@@ -2,7 +2,7 @@
 
 #include "EngineConfigs.hpp"
 
-namespace neko {
+namespace Neko {
 
 ThreadPool::ThreadPool() { initializePool(CPUThreadUsage::medium); }
 
@@ -84,4 +84,4 @@ void ThreadPool::threadLoop(ThreadPool *pool) {
   }
 }
 
-} /* namespace neko */
+} /* namespace Neko */
