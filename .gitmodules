@@ -4,3 +4,6 @@
 [submodule "Modules/Stb"]
 	path = Modules/Stb
 	url = https://github.com/nothings/stb.git
+[submodule "Modules/Spdlog"]
+	path = Modules/Spdlog
+	url = https://github.com/gabime/spdlog.git

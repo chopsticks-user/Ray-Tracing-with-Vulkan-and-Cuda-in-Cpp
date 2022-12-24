@@ -1,5 +1,7 @@
 #include "Renderer.hpp"
 
+#include <iostream>
+
 namespace neko {
 
 Renderer::Renderer(const EngineConfigs &crConfigs, ThreadPool &threadPool)

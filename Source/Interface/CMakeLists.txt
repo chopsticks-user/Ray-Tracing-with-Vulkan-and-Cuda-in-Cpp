@@ -5,5 +5,6 @@ target_include_directories(NekoInterface INTERFACE
 )
 target_link_libraries(NekoInterface INTERFACE
     CompilerFlags
-    Neko
+
+    # Neko
 )

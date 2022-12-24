@@ -4,8 +4,8 @@
 
 namespace neko {
 
-Engine::Engine(const std::string &settingsFilePath) {
-  mpConfigs = std::make_unique<EngineConfigs>(settingsFilePath);
+Engine::Engine() {
+  mpConfigs = std::make_unique<EngineConfigs>("Data/Configs/configs.json");
 
   mpThreadPool = std::make_unique<ThreadPool>(*mpConfigs);
 

@@ -1,14 +1,13 @@
-#ifndef NEKO_INTERFACE_USER_DEFINES_HPP
-#define NEKO_INTERFACE_USER_DEFINES_HPP
+#ifndef NEKO_INTERFACE_LINKAGES_HPP
+#define NEKO_INTERFACE_LINKAGES_HPP
 
 #include "CoreNeko.hpp"
 
-#include "Engine/Engine.hpp"
+// #include "Engine/Engine.hpp"
 
-namespace neko {
+// namespace neko
+// {
+//     Engine *_nekoUserInitializeEngine();
+// }
 
-Engine *initializeEngine(const std::string &configFilePath);
-
-} // namespace neko
-
-#endif /* NEKO_INTERFACE_USER_DEFINES_HPP */
+#endif /* NEKO_INTERFACE_LINKAGES_HPP */

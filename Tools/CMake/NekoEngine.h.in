@@ -2,4 +2,3 @@
 #define NEKO_VERSION_MINOR @NekoEngine_VERSION_MINOR@
 #define NEKO_VERSION_PATCH @NekoEngine_VERSION_PATCH@
 
-#

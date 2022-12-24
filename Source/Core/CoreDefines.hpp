@@ -66,6 +66,16 @@ inline constexpr CppVersion cppVersion = std17;
 #error "At least C++17 is required"
 #endif /* C++ version */
 
+namespace internal {
+
+#ifdef NEKO_ABSOLUTE_DIRECTORY
+constexpr const std::string_view abosoluteDirectory = NEKO_ABSOLUTE_DIRECTORY;
+#else
+constexpr const std::string_view abosoluteDirectory = "asd";
+#endif /* defined(NEKO_ABSOLUTE_DIRECTORY) */
+
+} /* namespace internal */
+
 } /* namespace neko */
 
 #endif /* NEKO_CORE_DEFINES_HPP */

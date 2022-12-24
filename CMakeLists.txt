@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(NekoEngine VERSION 1.0.0 LANGUAGES CXX)
 
+include(Tools/CMake/GlobalVariables.cmake)
 include(Tools/CMake/CompilerFlags.cmake)
 
 configure_file(${PROJECT_SOURCE_DIR}/Tools/CMake/NekoEngine.h.in
@@ -9,5 +10,3 @@ configure_file(${PROJECT_SOURCE_DIR}/Tools/CMake/NekoEngine.h.in
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/Source)
-
-include(${PROJECT_SOURCE_DIR}/Tools/CMake/Install.cmake)

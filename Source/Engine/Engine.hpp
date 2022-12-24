@@ -16,7 +16,7 @@ public:
   Engine &operator=(const Engine &) = delete;
   Engine &operator=(Engine &&) = default;
 
-  Engine(const std::string &settingsFilePath = "");
+  Engine();
 
   ~Engine();
 
