@@ -127,7 +127,6 @@ namespace Neko
     }
 
     TextureImage::TextureImage(std::string textureImagePath, const Device &crDevice,
-                               const Swapchain &crSwapchain,
                                const CommandPool &crCommandPool,
                                VkDeviceSize memoryOffset)
     {
@@ -146,8 +145,8 @@ namespace Neko
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
-        imageInfo.extent.width = crSwapchain.extent().width;
-        imageInfo.extent.height = crSwapchain.extent().height;
+        imageInfo.extent.width = vku32(textureImage.width());
+        imageInfo.extent.height = vku32(textureImage.height());
         imageInfo.extent.depth = 1;
         imageInfo.mipLevels = mipLevels;
         imageInfo.arrayLayers = 1;

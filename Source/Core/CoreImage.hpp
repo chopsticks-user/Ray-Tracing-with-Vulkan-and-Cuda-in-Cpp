@@ -50,10 +50,7 @@ namespace Neko
                 {
                     return vku32(std::floor(std::log2(std::max(mWidth, mHeight)))) + 1;
                 }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
 
             ImageColor color() const noexcept { return mColor; }

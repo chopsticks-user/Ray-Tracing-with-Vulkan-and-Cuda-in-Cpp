@@ -89,7 +89,7 @@ namespace Neko
         using ImageObject::ImageObject;
 
         TextureImage(std::string textureImagePath, const Device &crDevice,
-                     const Swapchain &crSwapchain, const CommandPool &crCommandPool,
+                     const CommandPool &crCommandPool,
                      VkDeviceSize memoryOffset = 0);
 
     private:

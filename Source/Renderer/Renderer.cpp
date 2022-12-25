@@ -35,8 +35,8 @@ namespace Neko
           mIndexBuffer{mDevice, mCommandPool, indices.data(),
                        sizeof(ShaderObject::Index) * indices.size()},
 
-          mTextureImage{"Data/Resources/Textures/Cat.jpg",
-                        mDevice, mSwapchain, mCommandPool},
+          mTextureImage{"Data/Resources/Textures/Texture.jpeg",
+                        mDevice, mCommandPool},
 
           mSampler{crConfigs, mDevice},
 
@@ -133,9 +133,7 @@ namespace Neko
     Renderer::getUniformBuffer([[maybe_unused]] float elapsedTime)
     {
         ShaderObject::Uniform ubo;
-        // ubo.model = glm::rotate(glm::mat4(1.0f), elapsedTime * glm::radians(90.0f),
-        //                         glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.model = glm::rotate(glm::mat4(1.0f), 0.0f,
+        ubo.model = glm::rotate(glm::mat4(1.0f), elapsedTime * glm::radians(90.0f),
                                 glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.view =
             glm::lookAt(glm::vec3{1.0f, 1.0f, 1.0f}, glm::vec3{0.0f, 0.0f, 0.0f},
