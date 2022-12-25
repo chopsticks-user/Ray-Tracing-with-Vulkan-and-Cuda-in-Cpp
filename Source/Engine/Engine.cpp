@@ -2,16 +2,17 @@
 
 #include "Renderer.hpp"
 
-namespace Neko
+namespace Neko::Internal
 {
     Engine::Engine()
     {
-        mpConfigs = std::make_unique<EngineConfigs>("Data/Configs/configs.json");
+        mpConfigs = std::make_unique<Core::EngineConfigs>("Data/Configs/configs.json");
 
-        mpThreadPool = std::make_unique<ThreadPool>(*mpConfigs);
+        mpThreadPool = std::make_unique<Core::ThreadPool>(*mpConfigs);
 
-        auto rendererReady = mpThreadPool->submitJob([&]
-                                                     { mpRenderer = std::make_unique<Renderer>(*mpConfigs, *mpThreadPool); });
+        auto rendererReady = mpThreadPool->submitJob(
+            [&]
+            { mpRenderer = std::make_unique<Renderer>(*mpConfigs, *mpThreadPool); });
         rendererReady->wait();
     };
 
@@ -26,4 +27,4 @@ namespace Neko
 
     void Engine::stop() { mpThreadPool->release(); }
 
-} // namespace Neko
+} // namespace Neko::Internal

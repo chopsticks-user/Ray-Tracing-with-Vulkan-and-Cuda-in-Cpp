@@ -1,8 +1,8 @@
-#ifndef NEKO_INTERFACE_HPP
-#define NEKO_INTERFACE_HPP
+#ifndef HDG_INTERFACE_HPP
+#define HDG_INTERFACE_HPP
 
 #include "Linkages.hpp"
 #include "UserDefines.hpp"
 #include "UserEntry.hpp"
 
-#endif /* NEKO_INTERFACE_HPP */
+#endif /* HDG_INTERFACE_HPP */

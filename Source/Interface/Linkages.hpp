@@ -1,7 +1,7 @@
-#ifndef NEKO_INTERFACE_LINKAGES_HPP
-#define NEKO_INTERFACE_LINKAGES_HPP
+#ifndef HDG_INTERFACE_LINKAGES_HPP
+#define HDG_INTERFACE_LINKAGES_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
 
 // #include "Engine/Engine.hpp"
 
@@ -10,4 +10,4 @@
 //     Engine *_nekoUserInitializeEngine();
 // }
 
-#endif /* NEKO_INTERFACE_LINKAGES_HPP */
+#endif /* HDG_INTERFACE_LINKAGES_HPP */

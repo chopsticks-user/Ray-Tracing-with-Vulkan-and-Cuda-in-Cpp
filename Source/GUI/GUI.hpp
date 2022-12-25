@@ -1,12 +1,12 @@
-#ifndef NEKO_RENDERER_GUI_HPP
-#define NEKO_RENDERER_GUI_HPP
+#ifndef HDG_GUI_HPP
+#define HDG_GUI_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
 
-namespace Neko {
+namespace Neko::Internal
+{
+    void createImGUI();
 
-void createImGUI();
+} // namespace Neko::Internal
 
-} // namespace Neko
-
-#endif /* NEKO_RENDERER_GUI_HPP */
+#endif /* HDG_GUI_HPP */

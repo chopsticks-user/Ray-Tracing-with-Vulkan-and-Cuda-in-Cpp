@@ -1,11 +1,12 @@
 
 add_library(NekoCore
-    ${CMAKE_CURRENT_SOURCE_DIR}/EngineConfigs.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/CoreImage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ThreadPool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Configs/EngineConfigs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utils/ImageLoader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Threading/ThreadPool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Logger/Logger.cpp
 )
 target_include_directories(NekoCore
-    INTERFACE ${PROJECT_SOURCE_DIR}/Source/Core
+    PUBLIC ${PROJECT_SOURCE_DIR}/Source/Core
 )
 target_link_libraries(NekoCore
     PUBLIC CompilerFlags

@@ -7,7 +7,7 @@ include(Tools/CMake/CompilerFlags.cmake)
 include(Tools/CMake/ImportExternalLibraries.cmake)
 
 configure_file(${PROJECT_SOURCE_DIR}/Tools/CMake/NekoEngine.h.in
-    ${PROJECT_SOURCE_DIR}/Source/Core/CMakeConfigs.hpp
+    ${PROJECT_SOURCE_DIR}/Source/Core/Common/CMakeConfigs.hpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/Source)

@@ -1,6 +1,10 @@
 #ifndef NEKO_EVENTS_HPP
 #define NEKO_EVENTS_HPP
 
-namespace Neko {} // namespace Neko
+#include "CoreInternal.hpp"
+
+namespace Neko::Internal
+{
+} // namespace Neko::Internal
 
 #endif /* NEKO_EVENTS_HPP */

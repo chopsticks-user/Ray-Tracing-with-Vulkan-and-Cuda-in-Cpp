@@ -2,8 +2,8 @@
 
 #include <imgui.h>
 
-namespace Neko
+namespace Neko::Internal
 {
     void createImGUI() {}
 
-} // namespace Neko
+} // namespace Neko::Internal
