@@ -7,6 +7,12 @@
 
 namespace Neko
 {
+    struct ModelVertexData
+    {
+        std::vector<ShaderObject::Vertex> vertices;
+        std::vector<ShaderObject::Index> indices;
+    };
+
     class Renderer
     {
     public:
@@ -26,26 +32,13 @@ namespace Neko
         const u64 maxFramesInFlight = 2;
         bool resized = false;
 
-        std::vector<ShaderObject::Vertex> vertices = {
-            {{-0.25f, -0.25f, -0.2f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.25f, -0.25f, -0.2f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.25f, 0.25f, -0.2f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-            {{-0.25f, 0.25f, -0.2f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+        // std::vector<ShaderObject::Vertex> vertices;
+        // std::vector<ShaderObject::Index> indices;
 
-            {{-0.25f, -0.25f, 0.3f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.25f, -0.25f, 0.3f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.25f, 0.25f, 0.3f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-            {{-0.25f, 0.25f, 0.3f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+        ModelVertexData modelData;
 
-        };
-        std::vector<ShaderObject::Index> indices{0, 1, 2, 2, 3, 0,
-                                                 4, 5, 6, 6, 7, 4,
-                                                 2, 6, 7, 7, 3, 2,
-                                                 1, 5, 4, 4, 0, 1,
-                                                 1, 5, 6, 6, 2, 1,
-                                                 0, 4, 7, 7, 3, 0};
-
-        void updateDesciptorSets();
+        void
+        updateDesciptorSets();
 
         ShaderObject::Uniform getUniformBuffer(float elapsedTime);
 
@@ -58,6 +51,8 @@ namespace Neko
         static void resizeCallback(GLFWwindow *window, i32 width, i32 height);
 
         void recreateSwapchain();
+
+        ModelVertexData loadModel(const std::string &modelPath);
 
     private:
         const EngineConfigs *mpConfigs;

@@ -1,11 +1,19 @@
 #include "Renderer.hpp"
 
+#ifndef TINYOBJLOADER_IMPLEMENTATION
+#define TINYOBJLOADER_IMPLEMENTATION
+#endif /* TINYOBJLOADER_IMPLEMENTATION */
+#include "tiny_obj_loader.h"
+
 #include <iostream>
+#include <unordered_map>
 
 namespace Neko
 {
     Renderer::Renderer(const EngineConfigs &crConfigs, ThreadPool &threadPool)
-        : mpConfigs{&crConfigs},
+        : modelData{loadModel("Data/Resources/Models/VikingRoom.obj")},
+
+          mpConfigs{&crConfigs},
 
           mpThreadPool{&threadPool},
 
@@ -29,13 +37,13 @@ namespace Neko
 
           mUniformBuffers{maxFramesInFlight},
 
-          mVertexBuffer{mDevice, mCommandPool, vertices.data(),
-                        sizeof(ShaderObject::Vertex) * vertices.size()},
+          mVertexBuffer{mDevice, mCommandPool, modelData.vertices.data(),
+                        sizeof(ShaderObject::Vertex) * modelData.vertices.size()},
 
-          mIndexBuffer{mDevice, mCommandPool, indices.data(),
-                       sizeof(ShaderObject::Index) * indices.size()},
+          mIndexBuffer{mDevice, mCommandPool, modelData.indices.data(),
+                       sizeof(ShaderObject::Index) * modelData.indices.size()},
 
-          mTextureImage{"Data/Resources/Textures/Texture.jpeg",
+          mTextureImage{"Data/Resources/Models/VikingRoom.png",
                         mDevice, mCommandPool},
 
           mSampler{crConfigs, mDevice},
@@ -136,7 +144,7 @@ namespace Neko
         ubo.model = glm::rotate(glm::mat4(1.0f), elapsedTime * glm::radians(90.0f),
                                 glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.view =
-            glm::lookAt(glm::vec3{1.0f, 1.0f, 1.0f}, glm::vec3{0.0f, 0.0f, 0.0f},
+            glm::lookAt(glm::vec3{2.0f, 2.0f, 2.0f}, glm::vec3{0.0f, 0.0f, 0.0f},
                         glm::vec3{0.0f, 0.0f, 1.0f});
         ubo.proj =
             glm::perspective(glm::radians(45.0f),
@@ -203,8 +211,8 @@ namespace Neko
         static constexpr u32 firstIndex = 0;
         static constexpr u32 vertexOffset = 0;
         static constexpr u32 firstInstance = 0;
-        vkCmdDrawIndexed(commandBuffer, vku32(indices.size()), instanceCount,
-                         firstIndex, vertexOffset, firstInstance);
+        vkCmdDrawIndexed(commandBuffer, vku32(modelData.indices.size()),
+                         instanceCount, firstIndex, vertexOffset, firstInstance);
 
         vkCmdEndRenderPass(commandBuffer);
         mCommandPool.endBuffer(commandBuffer);
@@ -325,6 +333,46 @@ namespace Neko
                 {ShaderStage::vertex, "Data/Resources/Shaders/Basic.vert.spv"},
             },
         };
+    }
+
+    ModelVertexData Renderer::loadModel(const std::string &modelPath)
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err,
+                              modelPath.c_str()))
+        {
+            throw std::runtime_error(warn + err);
+        }
+
+        ModelVertexData loadedModel{};
+        std::unordered_map<ShaderObject::Vertex, ShaderObject::Index> uniqueVertices{};
+
+        for (const auto &shape : shapes)
+        {
+            for (const auto &index : shape.mesh.indices)
+            {
+                ShaderObject::Vertex vertex{};
+                vertex.position = {attrib.vertices[3 * index.vertex_index + 0],
+                                   attrib.vertices[3 * index.vertex_index + 1],
+                                   attrib.vertices[3 * index.vertex_index + 2]};
+                vertex.texCoord = {attrib.texcoords[2 * index.texcoord_index + 0],
+                                   1.0f - attrib.texcoords[2 * index.texcoord_index + 1]};
+                vertex.color = {1.0f, 1.0f, 1.0f};
+
+                if (uniqueVertices.count(vertex) == 0)
+                {
+                    uniqueVertices[vertex] =
+                        static_cast<uint32_t>(loadedModel.vertices.size());
+                    loadedModel.vertices.push_back(vertex);
+                }
+                loadedModel.indices.push_back(uniqueVertices[vertex]);
+            }
+        }
+        return loadedModel;
     }
 
 } // namespace Neko

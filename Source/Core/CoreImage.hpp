@@ -7,7 +7,6 @@
 
 namespace Neko
 {
-
     namespace detail
     {
 

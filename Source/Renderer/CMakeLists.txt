@@ -46,6 +46,7 @@ add_library(NekoRenderer
 )
 target_include_directories(NekoRenderer
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${PROJECT_SOURCE_DIR}/Modules/TinyObjLoader
 )
 target_link_libraries(NekoRenderer
     PUBLIC CompilerFlags
