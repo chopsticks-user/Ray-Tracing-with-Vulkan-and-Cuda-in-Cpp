@@ -1,19 +1,17 @@
 
-add_library(neko_renderer_pipelines
-    ${CMAKE_CURRENT_SOURCE_DIR}/compute.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/graphics.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader_objects.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader_module.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/render_pass.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pipeline_layout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pipeline_cache.cpp
+add_library(NekoRendererVulkanPipelines OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/Compute.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Graphics.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ShaderObjects.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ShaderModules.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RenderPass.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PipelineLayout.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PipelineCache.cpp
 )
-target_include_directories(neko_renderer_pipelines
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/devices
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/resources
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/basic
+target_include_directories(NekoRendererVulkanPipelines
+    PRIVATE ${PROJECT_SOURCE_DIR}/Source/Renderer/Vulkan
 )
-target_link_libraries(neko_renderer_pipelines
-    PUBLIC compiler_flags
-    PRIVATE neko_core
+target_link_libraries(NekoRendererVulkanPipelines
+    PRIVATE CompilerFlags
+    PRIVATE NekoCore
 )

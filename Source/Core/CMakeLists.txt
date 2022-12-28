@@ -9,9 +9,7 @@ target_include_directories(NekoCore
     PUBLIC ${PROJECT_SOURCE_DIR}/Source/Core
 )
 target_link_libraries(NekoCore
-    PUBLIC CompilerFlags
-    PUBLIC GLFW
-    PUBLIC Vulkan
+    PRIVATE CompilerFlags
     PRIVATE NlohmannJson
     PRIVATE StbImage
     PRIVATE SpdLog

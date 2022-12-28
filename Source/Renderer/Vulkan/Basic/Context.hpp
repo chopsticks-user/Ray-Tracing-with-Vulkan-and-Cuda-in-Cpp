@@ -1,9 +1,14 @@
-#ifndef HDG_RENDERER_BASIC_CONTEXT_HPP
-#define HDG_RENDERER_BASIC_CONTEXT_HPP
+#ifndef HDG_RENDERER_VULKAN_BASIC_CONTEXT_HPP
+#define HDG_RENDERER_VULKAN_BASIC_CONTEXT_HPP
 
 #include "CoreInternal.hpp"
 
-namespace Neko::Internal
+#ifndef GLFW_INCLUDE_VULKAN
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#endif // GLFW_INCLUDE_VULKAN
+
+namespace Neko::Internal::VK
 {
     class Context
     {
@@ -39,6 +44,6 @@ namespace Neko::Internal
         static void destroyContext();
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* HDG_RENDERER_BASIC_CONTEXT_HPP */
+#endif /* HDG_RENDERER_VULKAN_BASIC_CONTEXT_HPP */

@@ -1,16 +1,16 @@
-#ifndef NEKO_RENDERER_HPP
-#define NEKO_RENDERER_HPP
+#ifndef HDG_RENDERER_GENERIC_HPP
+#define HDG_RENDERER_GENERIC_HPP
 
 #include "CoreInternal.hpp"
 
-#include "RendererModules.hpp"
+#include "VulkanModules.hpp"
 
 namespace Neko::Internal
 {
     struct ModelVertexData
     {
-        std::vector<ShaderObject::Vertex> vertices;
-        std::vector<ShaderObject::Index> indices;
+        std::vector<VK::ShaderObject::Vertex> vertices;
+        std::vector<VK::ShaderObject::Index> indices;
     };
 
     class Renderer
@@ -22,7 +22,7 @@ namespace Neko::Internal
         Renderer &operator=(const Renderer &) = delete;
         Renderer &operator=(Renderer &&) = default;
 
-        Renderer(const EngineConfigs &settings, ThreadPool &threadPool);
+        Renderer(const Core::EngineConfigs &settings, Core::ThreadPool &threadPool);
 
         ~Renderer();
 
@@ -32,15 +32,12 @@ namespace Neko::Internal
         const u64 maxFramesInFlight = 2;
         bool resized = false;
 
-        // std::vector<ShaderObject::Vertex> vertices;
-        // std::vector<ShaderObject::Index> indices;
-
         ModelVertexData modelData;
 
         void
         updateDesciptorSets();
 
-        ShaderObject::Uniform getUniformBuffer(float elapsedTime);
+        VK::ShaderObject::Uniform getUniformBuffer(float elapsedTime);
 
         void updateFrame(u32 currentFrame);
 
@@ -55,35 +52,35 @@ namespace Neko::Internal
         ModelVertexData loadModel(const std::string &modelPath);
 
     private:
-        const EngineConfigs *mpConfigs;
-        ThreadPool *mpThreadPool;
+        const Core::EngineConfigs *mpConfigs;
+        Core::ThreadPool *mpThreadPool;
 
-        Instance mInstance;
-        Window mWindow;
-        Surface mSurface;
-        Device mDevice;
-        CommandPool mCommandPool;
+        VK::Instance mInstance;
+        VK::Window mWindow;
+        VK::Surface mSurface;
+        VK::Device mDevice;
+        VK::CommandPool mCommandPool;
         std::vector<VkCommandBuffer> mCommandBuffers;
-        Swapchain mSwapchain;
-        RenderSync mRenderSync;
+        VK::Swapchain mSwapchain;
+        VK::RenderSync mRenderSync;
 
-        DepthBuffer mDepthBuffer;
-        std::vector<UniformBuffer> mUniformBuffers;
-        VertexBuffer mVertexBuffer;
-        IndexBuffer mIndexBuffer;
-        TextureImage mTextureImage;
-        Sampler mSampler;
+        VK::DepthBuffer mDepthBuffer;
+        std::vector<VK::UniformBuffer> mUniformBuffers;
+        VK::VertexBuffer mVertexBuffer;
+        VK::IndexBuffer mIndexBuffer;
+        VK::TextureImage mTextureImage;
+        VK::Sampler mSampler;
 
-        DescriptorSetLayout mDescriptorSetLayout;
-        DescriptorPool mDescriptorPool;
-        DescriptorSets mDescriptorSets;
+        VK::DescriptorSetLayout mDescriptorSetLayout;
+        VK::DescriptorPool mDescriptorPool;
+        VK::DescriptorSets mDescriptorSets;
 
-        RenderPass mRenderPass;
-        Framebuffers mFramebuffers;
-        PipelineLayout mPipelineLayout;
-        GraphicsPipeline mGraphicsPipeline;
+        VK::RenderPass mRenderPass;
+        VK::Framebuffers mFramebuffers;
+        VK::PipelineLayout mPipelineLayout;
+        VK::GraphicsPipeline mGraphicsPipeline;
     };
 
 } // namespace Neko::Internal
 
-#endif /* NEKO_RENDERER_HPP */
+#endif /* HDG_RENDERER_GENERIC_HPP */

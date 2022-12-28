@@ -1,12 +1,12 @@
 #include "Swapchain.hpp"
 #include "Surface.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
-    Swapchain::Swapchain(const EngineConfigs &crSettings, const Surface &crSurface,
+    Swapchain::Swapchain(const Core::EngineConfigs &crSettings, const Surface &crSurface,
                          const Device &crDevice)
     {
         /* Vulkan 1.3.231 - A Specification, pg 2235 */
@@ -253,4 +253,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

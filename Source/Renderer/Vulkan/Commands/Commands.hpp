@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_COMMANDS_HPP
-#define NEKO_RENDERER_COMMANDS_HPP
+#ifndef HDG_RENDERER_VULKAN_COMMANDS_HPP
+#define HDG_RENDERER_VULKAN_COMMANDS_HPP
 
 #include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
-
     class Device;
 
     class CommandPool
@@ -83,6 +83,6 @@ namespace Neko::Internal
                                                   BufferLevel level = primary) const;
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_COMMANDS_HPP */
+#endif /* HDG_RENDERER_VULKAN_COMMANDS_HPP */

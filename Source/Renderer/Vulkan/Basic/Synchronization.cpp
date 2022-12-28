@@ -1,10 +1,9 @@
 #include "Synchronization.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     RenderSync::RenderSync(const Device &crDevice, u64 frameCount)
         : mpcDevice{&crDevice}, mImageAvailableSemaphores{frameCount},
           mRenderFinishedSemaphores{frameCount}, mInFlightFences{frameCount}
@@ -70,4 +69,4 @@ namespace Neko
         mInFlightFences.clear();
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

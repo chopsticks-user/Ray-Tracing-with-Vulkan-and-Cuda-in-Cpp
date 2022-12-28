@@ -1,14 +1,14 @@
-#ifndef NEKO_RENDERER_RESOURCES_USAGE_SPECIFIC_HPP
-#define NEKO_RENDERER_RESOURCES_USAGE_SPECIFIC_HPP
+#ifndef HDG_RENDERER_VULKAN_RESOURCES_USAGE_SPECIFIC_HPP
+#define HDG_RENDERER_VULKAN_RESOURCES_USAGE_SPECIFIC_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
 #include "Buffers.hpp"
 #include "Images.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     class Swapchain;
     class Device;
 
@@ -28,7 +28,7 @@ namespace Neko
             return *this;
         }
 
-        DepthBuffer(const EngineConfigs &crSettings, const Device &crDevice,
+        DepthBuffer(const Core::EngineConfigs &crSettings, const Device &crDevice,
                     const Swapchain &crSwapchain);
 
         const VkFormat &format() const noexcept { return mFormat; }
@@ -95,6 +95,6 @@ namespace Neko
     private:
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_RESOURCES_USAGE_SPECIFIC_HPP */
+#endif /* HDG_RENDERER_VULKAN_RESOURCES_USAGE_SPECIFIC_HPP */

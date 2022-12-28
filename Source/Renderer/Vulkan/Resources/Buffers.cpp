@@ -2,9 +2,9 @@
 #include "ResourceUtils.hpp"
 
 #include "Commands/Commands.hpp"
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     BufferObject::BufferObject(const Device &crDevice,
@@ -39,7 +39,7 @@ namespace Neko
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memoryRequirements.size;
-        allocInfo.memoryTypeIndex = detail::findMemoryType(
+        allocInfo.memoryTypeIndex = findMemoryType(
             crDevice.physical(), memoryRequirements.memoryTypeBits, propertyFlags);
         createBufferMemory(&allocInfo, memoryOffset);
     }
@@ -137,4 +137,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

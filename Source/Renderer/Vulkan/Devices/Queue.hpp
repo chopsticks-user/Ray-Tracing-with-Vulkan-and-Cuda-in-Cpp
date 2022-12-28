@@ -1,7 +1,10 @@
-#ifndef HDG_RENDERER_DEVICES_QUEUE_HPP
-#define HDG_RENDERER_DEVICES_QUEUE_HPP
+#ifndef HDG_RENDERER_VULKAN_DEVICES_QUEUE_HPP
+#define HDG_RENDERER_VULKAN_DEVICES_QUEUE_HPP
 
-namespace Neko
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
+
+namespace Neko::Internal::VK
 {
 
     // class LogicalDevice;
@@ -21,6 +24,6 @@ namespace Neko
     //   QueueWrapper mQueue;
     // };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* HDG_RENDERER_DEVICES_QUEUE_HPP */
+#endif /* HDG_RENDERER_VULKAN_DEVICES_QUEUE_HPP */

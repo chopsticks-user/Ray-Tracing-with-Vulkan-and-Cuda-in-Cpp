@@ -1,14 +1,13 @@
 #include "Descriptors.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
 #include <array>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     DescriptorSetLayout::DescriptorSetLayout(
-        [[maybe_unused]] const EngineConfigs &crConfig, const Device &crDevice)
+        [[maybe_unused]] const Core::EngineConfigs &crConfig, const Device &crDevice)
         : mpcDevice{&crDevice}
     {
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -65,7 +64,7 @@ namespace Neko
         }
     }
 
-    DescriptorPool::DescriptorPool([[maybe_unused]] const EngineConfigs &crConfig,
+    DescriptorPool::DescriptorPool([[maybe_unused]] const Core::EngineConfigs &crConfig,
                                    const Device &crDevice, u32 descriptorSetCount)
         : mpcDevice{&crDevice}
     {
@@ -179,4 +178,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

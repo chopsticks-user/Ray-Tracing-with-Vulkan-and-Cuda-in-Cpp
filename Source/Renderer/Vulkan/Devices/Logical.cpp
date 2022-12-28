@@ -1,15 +1,14 @@
 #include "Logical.hpp"
 
-#include "Instance.hpp"
-#include "Surface.hpp"
+#include "Basic/Instance.hpp"
+#include "Basic/Surface.hpp"
 
 #include <cstring>
 #include <map>
 #include <optional>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     Device::Device(const Instance &crInstance, const Surface &crSurface)
     {
         VkPhysicalDevice selectedPhysicalDevice =
@@ -234,4 +233,4 @@ namespace Neko
         return physicalDevices;
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

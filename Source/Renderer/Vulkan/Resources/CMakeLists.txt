@@ -1,19 +1,16 @@
 
-add_library(neko_renderer_resources
-    ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/usage_specific.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sampler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/descriptor.cpp
+add_library(NekoRendererVulkanResources OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/Images.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Buffers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UsageSpecific.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ResourceUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sampler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Descriptors.cpp
 )
-target_include_directories(neko_renderer_resources
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/commands
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/devices
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/basic
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/pipelines
+target_include_directories(NekoRendererVulkanResources
+    PRIVATE ${PROJECT_SOURCE_DIR}/Source/Renderer/Vulkan
 )
-target_link_libraries(neko_renderer_resources
-    PUBLIC compiler_flags
-    PRIVATE neko_core
+target_link_libraries(NekoRendererVulkanResources
+    PRIVATE CompilerFlags
+    PRIVATE NekoCore
 )

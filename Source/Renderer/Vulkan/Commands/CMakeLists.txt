@@ -1,11 +1,11 @@
 
-add_library(neko_renderer_commands
-    ${CMAKE_CURRENT_SOURCE_DIR}/commands.cpp
+add_library(NekoRendererVulkanCommands OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/Commands.cpp
 )
-target_include_directories(neko_renderer_commands PRIVATE
-    ${PROJECT_SOURCE_DIR}/src/renderer/devices
+target_include_directories(NekoRendererVulkanCommands
+    PRIVATE ${PROJECT_SOURCE_DIR}/Source/Renderer/Vulkan
 )
-target_link_libraries(neko_renderer_commands
-    PUBLIC compiler_flags
-    PRIVATE neko_core
+target_link_libraries(NekoRendererVulkanCommands
+    PRIVATE CompilerFlags
+    PRIVATE NekoCore
 )

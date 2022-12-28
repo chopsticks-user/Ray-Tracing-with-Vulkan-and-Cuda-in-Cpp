@@ -1,5 +1,5 @@
-#ifndef NEKO_RENDERER_MODULES_HPP
-#define NEKO_RENDERER_MODULES_HPP
+#ifndef HDG_RENDERER_GENRIC_VULKANMODULES_HPP
+#define HDG_RENDERER_GENRIC_VULKANMODULES_HPP
 
 #include "Vulkan/Basic/Context.hpp"
 #include "Vulkan/Basic/Extensions.hpp"
@@ -10,9 +10,9 @@
 #include "Vulkan/Basic/Synchronization.hpp"
 #include "Vulkan/Basic/Window.hpp"
 #include "Vulkan/Commands/Commands.hpp"
-#include "Vulkan/Devices/LogicalDevice.hpp"
-#include "Vulkan/Devices/PhysicalDevice.hpp"
-#include "Vulkan/Devices/Queues.hpp"
+#include "Vulkan/Devices/Logical.hpp"
+#include "Vulkan/Devices/Physical.hpp"
+#include "Vulkan/Devices/Queue.hpp"
 #include "Vulkan/Pipelines/Compute.hpp"
 #include "Vulkan/Pipelines/Graphics.hpp"
 #include "Vulkan/Pipelines/PipelineCache.hpp"
@@ -27,4 +27,4 @@
 #include "Vulkan/Resources/Sampler.hpp"
 #include "Vulkan/Resources/UsageSpecific.hpp"
 
-#endif /* NEKO_RENDERER_MODULES_HPP */
+#endif /* HDG_RENDERER_GENRIC_VULKANMODULES_HPP */

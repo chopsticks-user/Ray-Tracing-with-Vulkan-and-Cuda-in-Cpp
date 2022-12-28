@@ -23,10 +23,10 @@ namespace Neko::Core
 
         enum class PresentMode
         {
-            immediate = VK_PRESENT_MODE_IMMEDIATE_KHR,
-            mailbox = VK_PRESENT_MODE_MAILBOX_KHR,
-            fifo = VK_PRESENT_MODE_FIFO_KHR,
-            fifoRelaxed = VK_PRESENT_MODE_FIFO_RELAXED_KHR,
+            immediate = 0,
+            mailbox = 1,
+            fifo = 2,
+            fifoRelaxed = 3,
         };
 
     } // namespace Neko::Core::Enum
@@ -36,10 +36,10 @@ namespace Neko::Core
         struct
         {
             std::string appName = "Vulkan Application";
-            u32 appVersion = VK_MAKE_VERSION(1, 0, 0);
+            Version appVersion = {1, 0, 0};
             std::string engineName = "Neko Engine";
-            u32 engineVersion = VK_MAKE_VERSION(1, 0, 0);
-            u32 apiVersion = VK_API_VERSION_1_3;
+            Version engineVersion = {1, 0, 0};
+            Version apiVersion = {1, 3, 0};
         } general;
 
         struct

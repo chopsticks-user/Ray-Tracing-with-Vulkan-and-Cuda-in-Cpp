@@ -1,4 +1,4 @@
-#include "VulkanModules.hpp"
+#include "GenericRenderer.hpp"
 
 #ifndef TINYOBJLOADER_IMPLEMENTATION
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -8,9 +8,9 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace Neko
+namespace Neko::Internal
 {
-    Renderer::Renderer(const EngineConfigs &crConfigs, ThreadPool &threadPool)
+    Renderer::Renderer(const Core::EngineConfigs &crConfigs, Core::ThreadPool &threadPool)
         : modelData{loadModel("Data/Resources/Models/VikingRoom.obj")},
 
           mpConfigs{&crConfigs},
@@ -19,7 +19,7 @@ namespace Neko
 
           mInstance{*mpConfigs},
 
-          mWindow{*mpConfigs, Window::resizeable},
+          mWindow{*mpConfigs, VK::Window::resizeable},
 
           mSurface{mInstance, mWindow},
 
@@ -38,10 +38,10 @@ namespace Neko
           mUniformBuffers{maxFramesInFlight},
 
           mVertexBuffer{mDevice, mCommandPool, modelData.vertices.data(),
-                        sizeof(ShaderObject::Vertex) * modelData.vertices.size()},
+                        sizeof(VK::ShaderObject::Vertex) * modelData.vertices.size()},
 
           mIndexBuffer{mDevice, mCommandPool, modelData.indices.data(),
-                       sizeof(ShaderObject::Index) * modelData.indices.size()},
+                       sizeof(VK::ShaderObject::Index) * modelData.indices.size()},
 
           mTextureImage{"Data/Resources/Models/VikingRoom.png",
                         mDevice, mCommandPool},
@@ -68,8 +68,8 @@ namespace Neko
               mRenderPass,
               mPipelineLayout,
               {
-                  {ShaderStage::fragment, "Data/Resources/Shaders/Basic.frag.spv"},
-                  {ShaderStage::vertex, "Data/Resources/Shaders/Basic.vert.spv"},
+                  {VK::ShaderStage::fragment, "Data/Resources/Shaders/Basic.frag.spv"},
+                  {VK::ShaderStage::vertex, "Data/Resources/Shaders/Basic.vert.spv"},
               },
           }
     {
@@ -77,7 +77,7 @@ namespace Neko
         /* Uniform buffers */
         for (auto &uniformBuffer : mUniformBuffers)
         {
-            uniformBuffer = {mDevice, sizeof(ShaderObject::Uniform)};
+            uniformBuffer = {mDevice, sizeof(VK::ShaderObject::Uniform)};
         }
 
         /* Descriptor sets */
@@ -103,7 +103,7 @@ namespace Neko
             VkDescriptorBufferInfo bufferInfo{};
             bufferInfo.buffer = *mUniformBuffers[i];
             bufferInfo.offset = 0;
-            bufferInfo.range = sizeof(ShaderObject::Uniform);
+            bufferInfo.range = sizeof(VK::ShaderObject::Uniform);
 
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -137,10 +137,10 @@ namespace Neko
         }
     }
 
-    ShaderObject::Uniform
+    VK::ShaderObject::Uniform
     Renderer::getUniformBuffer([[maybe_unused]] float elapsedTime)
     {
-        ShaderObject::Uniform ubo;
+        VK::ShaderObject::Uniform ubo;
         ubo.model = glm::rotate(glm::mat4(1.0f), elapsedTime * glm::radians(90.0f),
                                 glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.view =
@@ -329,8 +329,8 @@ namespace Neko
             mRenderPass,
             mPipelineLayout,
             {
-                {ShaderStage::fragment, "Data/Resources/Shaders/Basic.frag.spv"},
-                {ShaderStage::vertex, "Data/Resources/Shaders/Basic.vert.spv"},
+                {VK::ShaderStage::fragment, "Data/Resources/Shaders/Basic.frag.spv"},
+                {VK::ShaderStage::vertex, "Data/Resources/Shaders/Basic.vert.spv"},
             },
         };
     }
@@ -349,13 +349,13 @@ namespace Neko
         }
 
         ModelVertexData loadedModel{};
-        std::unordered_map<ShaderObject::Vertex, ShaderObject::Index> uniqueVertices{};
+        std::unordered_map<VK::ShaderObject::Vertex, VK::ShaderObject::Index> uniqueVertices{};
 
         for (const auto &shape : shapes)
         {
             for (const auto &index : shape.mesh.indices)
             {
-                ShaderObject::Vertex vertex{};
+                VK::ShaderObject::Vertex vertex{};
                 vertex.position = {attrib.vertices[3 * index.vertex_index + 0],
                                    attrib.vertices[3 * index.vertex_index + 1],
                                    attrib.vertices[3 * index.vertex_index + 2]};
@@ -375,4 +375,4 @@ namespace Neko
         return loadedModel;
     }
 
-} // namespace Neko
+} // namespace Neko::Internal

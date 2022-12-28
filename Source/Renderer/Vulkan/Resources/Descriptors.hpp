@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_RESOURCES_DESCRIPTOR_HPP
-#define NEKO_RENDERER_RESOURCES_DESCRIPTOR_HPP
+#ifndef HDG_RENDERER_VULKAN_RESOURCES_DESCRIPTOR_HPP
+#define HDG_RENDERER_VULKAN_RESOURCES_DESCRIPTOR_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     class Device;
 
     typedef std::vector<VkDescriptorSet> DescriptorSets;
@@ -17,7 +17,7 @@ namespace Neko
         DescriptorSetLayout(const DescriptorSetLayout &) = delete;
         DescriptorSetLayout &operator=(const DescriptorSetLayout &) = delete;
 
-        DescriptorSetLayout(const EngineConfigs &crConfig, const Device &crDevice);
+        DescriptorSetLayout(const Core::EngineConfigs &crConfig, const Device &crDevice);
 
         DescriptorSetLayout(DescriptorSetLayout &&rhs) noexcept;
 
@@ -41,7 +41,7 @@ namespace Neko
         DescriptorPool(const DescriptorPool &) = delete;
         DescriptorPool &operator=(const DescriptorPool &) = delete;
 
-        DescriptorPool(const EngineConfigs &crConfig, const Device &crDevice,
+        DescriptorPool(const Core::EngineConfigs &crConfig, const Device &crDevice,
                        u32 descriptorSetCount);
 
         DescriptorPool(DescriptorPool &&rhs) noexcept;
@@ -98,6 +98,6 @@ namespace Neko
     //   std::vector<VkDescriptorSet> mDSets;
     // };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_RESOURCES_DESCRIPTOR_HPP */
+#endif /* HDG_RENDERER_VULKAN_RESOURCES_DESCRIPTOR_HPP */

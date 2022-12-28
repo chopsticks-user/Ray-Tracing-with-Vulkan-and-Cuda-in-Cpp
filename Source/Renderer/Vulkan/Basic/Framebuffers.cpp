@@ -7,7 +7,7 @@
 
 #include <array>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     Framebuffers::Framebuffers(const Device &crDevice, const Swapchain &crSwapchain,
@@ -80,4 +80,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

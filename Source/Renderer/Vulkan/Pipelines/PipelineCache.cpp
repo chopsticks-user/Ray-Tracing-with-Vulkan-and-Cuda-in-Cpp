@@ -1,8 +1,8 @@
 #include "PipelineCache.hpp"
 
-#include "Devices/Logical/Logical.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
 
     PipelineCache::PipelineCache(const Device &crDevice, u64 initialDataSize,
@@ -44,4 +44,4 @@ namespace Neko::Internal
         }
     }
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK

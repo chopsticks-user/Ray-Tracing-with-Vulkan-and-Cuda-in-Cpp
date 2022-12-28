@@ -1,10 +1,11 @@
-#ifndef NEKO_RENDERER_PIPELINES_COMPUTE_HPP
-#define NEKO_RENDERER_PIPELINES_COMPUTE_HPP
+#ifndef HDG_RENDERER_VULKAN_PIPELINES_COMPUTE_HPP
+#define HDG_RENDERER_VULKAN_PIPELINES_COMPUTE_HPP
 
 #include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_PIPELINES_COMPUTE_HPP */
+#endif /* HDG_RENDERER_VULKAN_PIPELINES_COMPUTE_HPP */

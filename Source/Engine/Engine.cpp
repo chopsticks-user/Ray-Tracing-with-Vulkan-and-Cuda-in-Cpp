@@ -1,6 +1,6 @@
 #include "Engine.hpp"
 
-#include "Renderer.hpp"
+#include "GenericRenderer.hpp"
 
 namespace Neko::Internal
 {

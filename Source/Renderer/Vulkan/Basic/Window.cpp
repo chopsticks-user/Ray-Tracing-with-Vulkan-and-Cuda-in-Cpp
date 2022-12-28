@@ -1,9 +1,9 @@
 #include "Window.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
-    Window::Window(const EngineConfigs &settings, bool windowResizeable)
+    Window::Window(const Core::EngineConfigs &settings, bool windowResizeable)
         : mWidth{settings.graphics.screenWidth},
           mHeight{settings.graphics.screenHeight}
     {
@@ -47,4 +47,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

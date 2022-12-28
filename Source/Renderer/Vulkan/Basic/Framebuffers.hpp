@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_BASIC_FRAMEBUFFERS_HPP
-#define NEKO_RENDERER_BASIC_FRAMEBUFFERS_HPP
+#ifndef NEKO_RENDERER_VULKAN_BASIC_FRAMEBUFFERS_HPP
+#define NEKO_RENDERER_VULKAN_BASIC_FRAMEBUFFERS_HPP
 
 #include "CoreInternal.hpp"
+#include "Context.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
-
     class Device;
     class Swapchain;
     class DepthBuffer;
@@ -47,6 +47,6 @@ namespace Neko::Internal
         std::vector<VkFramebuffer> mFramebuffers = {};
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_BASIC_FRAMEBUFFERS_HPP */
+#endif /* NEKO_RENDERER_VULKAN_BASIC_FRAMEBUFFERS_HPP */

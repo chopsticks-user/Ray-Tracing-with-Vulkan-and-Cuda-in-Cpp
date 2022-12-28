@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_PIPELINES_GRAPHICS_HPP
-#define NEKO_RENDERER_PIPELINES_GRAPHICS_HPP
+#ifndef HDG_RENDERER_VULKAN_PIPELINES_GRAPHICS_HPP
+#define HDG_RENDERER_VULKAN_PIPELINES_GRAPHICS_HPP
 
 #include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
-
     class Device;
     class Swapchain;
     class PipelineLayout;
@@ -21,7 +21,7 @@ namespace Neko::Internal
         GraphicsPipeline &operator=(const GraphicsPipeline &) = delete;
 
         GraphicsPipeline(
-            const EngineConfigs &crConfigs, const Device &crDevice,
+            const Core::EngineConfigs &crConfigs, const Device &crDevice,
             const Swapchain &crSwapchain, const RenderPass &crRenderPass,
             const PipelineLayout &crPipelineLayout,
             const std::vector<std::pair<ShaderStage, std::string>> &pairShaderPaths);
@@ -43,6 +43,6 @@ namespace Neko::Internal
         VkPipeline mGPipeline = VK_NULL_HANDLE;
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_PIPELINES_GRAPHICS_HPP */
+#endif /* HDG_RENDERER_VULKAN_PIPELINES_GRAPHICS_HPP */

@@ -1,8 +1,8 @@
 #include "Commands.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
 
     CommandPool::CommandPool(const Device &crDevice,
@@ -188,4 +188,4 @@ namespace Neko::Internal
         return allocInfo;
     }
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK

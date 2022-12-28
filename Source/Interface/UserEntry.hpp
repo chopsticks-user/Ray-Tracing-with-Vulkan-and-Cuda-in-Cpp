@@ -3,20 +3,20 @@
 
 #include <iostream>
 
-namespace Neko
+namespace Neko::Internal
 {
     class Engine;
     extern Engine *_nekoUserInitializeEngine();
     extern void _userEntry();
     extern void createImGUI();
 
-} /* namespace Neko */
+} /* namespace Neko::Internal */
 
 static int protectedMain(int, char **)
 {
-    Neko::_userEntry();
+    Neko::Internal::_userEntry();
 
-    auto engine = Neko::_nekoUserInitializeEngine();
+    auto engine = Neko::Internal::_nekoUserInitializeEngine();
     engine->start();
     delete engine;
 

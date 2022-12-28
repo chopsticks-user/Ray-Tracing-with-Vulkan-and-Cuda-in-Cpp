@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     VKAPI_ATTR VkBool32 VKAPI_CALL Instance::debugMessengerCallback(
@@ -54,23 +54,27 @@ namespace Neko
         return requiredExtensions;
     }
 
-    Instance::Instance(const EngineConfigs &settings)
+    Instance::Instance(const Core::EngineConfigs &configs)
     {
         uint32_t apiVersion;
         vkEnumerateInstanceVersion(&apiVersion);
 
         VkApplicationInfo applicationInfo{};
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        applicationInfo.pApplicationName = settings.general.appName.c_str();
-        applicationInfo.applicationVersion = settings.general.appVersion;
-        applicationInfo.pEngineName = settings.general.engineName.c_str();
-        applicationInfo.engineVersion = settings.general.engineVersion;
+        applicationInfo.pApplicationName = configs.general.appName.c_str();
+        applicationInfo.applicationVersion = VK_MAKE_VERSION(configs.general.appVersion.major,
+                                                             configs.general.appVersion.minor,
+                                                             configs.general.appVersion.patch);
+        applicationInfo.pEngineName = configs.general.engineName.c_str();
+        applicationInfo.engineVersion = VK_MAKE_VERSION(configs.general.engineVersion.major,
+                                                        configs.general.engineVersion.minor,
+                                                        configs.general.engineVersion.patch);
         applicationInfo.apiVersion = apiVersion;
 
         std::vector<const char *> layers{};
 
         // ! MangoHud on
-        if constexpr (platform == linuxk)
+        if constexpr (Core::platform == Core::Enum::Platform::linuxk)
         {
             layers.emplace_back("VK_LAYER_MANGOHUD_overlay");
         }
@@ -80,7 +84,7 @@ namespace Neko
         VkDebugUtilsMessengerCreateInfoEXT *pDebugMessengerInfo = nullptr;
         VkDebugUtilsMessengerCreateInfoEXT debugMessengerInfo{};
 
-        if constexpr (Neko::debugMode)
+        if constexpr (Core::System::debugMode)
         {
             layers.emplace_back("VK_LAYER_KHRONOS_validation");
             extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -103,7 +107,7 @@ namespace Neko
             throw std::runtime_error("Failed to create instance.");
         }
 
-        if constexpr (Neko::debugMode)
+        if constexpr (Core::System::debugMode)
         {
             if (mContext.createDebugMessenger(mInstance, pDebugMessengerInfo, nullptr,
                                               &mDebugMessenger) != VK_SUCCESS)
@@ -130,7 +134,7 @@ namespace Neko
     {
         if (mInstance != VK_NULL_HANDLE)
         {
-            if constexpr (Neko::debugMode)
+            if constexpr (Core::System::debugMode)
             {
                 mContext.destroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
             }
@@ -139,4 +143,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

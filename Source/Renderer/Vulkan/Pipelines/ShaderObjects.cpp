@@ -1,6 +1,6 @@
 #include "ShaderObjects.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
     namespace ShaderObject
     {
@@ -39,4 +39,4 @@ namespace Neko
         }
 
     } /* namespace ShaderObject */
-} // namespace Neko
+} // namespace Neko::Internal::VK

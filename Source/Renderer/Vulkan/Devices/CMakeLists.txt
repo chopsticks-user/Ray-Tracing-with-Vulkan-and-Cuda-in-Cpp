@@ -1,13 +1,13 @@
 
-add_library(neko_renderer_devices
-    ${CMAKE_CURRENT_SOURCE_DIR}/logical_device.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physical_device.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/queue.cpp
+add_library(NekoRendererVulkanDevices OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/Logical.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Physical.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Queue.cpp
 )
-target_include_directories(neko_renderer_devices
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/renderer/basic
+target_include_directories(NekoRendererVulkanDevices
+    PRIVATE ${PROJECT_SOURCE_DIR}/Source/Renderer/Vulkan
 )
-target_link_libraries(neko_renderer_devices
-    PUBLIC compiler_flags
-    PRIVATE neko_core
+target_link_libraries(NekoRendererVulkanDevices
+    PRIVATE CompilerFlags
+    PRIVATE NekoCore
 )

@@ -1,9 +1,9 @@
 #include "PipelineLayout.hpp"
 
-#include "Logical/Logical.hpp"
+#include "Devices/Logical.hpp"
 #include "Resources/Descriptors.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
 
     PipelineLayout::PipelineLayout(
@@ -45,4 +45,4 @@ namespace Neko::Internal
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

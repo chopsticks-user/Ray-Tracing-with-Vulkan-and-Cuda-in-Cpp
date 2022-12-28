@@ -1,9 +1,10 @@
-#ifndef NEKO_RENDERER_RESOURCES_BUFFER_HPP
-#define NEKO_RENDERER_RESOURCES_BUFFER_HPP
+#ifndef HDG_RENDERER_VULKAN_RESOURCES_BUFFER_HPP
+#define HDG_RENDERER_VULKAN_RESOURCES_BUFFER_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     class Device;
@@ -78,6 +79,6 @@ namespace Neko
         void createBufferView(const VkBufferViewCreateInfo *pcBufferViewInfo);
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_RESOURCES_BUFFER_HPP */
+#endif /* HDG_RENDERER_VULKAN_RESOURCES_BUFFER_HPP */

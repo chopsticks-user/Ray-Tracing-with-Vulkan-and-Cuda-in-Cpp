@@ -1,11 +1,12 @@
-#ifndef NEKO_RENDERER_BASIC_WINDOW_HPP
-#define NEKO_RENDERER_BASIC_WINDOW_HPP
+#ifndef NEKO_RENDERER_VULKAN_BASIC_WINDOW_HPP
+#define NEKO_RENDERER_VULKAN_BASIC_WINDOW_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Context.hpp"
 
 #include <functional>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     class Window
@@ -19,7 +20,7 @@ namespace Neko
         Window(const Window &) = delete;
         Window &operator=(const Window &) = delete;
 
-        explicit Window(const EngineConfigs &settings, bool windowResizeable = false);
+        explicit Window(const Core::EngineConfigs &settings, bool windowResizeable = false);
 
         Window(Window &&) noexcept;
 
@@ -41,6 +42,6 @@ namespace Neko
         u32 mHeight = 0;
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_BASIC_WINDOW_HPP */
+#endif /* NEKO_RENDERER_VULKAN_BASIC_WINDOW_HPP */

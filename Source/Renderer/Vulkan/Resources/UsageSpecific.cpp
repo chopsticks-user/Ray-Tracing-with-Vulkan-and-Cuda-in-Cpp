@@ -2,14 +2,14 @@
 #include "ResourceUtils.hpp"
 
 #include "Basic/Swapchain.hpp"
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
 #include <cmath>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
-    DepthBuffer::DepthBuffer([[maybe_unused]] const EngineConfigs &crSettings,
+    DepthBuffer::DepthBuffer([[maybe_unused]] const Core::EngineConfigs &crSettings,
                              const Device &crDevice, const Swapchain &crSwapchain)
     {
         static constexpr u32 mipLevels = 1;
@@ -18,7 +18,7 @@ namespace Neko
         mpcDevice = &crDevice;
         mOffset = 0;
 
-        mFormat = detail::findSupportedFormat(
+        mFormat = findSupportedFormat(
             crDevice.physical(),
             {VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
             VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
@@ -46,7 +46,7 @@ namespace Neko
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memoryRequirements.size;
-        allocInfo.memoryTypeIndex = detail::findMemoryType(
+        allocInfo.memoryTypeIndex = findMemoryType(
             mpcDevice->physical(), memoryRequirements.memoryTypeBits,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         createImageMemory(&allocInfo);
@@ -136,7 +136,7 @@ namespace Neko
         mpcDevice = &crDevice;
         mOffset = memoryOffset;
 
-        detail::LoadedImage textureImage{textureImagePath};
+        Core::ImageLoader textureImage{textureImagePath};
         u32 mipLevels = textureImage.mipLevels();
         VkDeviceSize textureImageSize = textureImage.imageSize();
         StagingBuffer stagingBuffer{crDevice, textureImage.pixels(),
@@ -167,21 +167,21 @@ namespace Neko
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memoryRequirements.size;
-        allocInfo.memoryTypeIndex = detail::findMemoryType(
+        allocInfo.memoryTypeIndex = findMemoryType(
             mpcDevice->physical(), memoryRequirements.memoryTypeBits,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         createImageMemory(&allocInfo);
 
-        detail::transitImageLayout(crCommandPool, mImage, VK_FORMAT_R8G8B8A8_SRGB,
-                                   VK_IMAGE_LAYOUT_UNDEFINED,
-                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+        transitImageLayout(crCommandPool, mImage, VK_FORMAT_R8G8B8A8_SRGB,
+                           VK_IMAGE_LAYOUT_UNDEFINED,
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
 
-        detail::copyBufferToImage(crCommandPool, *stagingBuffer, mImage,
-                                  textureImage.width(), textureImage.height());
+        copyBufferToImage(crCommandPool, *stagingBuffer, mImage,
+                          textureImage.width(), textureImage.height());
 
-        detail::generateMipMaps(crCommandPool, crDevice.physical(), mImage, format,
-                                textureImage.width(), textureImage.height(),
-                                mipLevels);
+        generateMipMaps(crCommandPool, crDevice.physical(), mImage, format,
+                        textureImage.width(), textureImage.height(),
+                        mipLevels);
 
         VkImageViewCreateInfo imageViewInfo{};
         imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -213,4 +213,4 @@ namespace Neko
         createImageView(&imageViewInfo);
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

@@ -1,8 +1,8 @@
 #include "Images.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     ImageObject::ImageObject(const Device &crDevice,
@@ -92,4 +92,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

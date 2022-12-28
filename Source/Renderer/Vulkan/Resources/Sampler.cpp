@@ -1,11 +1,10 @@
 #include "Sampler.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
-    Sampler::Sampler([[maybe_unused]] const EngineConfigs &crConfig,
+    Sampler::Sampler([[maybe_unused]] const Core::EngineConfigs &crConfig,
                      const Device &crDevice, u32 mipLevels)
         : mpcDevice{&crDevice}
     {
@@ -57,4 +56,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

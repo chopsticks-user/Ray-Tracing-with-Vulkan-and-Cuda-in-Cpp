@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_RESOURCES_SAMPLER_HPP
-#define NEKO_RENDERER_RESOURCES_SAMPLER_HPP
+#ifndef HDG_RENDERER_VULKAN_RESOURCES_SAMPLER_HPP
+#define HDG_RENDERER_VULKAN_RESOURCES_SAMPLER_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     class Device;
 
     class Sampler
@@ -15,7 +15,7 @@ namespace Neko
         Sampler(const Sampler &) = delete;
         Sampler &operator=(const Sampler &) = delete;
 
-        Sampler(const EngineConfigs &crConfig, const Device &crDevice,
+        Sampler(const Core::EngineConfigs &crConfig, const Device &crDevice,
                 u32 mipLevels = 1);
 
         Sampler(Sampler &&rhs) noexcept;
@@ -33,6 +33,6 @@ namespace Neko
         VkSampler mSampler = VK_NULL_HANDLE;
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_RESOURCES_SAMPLER_HPP */
+#endif /* HDG_RENDERER_VULKAN_RESOURCES_SAMPLER_HPP */

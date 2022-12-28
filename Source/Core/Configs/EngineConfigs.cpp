@@ -34,12 +34,6 @@ namespace Neko::Core
         };
     }
 
-    static u32 getVkVersion(const std::string &versionStr)
-    {
-        Version version = getVersion(versionStr);
-        return VK_MAKE_VERSION(version.major, version.minor, version.patch);
-    }
-
     static Enum::CPUThreadUsage getCPUThreadUsage(const std::string &usageModeStr)
     {
         if (usageModeStr == "high")
@@ -92,11 +86,11 @@ namespace Neko::Core
         auto generalSettings = jsonData["general"];
         general.appName = generalSettings["info"]["application"]["name"];
         general.appVersion =
-            getVkVersion(generalSettings["info"]["application"]["version"]);
+            getVersion(generalSettings["info"]["application"]["version"]);
         general.engineName = generalSettings["info"]["engine"]["name"];
         general.engineVersion =
-            getVkVersion(generalSettings["info"]["engine"]["version"]);
-        general.apiVersion = getVkVersion(generalSettings["info"]["api"]["version"]);
+            getVersion(generalSettings["info"]["engine"]["version"]);
+        general.apiVersion = getVersion(generalSettings["info"]["api"]["version"]);
 
         auto graphicsSettings = jsonData["graphics"];
         graphics.screenWidth = graphicsSettings["render-window"]["width"];

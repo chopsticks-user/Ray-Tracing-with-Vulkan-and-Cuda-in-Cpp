@@ -1,7 +1,8 @@
-#ifndef NEKO_RENDERER_PIPELINES_SHADER_OBJECTS_HPP
-#define NEKO_RENDERER_PIPELINES_SHADER_OBJECTS_HPP
+#ifndef HDG_RENDERER_VULKAN_PIPELINES_SHADER_OBJECTS_HPP
+#define HDG_RENDERER_VULKAN_PIPELINES_SHADER_OBJECTS_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
@@ -16,7 +17,7 @@
 
 #include <array>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
     namespace ShaderObject
     {
@@ -51,14 +52,14 @@ namespace Neko
         };
 
     } /* namespace ShaderObject */
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
 namespace std
 {
     template <>
-    struct hash<Neko::ShaderObject::Vertex>
+    struct hash<Neko::Internal::VK::ShaderObject::Vertex>
     {
-        size_t operator()(Neko::ShaderObject::Vertex const &vertex) const
+        size_t operator()(Neko::Internal::VK::ShaderObject::Vertex const &vertex) const
         {
             return ((hash<glm::vec3>()(vertex.position) ^
                      (hash<glm::vec3>()(vertex.color) << 1)) >>
@@ -68,4 +69,4 @@ namespace std
     };
 } /* namespace std */
 
-#endif /* NEKO_RENDERER_PIPELINES_SHADER_OBJECTS_HPP */
+#endif /* HDG_RENDERER_VULKAN_PIPELINES_SHADER_OBJECTS_HPP */

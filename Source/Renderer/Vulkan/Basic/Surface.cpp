@@ -2,7 +2,7 @@
 #include "Instance.hpp"
 #include "Window.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     Surface::Surface(const Instance &crInstance, const Window &crWindow)
@@ -37,4 +37,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

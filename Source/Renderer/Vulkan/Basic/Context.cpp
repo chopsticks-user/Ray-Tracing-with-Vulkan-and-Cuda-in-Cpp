@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
     static std::atomic<u32> contextCount = 0;
 
@@ -57,4 +57,4 @@ namespace Neko::Internal
         }
     }
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK

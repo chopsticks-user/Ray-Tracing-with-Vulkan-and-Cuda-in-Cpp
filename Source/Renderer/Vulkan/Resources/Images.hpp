@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_RESOURCES_IMAGE_HPP
-#define NEKO_RENDERER_RESOURCES_IMAGE_HPP
+#ifndef HDG_RENDERER_VULKAN_RESOURCES_IMAGE_HPP
+#define HDG_RENDERER_VULKAN_RESOURCES_IMAGE_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     class Device;
 
     class Image
@@ -69,6 +69,6 @@ namespace Neko
         void createImageView(const VkImageViewCreateInfo *pcImageViewInfo);
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_RESOURCES_IMAGE_HPP */
+#endif /* HDG_RENDERER_VULKAN_RESOURCES_IMAGE_HPP */

@@ -1,10 +1,10 @@
 #include "ShaderModules.hpp"
 
-#include "Devices/LogicalDevice.hpp"
+#include "Devices/Logical.hpp"
 
 #include <fstream>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     ShaderModule::ShaderModule(const Device &crDevice,
@@ -55,4 +55,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

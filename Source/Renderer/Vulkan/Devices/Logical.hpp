@@ -1,11 +1,11 @@
-#ifndef HDG_RENDERER_DEVICES_LOGICAL_HPP
-#define HDG_RENDERER_DEVICES_LOGICAL_HPP
+#ifndef HDG_RENDERER_VULKAN_DEVICES_LOGICAL_HPP
+#define HDG_RENDERER_VULKAN_DEVICES_LOGICAL_HPP
 
 #include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
-
     class Instance;
     class Surface;
 
@@ -80,6 +80,6 @@ namespace Neko::Internal
         std::vector<VkPhysicalDevice> getPhysicalDevices(VkInstance instance);
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* HDG_RENDERER_DEVICES_LOGICAL_HPP */
+#endif /* HDG_RENDERER_VULKAN_DEVICES_LOGICAL_HPP */

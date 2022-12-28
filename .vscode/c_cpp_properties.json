@@ -8,12 +8,12 @@
                 "${workspaceFolder}/Source/Core",
                 "${workspaceFolder}/Source/Renderer",
                 "${workspaceFolder}/Source/Engine",
-                "${workspaceFolder}/Source/Renderer/Basic",
-                "${workspaceFolder}/Source/Renderer/Commands",
-                "${workspaceFolder}/Source/Renderer/Devices",
-                "${workspaceFolder}/Source/Renderer/Pipelines",
-                "${workspaceFolder}/Source/Renderer/Resources",
-
+                "${workspaceFolder}/Source/Renderer/Vulkan/Basic",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Commands",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Devices",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Pipelines",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Resources",
+                "${workspaceFolder}/Source/Renderer/Vulkan"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

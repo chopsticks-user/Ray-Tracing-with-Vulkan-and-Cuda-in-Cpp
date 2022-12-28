@@ -1,9 +1,10 @@
-#ifndef NEKO_RENDERER_BASIC_SWAPCHAIN_HPP
-#define NEKO_RENDERER_BASIC_SWAPCHAIN_HPP
+#ifndef NEKO_RENDERER_VULKAN_BASIC_SWAPCHAIN_HPP
+#define NEKO_RENDERER_VULKAN_BASIC_SWAPCHAIN_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Context.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     class Surface;
@@ -16,7 +17,7 @@ namespace Neko
         Swapchain(const Swapchain &) = delete;
         Swapchain &operator=(const Swapchain &) = delete;
 
-        Swapchain(const EngineConfigs &crSettings, const Surface &crSurface,
+        Swapchain(const Core::EngineConfigs &crSettings, const Surface &crSurface,
                   const Device &crDevice);
 
         Swapchain(Swapchain &&rhs) noexcept;
@@ -52,6 +53,6 @@ namespace Neko
         void initializeImageViews();
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_BASIC_SWAPCHAIN_HPP */
+#endif /* NEKO_RENDERER_VULKAN_BASIC_SWAPCHAIN_HPP */

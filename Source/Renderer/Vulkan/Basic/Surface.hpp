@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_BASIC_SURFACE_HPP
-#define NEKO_RENDERER_BASIC_SURFACE_HPP
+#ifndef NEKO_RENDERER_VULKAN_BASIC_SURFACE_HPP
+#define NEKO_RENDERER_VULKAN_BASIC_SURFACE_HPP
 
-#include "CoreNeko.hpp"
+#include "CoreInternal.hpp"
+#include "Context.hpp"
 
-namespace Neko
+namespace Neko::Internal::VK
 {
-
     class Instance;
     class Window;
 
@@ -35,6 +35,6 @@ namespace Neko
         VkSurfaceKHR mSurface = VK_NULL_HANDLE;
     };
 
-} // namespace Neko
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_BASIC_SURFACE_HPP */
+#endif /* NEKO_RENDERER_VULKAN_BASIC_SURFACE_HPP */

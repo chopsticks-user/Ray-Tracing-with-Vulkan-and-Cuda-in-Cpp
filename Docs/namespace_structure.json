@@ -15,7 +15,7 @@
         },
         "Internal": {
             "Brief": "Contains most implementations, some will be selected by the interface module to make them publicly accessible",
-            "Vulkan": {
+            "VK": {
                 "Brief": "Contains Vulkan renderer implementations"
             }
         },

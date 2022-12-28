@@ -1,19 +1,19 @@
 #include "Graphics.hpp"
 #include "PipelineCache.hpp"
-#include "Layout/PipelineLayout.hpp"
-#include "RenderPass/RenderPass.hpp"
-#include "Shaders/ShaderModules.hpp"
-#include "Shaders/ShaderObjects.hpp"
+#include "PipelineLayout.hpp"
+#include "RenderPass.hpp"
+#include "ShaderModules.hpp"
+#include "ShaderObjects.hpp"
 
-#include "Swapchain/Swapchain.hpp"
-#include "Logical/Logical.hpp"
+#include "Basic/Swapchain.hpp"
+#include "Devices/Logical.hpp"
 #include "Resources/Descriptors.hpp"
 #include "Resources/UsageSpecific.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
     GraphicsPipeline::GraphicsPipeline(
-        [[maybe_unused]] const EngineConfigs &crConfigs, const Device &crDevice,
+        [[maybe_unused]] const Core::EngineConfigs &crConfigs, const Device &crDevice,
         const Swapchain &crSwapchain, const RenderPass &crRenderPass,
         const PipelineLayout &crPipelineLayout,
         const std::vector<std::pair<ShaderStage, std::string>> &pairShaderPaths)
@@ -215,4 +215,4 @@ namespace Neko::Internal
         }
     }
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK

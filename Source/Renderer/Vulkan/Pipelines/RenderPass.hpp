@@ -1,11 +1,11 @@
-#ifndef NEKO_RENDERER_PIPELINES_RENDER_PASS_HPP
-#define NEKO_RENDERER_PIPELINES_RENDER_PASS_HPP
+#ifndef HDG_RENDERER_VULKAN_PIPELINES_RENDER_PASS_HPP
+#define HDG_RENDERER_VULKAN_PIPELINES_RENDER_PASS_HPP
 
 #include "CoreInternal.hpp"
+#include "Basic/Context.hpp"
 
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
-
     class Device;
     class Swapchain;
     class DepthBuffer;
@@ -38,6 +38,6 @@ namespace Neko::Internal
         VkRenderPass mRenderPass = VK_NULL_HANDLE;
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* NEKO_RENDERER_PIPELINES_RENDER_PASS_HPP */
+#endif /* HDG_RENDERER_VULKAN_PIPELINES_RENDER_PASS_HPP */

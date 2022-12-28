@@ -1,12 +1,12 @@
 #include "RenderPass.hpp"
 
-#include "Swapchain/Swapchain.hpp"
-#include "Logical/Logical.hpp"
+#include "Basic/Swapchain.hpp"
+#include "Devices/Logical.hpp"
 #include "Resources/UsageSpecific.hpp"
 
 #include <array>
 
-namespace Neko
+namespace Neko::Internal::VK
 {
 
     RenderPass::RenderPass(const Device &crDevice,
@@ -129,4 +129,4 @@ namespace Neko
         }
     }
 
-} // namespace Neko
+} // namespace Neko::Internal::VK

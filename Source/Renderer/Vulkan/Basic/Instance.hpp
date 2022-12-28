@@ -1,11 +1,10 @@
-#ifndef HDG_RENDERDER_BASIC_INSTANCE_HPP
-#define HDG_RENDERDER_BASIC_INSTANCE_HPP
+#ifndef HDG_RENDERDER_VULKAN_BASIC_INSTANCE_HPP
+#define HDG_RENDERDER_VULKAN_BASIC_INSTANCE_HPP
 
 #include "CoreInternal.hpp"
+#include "Context.hpp"
 
-#include "Context/Context.hpp"
-
-namespace Neko::Internal
+namespace Neko::Internal::VK
 {
     class Instance
     {
@@ -14,7 +13,7 @@ namespace Neko::Internal
         Instance(const Instance &) = delete;
         Instance &operator=(const Instance &) = delete;
 
-        explicit Instance(const EngineConfigs &settings);
+        explicit Instance(const Core::EngineConfigs &configs);
 
         Instance(Instance &&rhs) noexcept;
 
@@ -43,6 +42,6 @@ namespace Neko::Internal
             VkDebugUtilsMessengerCreateInfoEXT &debugMessengerInfo);
     };
 
-} // namespace Neko::Internal
+} // namespace Neko::Internal::VK
 
-#endif /* HDG_RENDERDER_BASIC_INSTANCE_HPP */
+#endif /* HDG_RENDERDER_VULKAN_BASIC_INSTANCE_HPP */

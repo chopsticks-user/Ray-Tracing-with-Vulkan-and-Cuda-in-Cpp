@@ -1,11 +1,18 @@
 
-add_library(neko_renderer_basic TARGET_OBJECTS
-    ${CMAKE_CURRENT_SOURCE_DIR}/Context/context.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Window/window.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Instance/instance.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Surface/surface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Swapchain/swapchain.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Framebuffers/framebuffers.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Extensions/extensions.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Synchronization/Synchoronization.cpp
+add_library(NekoRendererVulkanBasic OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/Context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Window.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Instance.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Surface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Swapchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Framebuffers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Extensions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Synchronization.cpp
+)
+target_include_directories(NekoRendererVulkanBasic
+    PRIVATE ${PROJECT_SOURCE_DIR}/Source/Renderer/Vulkan
+)
+target_link_libraries(NekoRendererVulkanBasic
+    PRIVATE CompilerFlags
+    PRIVATE NekoCore
 )
