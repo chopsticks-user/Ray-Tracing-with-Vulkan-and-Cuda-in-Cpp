@@ -4,14 +4,21 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src/utils",
-                "${workspaceFolder}/src/renderer",
-                "${workspaceFolder}/src/threads",
-                "${workspaceFolder}/src/renderer/basic"
+                "${workspaceFolder}/Source",
+                "${workspaceFolder}/Source/Core",
+                "${workspaceFolder}/Source/Renderer",
+                "${workspaceFolder}/Source/Engine",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Basic",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Commands",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Devices",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Pipelines",
+                "${workspaceFolder}/Source/Renderer/Vulkan/Resources",
+                "${workspaceFolder}/Source/Renderer/Vulkan"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
-            "intelliSenseMode": "linux-clang-x64"
+            "intelliSenseMode": "linux-clang-x64",
+            "compileCommands": "${workspaceFolder}/.vscode/compile_commands.json"
         }
     ],
     "version": 4

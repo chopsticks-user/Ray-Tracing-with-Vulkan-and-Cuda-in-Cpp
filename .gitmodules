@@ -1,6 +1,15 @@
-[submodule "json"]
-	path = json
-	url = https://github.com/nlohmann/json
-[submodule "modules/json"]
-	path = modules/json
-	url = https://github.com/nlohmann/json
+[submodule "Modules/Json"]
+	path = Modules/Json
+	url = https://github.com/nlohmann/json.git
+[submodule "Modules/Stb"]
+	path = Modules/Stb
+	url = https://github.com/nothings/stb.git
+[submodule "Modules/Spdlog"]
+	path = Modules/Spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "Modules/ImGUI"]
+	path = Modules/ImGUI
+	url = https://github.com/ocornut/imgui.git
+[submodule "Modules/TinyObjLoader"]
+	path = Modules/TinyObjLoader
+	url = https://github.com/tinyobjloader/tinyobjloader.git

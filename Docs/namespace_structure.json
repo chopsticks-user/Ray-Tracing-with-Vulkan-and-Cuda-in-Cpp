@@ -1,0 +1,26 @@
+{
+    "Neko": {
+        "Brief": "Contains public client interfaces selected in the interface module",
+        "Core": {
+            "Brief": "Contains core utilities, definitions, and interfaces",
+            "Super": {
+                "Brief": "Contains core interface classes to derived from"
+            },
+            "System": {
+                "Brief": "Contains system details like paths, platforms, etc"
+            },
+            "Enum": {
+                "Brief": "Contains enum classes"
+            }
+        },
+        "Internal": {
+            "Brief": "Contains most implementations, some will be selected by the interface module to make them publicly accessible",
+            "VK": {
+                "Brief": "Contains Vulkan renderer implementations"
+            }
+        },
+        "Client": {
+            "Brief": "Contains client side extern functions and classes"
+        }
+    }
+}

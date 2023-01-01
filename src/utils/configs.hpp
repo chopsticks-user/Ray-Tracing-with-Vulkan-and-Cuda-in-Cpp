@@ -1,5 +1,0 @@
-#define NEKO_VERSION_MAJOR 1
-#define NEKO_VERSION_MINOR 0
-#define NEKO_VERSION_PATCH 0
-
-#
